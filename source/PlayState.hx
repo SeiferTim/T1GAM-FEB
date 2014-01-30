@@ -63,9 +63,11 @@ class PlayState extends FlxState
 		
 		_grpMap = new FlxGroup();
 		_grpMeat = new FlxGroup();
+		_grpFX = new FlxGroup();
+		_grpHUD = new FlxGroup();
+		
 		player = new DisplaySprite(0, 0);
 		player.makeGraphic(32, 32, 0xff1F64B1);
-		_grpHUD = new FlxGroup();
 		
 		_grass = FlxGridOverlay.create(64, 64, FlxG.width, FlxG.height,false, true, 0xff77C450, 0xff2A9D0C);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
@@ -83,15 +85,9 @@ class PlayState extends FlxState
 		
 		_grpMap.add(_walls);
 		
-		_grpFX = new FlxGroup();
-		
-		
-		
 		add(_grpMap);
 		add(_grpDisplayObjs);
 		_grpDisplayObjs.add(player);
-		//add(_grpMeat);
-		//add(player);
 		add(_grpFX);
 		add(_grpHUD);
 		
@@ -146,16 +142,35 @@ class PlayState extends FlxState
 	
 	public function heartBurst(X:Float, Y:Float, Floor:Float):Void
 	{
-		var h:ZEmitterExt = new ZEmitterExt();
-		h.setRotation(0, 0);
-		h.setMotion(0, 10, .33, 360, 140,3);
-		h.particleClass = ZParticle;
-		h.gravity = 1200;
-		h.particleDrag.x = 400;
-		h.particleDrag.y = 600;
+		var h:ZEmitterExt=null;
+		
+		for (o in _grpDisplayObjs.members)
+		{
+			if (Type.getClassName(Type.getClass(o)) == "ZEmitterExt")
+			{
+				if (cast(o, ZEmitterExt).countLiving() == 0)
+				{
+					h = cast(o, ZEmitterExt);
+					trace("revival!");
+					break;
+				}
+			}
+		}
+		
+		if (h == null)
+		{
+			h = new ZEmitterExt();
+			h.setRotation(0, 0);
+			h.setMotion(0, 10, .33, 360, 140,3);
+			h.particleClass = ZParticle;
+			h.gravity = 1200;
+			h.particleDrag.x = 400;
+			h.particleDrag.y = 600;
 
-		h.makeParticles("assets/images/heartparticles.png", 20, 0, true);
-		_grpDisplayObjs.add(h);
+			h.makeParticles("assets/images/heartparticles.png", 20, 0, true);
+			_grpDisplayObjs.add(h);
+		}
+		
 		
 		h.z = Floor;
 		h.setAll("floor", Floor);

@@ -16,30 +16,25 @@ class ZParticle extends FlxParticle
 	public function new() 
 	{
 		super();
-		//elasticity = .6;
-		FlxG.watch.add(this, "x");
-		FlxG.watch.add(this, "y");
-		FlxG.watch.add(this, "touching");
 		
 	}
 	
 	override public function update():Void 
 	{
-		if (alive && exists && active && visible)
+		
+		if (y >= _floor-1)
 		{
-			if (y >= _floor)
-			{
-				velocity.x = 0;
-				velocity.y = 0;
-			}
-			
+			velocity.x = 0;
+			velocity.y = 0;
+			y = _floor-1;
 		}
+			
+		
 		super.update();
 	}
 	
 	private function set_floor(value:Float):Float 
 	{
-		trace(value);
 		return _floor = value;
 	}
 	
