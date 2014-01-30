@@ -38,5 +38,7 @@ class Reg
 	 */
 	static public var saves:Array<FlxSave> = [];
 	
+	static public var playState:PlayState;
+	
 	
 }

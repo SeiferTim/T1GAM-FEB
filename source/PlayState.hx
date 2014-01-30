@@ -2,6 +2,8 @@ package;
 
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.effects.particles.FlxEmitter;
+import flixel.effects.particles.FlxEmitterExt;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -29,14 +31,18 @@ class PlayState extends FlxState
 	
 	private var _loading:Bool = true;
 	
-	private var _player:FlxSprite;
+	public var player:DisplaySprite;
 	private var _grpMeat:FlxGroup;
 	private var _grpMap:FlxGroup;
+	private var _grpDisplayObjs:FlxGroup;
+	private var _grpFX:FlxGroup;
 	private var _grpHUD:FlxGroup;
 	
 	private var _grass:FlxSprite;
 	private var _map:FlxOgmoLoader;
 	private var _walls:FlxTilemap;
+	
+	private var _emtHeartBurst:ZEmitterExt;
 	
 	
 	/**
@@ -51,19 +57,23 @@ class PlayState extends FlxState
 		FlxG.mouse.visible = false;
 		#end
 		
+		Reg.playState = this;
+		
+		_grpDisplayObjs = new FlxGroup();
 		
 		_grpMap = new FlxGroup();
 		_grpMeat = new FlxGroup();
-		_player = new FlxSprite(0, 0).makeGraphic(32, 32, 0xff1F64B1);
+		player = new DisplaySprite(0, 0);
+		player.makeGraphic(32, 32, 0xff1F64B1);
 		_grpHUD = new FlxGroup();
 		
 		_grass = FlxGridOverlay.create(64, 64, FlxG.width, FlxG.height,false, true, 0xff77C450, 0xff2A9D0C);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		_grpMap.add(_grass);
 		
-		_player.x = (FlxG.width - _player.width) / 2;
-		_player.y = (FlxG.height - _player.height) / 2;
-		_player.forceComplexRender = true;
+		player.x = (FlxG.width - player.width) / 2;
+		player.y = (FlxG.height - player.height) / 2;
+		player.forceComplexRender = true;
 		
 		_map = new FlxOgmoLoader("assets/data/level-0001.oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 16, 16, "walls");
@@ -73,9 +83,16 @@ class PlayState extends FlxState
 		
 		_grpMap.add(_walls);
 		
+		_grpFX = new FlxGroup();
+		
+		
+		
 		add(_grpMap);
-		add(_grpMeat);
-		add(_player);
+		add(_grpDisplayObjs);
+		_grpDisplayObjs.add(player);
+		//add(_grpMeat);
+		//add(player);
+		add(_grpFX);
 		add(_grpHUD);
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
@@ -85,7 +102,9 @@ class PlayState extends FlxState
 	
 	private function loadEntity(EType:String, EXml:Xml):Void
 	{
-		_grpMeat.add(new MeatBag(Std.parseFloat(EXml.get("x")), Std.parseFloat(EXml.get("y"))));
+		var mB:MeatBag = new MeatBag(Std.parseFloat(EXml.get("x")), Std.parseFloat(EXml.get("y")));
+		_grpMeat.add(mB);
+		_grpDisplayObjs.add(mB);
 	}
 	
 	private function fadeInDone():Void
@@ -117,13 +136,35 @@ class PlayState extends FlxState
 		
 		super.update();
 		
-		FlxG.collide(_player, _walls);
+		FlxG.collide(player, _walls);
 		FlxG.collide(_grpMeat, _grpMeat);
 		FlxG.collide(_grpMeat, _walls);
 		
-		_grpMeat.sort();
+		_grpDisplayObjs.sort("z");
 		
 	}	
+	
+	public function heartBurst(X:Float, Y:Float, Floor:Float):Void
+	{
+		var h:ZEmitterExt = new ZEmitterExt();
+		h.setRotation(0, 0);
+		h.setMotion(0, 10, .33, 360, 140,3);
+		h.particleClass = ZParticle;
+		h.gravity = 1200;
+		h.particleDrag.x = 400;
+		h.particleDrag.y = 600;
+
+		h.makeParticles("assets/images/heartparticles.png", 20, 0, true);
+		_grpDisplayObjs.add(h);
+		
+		h.z = Floor;
+		h.setAll("floor", Floor);
+		h.x = X;
+		h.y = Y;
+		h.start(true,.33,0,0,1);
+		h.update();
+		
+	}
 	
 	private function playerMovement():Void
 	{
@@ -174,27 +215,28 @@ class PlayState extends FlxState
 		if (mA != -400)
 		{
 			var v:FlxPoint = FlxAngle.rotatePoint(SPEED, 0, 0, 0, mA);
-			_player.velocity.x = v.x;
-			_player.velocity.y = v.y;
+			player.velocity.x = v.x;
+			player.velocity.y = v.y;
 			
-			if (_player.velocity.x > 0 && Math.abs(_player.velocity.x) > Math.abs(_player.velocity.y))
-				_player.facing = FlxObject.RIGHT;
-			else if (_player.velocity.x < 0 && Math.abs(_player.velocity.x) > Math.abs(_player.velocity.y))
-				_player.facing = FlxObject.LEFT;
-			else if (_player.velocity.y > 0)
-				_player.facing = FlxObject.DOWN;
-			else if (_player.velocity.y < 0)
-				_player.facing = FlxObject.UP;
+			if (player.velocity.x > 0 && Math.abs(player.velocity.x) > Math.abs(player.velocity.y))
+				player.facing = FlxObject.RIGHT;
+			else if (player.velocity.x < 0 && Math.abs(player.velocity.x) > Math.abs(player.velocity.y))
+				player.facing = FlxObject.LEFT;
+			else if (player.velocity.y > 0)
+				player.facing = FlxObject.DOWN;
+			else if (player.velocity.y < 0)
+				player.facing = FlxObject.UP;
 		}
 		
 		if (!_pressingDown && !_pressingUp)
-			if (Math.abs(_player.velocity.y) > 1)
-				_player.velocity.y *= FRICTION;
+			if (Math.abs(player.velocity.y) > 1)
+				player.velocity.y *= FRICTION;
 		if (!_pressingLeft && !_pressingRight)
-			if (Math.abs(_player.velocity.x) > 1)
-				_player.velocity.x *= FRICTION;
+			if (Math.abs(player.velocity.x) > 1)
+				player.velocity.x *= FRICTION;
 			
 		
 		
 	}
+	
 }
