@@ -6,13 +6,14 @@ import flixel.addons.display.FlxNestedSprite;
  * ...
  * @author 
  */
-class MeatBagShadow extends DisplaySprite
+class MeatBagHead extends DisplaySprite
 {
+	
+	
 	public function new(X:Float=0, Y:Float=0) 
 	{
 		super(X, Y);
-		loadGraphic("assets/images/shadow.png", false, false);
-		relativeY = 2;
+		makeGraphic(8, 8, 0xffFFEDFD);
 		
 	}
 	

@@ -9,7 +9,7 @@ import flixel.util.FlxRandom;
  * ...
  * @author 
  */
-class MeatBody extends FlxNestedSprite
+class MeatBody extends DisplaySprite
 {
 	public var heart:MeatBagHeart;
 	private var _bounceAmt:Float = 2;
@@ -23,8 +23,12 @@ class MeatBody extends FlxNestedSprite
 		makeGraphic(16, 16, 0xffFFEDFD);
 		heart = new MeatBagHeart(0, 0);
 		add(heart);
+		
+		
+		
 		twnBounce = FlxTween.multiVar(this, { _bounceStep:4 }, .1, { type:FlxTween.PINGPONG, ease:FlxEase.quartOut } );
 		twnBounce.percent = FlxRandom.floatRanged(0, 1);
+		
 		
 	}
 	
@@ -34,6 +38,7 @@ class MeatBody extends FlxNestedSprite
 		
 		super.update();
 	}
+	
 	
 	
 }

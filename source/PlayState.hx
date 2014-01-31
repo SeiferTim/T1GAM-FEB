@@ -14,6 +14,9 @@ import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.LogitechButtonID;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
 import flixel.ui.FlxButton;
 import flixel.util.FlxAngle;
 import flixel.util.FlxCollision;
@@ -43,6 +46,11 @@ class PlayState extends FlxState
 	private var _walls:FlxTilemap;
 	
 	private var _emtHeartBurst:ZEmitterExt;
+	private var _energy:Float = 100;
+	private var _barEnergy:FlxBar;
+	private var _twnBar:FlxTween;
+	private var _barFadingOut:Bool = false;
+	private var _barFadingIn:Bool = false;
 	
 	
 	/**
@@ -80,7 +88,7 @@ class PlayState extends FlxState
 		_map = new FlxOgmoLoader("assets/data/level-0001.oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 16, 16, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
-		
+		trace(_walls.x + " " + _walls.y);
 		_map.loadEntities(loadEntity, "meats");
 		
 		_grpMap.add(_walls);
@@ -90,6 +98,13 @@ class PlayState extends FlxState
 		_grpDisplayObjs.add(player);
 		add(_grpFX);
 		add(_grpHUD);
+		
+		_barEnergy = new FlxBar(0, FlxG.height - 24, FlxBar.FILL_LEFT_TO_RIGHT, Std.int(FlxG.width * .6), 16, this, "_energy", 0, 100, true);
+		_barEnergy.createFilledBar(0xff006666, 0xff00ffff, true, 0xff003333);
+		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
+		_grpHUD.add(_barEnergy);
+		
+		
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
@@ -136,9 +151,50 @@ class PlayState extends FlxState
 		FlxG.collide(_grpMeat, _grpMeat);
 		FlxG.collide(_grpMeat, _walls);
 		
+		_energy -=FlxG.elapsed * 3;
+		
+		if (player.y > FlxG.height - player.height - 40 && player.x - player.width > 32 && player.x < FlxG.height - 32)
+			fadeOutEnergyBar();
+		else
+			fadeInEnergyBar();
+		
 		_grpDisplayObjs.sort("z");
 		
 	}	
+	
+	private function fadeOutEnergyBar():Void
+	{
+		if (_barFadingOut)
+			return;
+		_barFadingOut = true;
+		if (_barFadingIn)
+			_twnBar.cancel();
+		_barFadingIn = false;
+		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:.2 }, .2, { type:FlxTween.PERSIST, complete:finishBarFadeOut } );
+		
+	}
+	
+	private function finishBarFadeOut(T:FlxTween):Void
+	{
+		_barFadingOut = false;
+	}
+	
+	private function fadeInEnergyBar():Void
+	{
+		if (_barFadingIn)
+			return;
+		_barFadingIn = true;
+		if (_barFadingOut)
+			_twnBar.cancel();
+		_barFadingOut = false;
+		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:1 }, .2, { type:FlxTween.PERSIST, complete:finishBarFadeIn } );
+	
+	}
+	
+	private function finishBarFadeIn(T:FlxTween):Void
+	{
+		_barFadingIn = false;
+	}
 	
 	public function heartBurst(X:Float, Y:Float, Floor:Float):Void
 	{
@@ -229,7 +285,7 @@ class PlayState extends FlxState
 		
 		if (mA != -400)
 		{
-			var v:FlxPoint = FlxAngle.rotatePoint(SPEED, 0, 0, 0, mA);
+			var v:FlxPoint = FlxAngle.rotatePoint(Math.max(SPEED * Math.min(((_energy / 100) * 2), 1), 100), 0, 0, 0, mA);
 			player.velocity.x = v.x;
 			player.velocity.y = v.y;
 			
