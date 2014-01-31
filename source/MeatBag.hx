@@ -9,7 +9,6 @@ import flixel.util.FlxAngle;
 import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
-import lime.InputHandler.ButtonState;
 
 /**
  * ...
@@ -53,8 +52,8 @@ class MeatBag extends DisplaySprite
 		head.z = 15;
 		add(head);
 		
-		//var dirs:Array<Int> = [FlxObject.UP, FlxObject.DOWN, FlxObject.RIGHT, FlxObject.LEFT];
-		//facing = FlxRandom.getObject(dirs);
+		var dirs:Array<Int> = [FlxObject.UP, FlxObject.DOWN, FlxObject.RIGHT, FlxObject.LEFT];
+		facing = FlxRandom.getObject(dirs);
 	}
 	
 	private function idle():Void
@@ -200,31 +199,31 @@ class MeatBag extends DisplaySprite
 		switch(facing)
 		{
 			case FlxObject.RIGHT:
-				head.relativeX =  _body.relativeX - width - 2;
+				head.relativeX =  _body.relativeX + width - 2;
 				head.relativeY = _body.relativeY - 2;
 				head.z = 15;
 			case FlxObject.LEFT:
-				head.relativeX = _body.relativeX - 6;
-				head.relativeY = _body.relativeX - 2;
+				head.relativeX = _body.relativeX - head.width + 2; 
+				head.relativeY = _body.relativeY - 2;
 				head.z = 15;
 			case FlxObject.DOWN:
-				head.relativeX = _body.relativeX + 2;
+				head.relativeX = _body.relativeX + (width/2) - (head.width/2);
 				head.relativeY = _body.relativeY + 2;
 				head.z = 15;
 			case FlxObject.UP:
-				head.relativeX = _body.relativeX + 2;
+				head.relativeX = _body.relativeX + (width/2) - (head.width/2);
 				head.relativeY = _body.relativeY - 4;
 				head.z = 5;
 		}
 		
 		
-		//_children.sort(sortZ);
+		_children.sort(sortZ);
 		super.update();
 		_shadow.relativeScaleX = 1.25 + (_body.relativeY / 10);
 		
 	}
 	
-	/*private function sortZ(O1:FlxNestedSprite, O2:FlxNestedSprite):Int
+	private function sortZ(O1:FlxNestedSprite, O2:FlxNestedSprite):Int
 	{
 		if (cast(O1,DisplaySprite).z > cast(O2,DisplaySprite).z)
 			return 1;
@@ -232,7 +231,7 @@ class MeatBag extends DisplaySprite
 			return -1;
 		else
 			return 0;
-	}*/
+	}
 	
 	private function goDie(T:FlxTween):Void
 	{

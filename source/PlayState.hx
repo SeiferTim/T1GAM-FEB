@@ -51,7 +51,7 @@ class PlayState extends FlxState
 	private var _twnBar:FlxTween;
 	private var _barFadingOut:Bool = false;
 	private var _barFadingIn:Bool = false;
-	
+	private var _idleTimer:Float = 0;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -88,7 +88,7 @@ class PlayState extends FlxState
 		_map = new FlxOgmoLoader("assets/data/level-0001.oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 16, 16, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
-		trace(_walls.x + " " + _walls.y);
+		//trace(_walls.x + " " + _walls.y);
 		_map.loadEntities(loadEntity, "meats");
 		
 		_grpMap.add(_walls);
@@ -151,7 +151,20 @@ class PlayState extends FlxState
 		FlxG.collide(_grpMeat, _grpMeat);
 		FlxG.collide(_grpMeat, _walls);
 		
-		_energy -=FlxG.elapsed * 3;
+		if (player.velocity.x != 0 && player.velocity.y != 0)
+		{
+			_idleTimer = 0;
+			_energy -= FlxG.elapsed * 9;
+		}
+		else
+		{
+			if (_idleTimer < 1)
+			{
+				_idleTimer += FlxG.elapsed;
+			}
+			else
+				_energy += FlxG.elapsed * 3; 
+		}
 		
 		if (player.y > FlxG.height - player.height - 40 && player.x - player.width > 32 && player.x < FlxG.height - 32)
 			fadeOutEnergyBar();
@@ -207,7 +220,7 @@ class PlayState extends FlxState
 				if (cast(o, ZEmitterExt).countLiving() == 0)
 				{
 					h = cast(o, ZEmitterExt);
-					trace("revival!");
+					//trace("revival!");
 					break;
 				}
 			}
@@ -285,7 +298,7 @@ class PlayState extends FlxState
 		
 		if (mA != -400)
 		{
-			var v:FlxPoint = FlxAngle.rotatePoint(Math.max(SPEED * Math.min(((_energy / 100) * 2), 1), 100), 0, 0, 0, mA);
+			var v:FlxPoint = FlxAngle.rotatePoint(Math.max(SPEED * Math.min(((_energy / 100) * 2), 1), 180), 0, 0, 0, mA);
 			player.velocity.x = v.x;
 			player.velocity.y = v.y;
 			
