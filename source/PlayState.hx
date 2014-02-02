@@ -2,25 +2,16 @@ package;
 
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
-import flixel.effects.particles.FlxEmitter;
-import flixel.effects.particles.FlxEmitterExt;
+import flixel.addons.text.FlxBitmapFont;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
-import flixel.input.gamepad.FlxGamepad;
-import flixel.input.gamepad.FlxGamepadButton;
-import flixel.input.gamepad.LogitechButtonID;
-import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
-import flixel.ui.FlxButton;
 import flixel.util.FlxAngle;
-import flixel.util.FlxCollision;
-import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import flixel.util.FlxSpriteUtil;
 
@@ -52,6 +43,9 @@ class PlayState extends FlxState
 	private var _barFadingOut:Bool = false;
 	private var _barFadingIn:Bool = false;
 	private var _idleTimer:Float = 0;
+	
+	private var _meatBagCounter:FlxBitmapFont;
+	private var _meatBagCounterIcon:MeatBag;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -105,6 +99,20 @@ class PlayState extends FlxState
 		_grpHUD.add(_barEnergy);
 		
 		
+		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789", 11, 0, 0, 0, 0);
+		_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
+		_meatBagCounter.scrollFactor.x = _meatBagCounter.scrollFactor.y = 0;
+		_meatBagCounter.x = FlxG.width - 104;
+		_meatBagCounter.y = FlxG.height - 40;
+		_meatBagCounter.alpha = .8;
+		_grpHUD.add(_meatBagCounter);
+		
+		_meatBagCounterIcon = new MeatBag(FlxG.width - 28, _meatBagCounter.y + 12);
+		_meatBagCounterIcon.isReal = false;
+		_meatBagCounterIcon.facing = FlxObject.LEFT;
+		_meatBagCounterIcon.scrollFactor.x = _meatBagCounterIcon.scrollFactor.y = 0;
+		_meatBagCounterIcon.alpha = .8;
+		_grpHUD.add(_meatBagCounterIcon);
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
@@ -166,24 +174,47 @@ class PlayState extends FlxState
 				_energy += FlxG.elapsed * 3; 
 		}
 		
-		if (player.y > FlxG.height - player.height - 40 && player.x - player.width > 32 && player.x < FlxG.height - 32)
-			fadeOutEnergyBar();
+		if (player.y + player.height > FlxG.height - 48)
+		{
+			_barEnergy.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha = .33;
+		}
 		else
-			fadeInEnergyBar();
+		{
+			
+			_meatBagCounter.alpha = _meatBagCounterIcon.alpha =  _barEnergy.alpha = .8;
+		}
 		
 		_grpDisplayObjs.sort("z");
 		
+		var living:Int = getLivingBags();
+			
+		if (living < 10) 
+			_meatBagCounter.text = " " + Std.string(living);
+		else
+			_meatBagCounter.text = Std.string(living);
 	}	
 	
+	private function getLivingBags():Int
+	{
+		var count:Int = 0;
+		for (o in _grpMeat.members)
+		{
+			if (!cast(o, MeatBag).dying && o.alive && o.exists && o.visible)
+				count++;
+		}
+		return count;
+	}
+	
+	/*
 	private function fadeOutEnergyBar():Void
 	{
-		if (_barFadingOut)
+		if (_barFadingOut || _barEnergy.alpha <= .4)
 			return;
 		_barFadingOut = true;
 		if (_barFadingIn)
 			_twnBar.cancel();
 		_barFadingIn = false;
-		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:.2 }, .2, { type:FlxTween.PERSIST, complete:finishBarFadeOut } );
+		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:.4 }, .2, { type:FlxTween.ONESHOT, complete:finishBarFadeOut } );
 		
 	}
 	
@@ -194,20 +225,20 @@ class PlayState extends FlxState
 	
 	private function fadeInEnergyBar():Void
 	{
-		if (_barFadingIn)
+		if (_barFadingIn || _barEnergy.alpha >= 1)
 			return;
 		_barFadingIn = true;
 		if (_barFadingOut)
 			_twnBar.cancel();
 		_barFadingOut = false;
-		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:1 }, .2, { type:FlxTween.PERSIST, complete:finishBarFadeIn } );
+		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:1 }, .2, { type:FlxTween.ONESHOT, complete:finishBarFadeIn } );
 	
 	}
 	
 	private function finishBarFadeIn(T:FlxTween):Void
 	{
 		_barFadingIn = false;
-	}
+	}*/
 	
 	public function heartBurst(X:Float, Y:Float, Floor:Float):Void
 	{

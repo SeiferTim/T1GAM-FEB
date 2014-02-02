@@ -29,6 +29,10 @@ class MeatBag extends DisplaySprite
 	private var _dying:Bool = false;
 	private var _twnDeath:FlxTween;
 	private var _delay:Float = ACTION_DELAY;
+	private var _adjust:Float = 0;
+	private var _adjustDelay:Float = 0;
+	private var _isReal:Bool = true;
+	
 
 	public function new(X:Float=0, Y:Float=0) 
 	{
@@ -115,8 +119,17 @@ class MeatBag extends DisplaySprite
 	private function flee():Void
 	{
 		var a:Float = FlxAngle.angleBetween(Reg.playState.player, this, true);
-		a += FlxRandom.intRanged( -30, 30);
+		if (_adjustDelay <= 0)
+		{
+			_adjustDelay = 1 + FlxRandom.floatRanged( -1, 1);
+			_adjust = FlxRandom.intRanged( -30, 30);
+		}
+		else
+			_adjustDelay -= FlxG.elapsed;
+		a += _adjust;
 		a  = FlxAngle.wrapAngle(a);
+		
+	
 		var v:FlxPoint = FlxAngle.rotatePoint(_speed * 4, 0, 0, 0, a);
 		
 		/*
@@ -134,8 +147,9 @@ class MeatBag extends DisplaySprite
 		{
 			if (_delay <= 0)
 			{
-			_fear = 0;
-			_brain.setState(idle);
+				_fear = 0;
+				_brain.setState(idle);
+				_adjustDelay = 0;
 			}
 			else 
 				_delay -= FlxG.elapsed * FlxRandom.floatRanged(0, 1);
@@ -164,38 +178,41 @@ class MeatBag extends DisplaySprite
 	
 	override public function update():Void 
 	{
-		if (!_dying)
+		if (_isReal)
 		{
-			_brain.update();
+			if (!_dying)
+			{
+				_brain.update();
 
-		}
-		else
-		{
-			if (_body.twnBounce.type != FlxTween.ONESHOT && _body.twnBounce.backward) 
-				_body.twnBounce.type = FlxTween.ONESHOT;
+			}
+			else
+			{
+				if (_body.twnBounce.type != FlxTween.ONESHOT && _body.twnBounce.backward) 
+					_body.twnBounce.type = FlxTween.ONESHOT;
+				
+			}
 			
+			if (velocity.x > 0 && Math.abs(velocity.x) > Math.abs(velocity.y))
+			{
+				facing = FlxObject.RIGHT;
+				
+			}
+			else if (velocity.x < 0 && Math.abs(velocity.x) > Math.abs(velocity.y))
+			{
+				facing = FlxObject.LEFT;
+				
+			}
+			else if (velocity.y > 0)
+			{
+				facing = FlxObject.DOWN;
+				
+			}
+			else if (velocity.y < 0)
+			{
+				facing = FlxObject.UP;
+			}
 		}
 		
-		if (velocity.x > 0 && Math.abs(velocity.x) > Math.abs(velocity.y))
-		{
-			facing = FlxObject.RIGHT;
-			
-		}
-		else if (velocity.x < 0 && Math.abs(velocity.x) > Math.abs(velocity.y))
-		{
-			facing = FlxObject.LEFT;
-			
-		}
-		else if (velocity.y > 0)
-		{
-			facing = FlxObject.DOWN;
-			
-		}
-		else if (velocity.y < 0)
-		{
-			facing = FlxObject.UP;
-		}
-			
 		switch(facing)
 		{
 			case FlxObject.RIGHT:
@@ -249,5 +266,19 @@ class MeatBag extends DisplaySprite
 	}
 	
 	public var fear(get_fear, set_fear):Float;
+	
+	private function set_isReal(value:Bool):Bool 
+	{
+		return _isReal = value;
+	}
+	
+	public var isReal(null, set_isReal):Bool;
+	
+	function get_dying():Bool 
+	{
+		return _dying;
+	}
+	
+	public var dying(get_dying, null):Bool;
 	
 }
