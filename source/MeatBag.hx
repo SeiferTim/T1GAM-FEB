@@ -157,21 +157,22 @@ class MeatBag extends DisplaySprite
 		else 
 		{
 			_delay = ACTION_DELAY;
-			_fear = (SCARE_RANGE - _dist) / (SCARE_RANGE * 5);
+			_fear = (SCARE_RANGE - _dist) / (SCARE_RANGE * 3);
 		}
 		_body.heart.duration = .2 - _fear;
-		if (_body.heart.duration < FlxG.elapsed*4)
+		if (_body.heart.duration < FlxG.elapsed*5)
 		{
 			_dying = true;
 			// heart bursts!
-			Reg.playState.heartBurst(_body.heart.x + 4, _body.heart.y + 4, z);
+			Reg.playState.heartBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint());
 			_body.heart.kill();
+			
 			
 			velocity.x = 0;
 			velocity.y = 0;
 			acceleration.x = 0;
 			acceleration.y = 0;
-			_twnDeath = FlxTween.color(this, 2, 0xffffffff, 0xff0000ff, 1, 0, { type:FlxTween.ONESHOT, ease:FlxEase.circIn, complete:goDie } );
+			_twnDeath = FlxTween.color(this, .66, 0x00ffffff, 0xffffffff, 1, 0, { type:FlxTween.ONESHOT, ease:FlxEase.circIn, complete:goDie } );
 		}
 		
 	}

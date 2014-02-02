@@ -3,6 +3,7 @@ package;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.addons.text.FlxBitmapFont;
+import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -12,6 +13,7 @@ import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxAngle;
+import flixel.util.FlxGradient;
 import flixel.util.FlxPoint;
 import flixel.util.FlxSpriteUtil;
 
@@ -31,6 +33,7 @@ class PlayState extends FlxState
 	private var _grpDisplayObjs:FlxGroup;
 	private var _grpFX:FlxGroup;
 	private var _grpHUD:FlxGroup;
+	private var _grpPickups:FlxGroup;
 	
 	private var _grass:FlxSprite;
 	private var _map:FlxOgmoLoader;
@@ -46,6 +49,7 @@ class PlayState extends FlxState
 	
 	private var _meatBagCounter:FlxBitmapFont;
 	private var _meatBagCounterIcon:MeatBag;
+	private var _countBack:FlxSprite;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -67,6 +71,7 @@ class PlayState extends FlxState
 		_grpMeat = new FlxGroup();
 		_grpFX = new FlxGroup();
 		_grpHUD = new FlxGroup();
+		_grpPickups = new FlxGroup(20);
 		
 		player = new DisplaySprite(0, 0);
 		player.makeGraphic(32, 32, 0xff1F64B1);
@@ -98,23 +103,36 @@ class PlayState extends FlxState
 		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
 		_grpHUD.add(_barEnergy);
 		
-		
 		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789", 11, 0, 0, 0, 0);
 		_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
 		_meatBagCounter.scrollFactor.x = _meatBagCounter.scrollFactor.y = 0;
 		_meatBagCounter.x = FlxG.width - 104;
 		_meatBagCounter.y = FlxG.height - 40;
 		_meatBagCounter.alpha = .8;
-		_grpHUD.add(_meatBagCounter);
 		
 		_meatBagCounterIcon = new MeatBag(FlxG.width - 28, _meatBagCounter.y + 12);
 		_meatBagCounterIcon.isReal = false;
 		_meatBagCounterIcon.facing = FlxObject.LEFT;
 		_meatBagCounterIcon.scrollFactor.x = _meatBagCounterIcon.scrollFactor.y = 0;
 		_meatBagCounterIcon.alpha = .8;
+		
+		_countBack = FlxGradient.createGradientFlxSprite(120, 16, [0x00006666, 0xcc006666, 0xcc006666, 0xcc006666], 1, 0, true);
+		_countBack.x = FlxG.width - 120;
+		_countBack.y = FlxG.height - 24;
+		_countBack.scrollFactor.x = _countBack.scrollFactor.y = 0;
+		_countBack.alpha = .8;
+		
+		
+		
+		_grpHUD.add(_countBack);
+		_grpHUD.add(_meatBagCounter);
 		_grpHUD.add(_meatBagCounterIcon);
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
+		
+		FlxG.watch.add(this, "_idleTimer");
+		FlxG.watch.add(player.velocity, "x");
+		FlxG.watch.add(player.velocity, "y");
 		
 		super.create();
 	}
@@ -158,30 +176,48 @@ class PlayState extends FlxState
 		FlxG.collide(player, _walls);
 		FlxG.collide(_grpMeat, _grpMeat);
 		FlxG.collide(_grpMeat, _walls);
+		FlxG.overlap(player, _grpPickups, pickupEnergy);
 		
-		if (player.velocity.x != 0 && player.velocity.y != 0)
+		if (Math.abs(player.velocity.x) < 10)
+			player.velocity.x = 0;
+		
+		if (Math.abs(player.velocity.y) < 10)
+			player.velocity.y = 0;
+			
+		if (player.velocity.x != 0 || player.velocity.y != 0)
 		{
-			_idleTimer = 0;
+			_idleTimer = 1;
+		}
+		else
+		{
+			if (_idleTimer > 0)
+			{
+				_idleTimer -= FlxG.elapsed;
+			}
+		}
+				
+		if (_idleTimer > 0)
+		{
 			_energy -= FlxG.elapsed * 9;
 		}
 		else
 		{
-			if (_idleTimer < 1)
-			{
-				_idleTimer += FlxG.elapsed;
-			}
-			else
-				_energy += FlxG.elapsed * 3; 
+			_energy += FlxG.elapsed * 3;
 		}
+		
+		if (_energy < 0)
+			_energy = 0;
+		else if (_energy > 100)
+			_energy = 100;
 		
 		if (player.y + player.height > FlxG.height - 48)
 		{
-			_barEnergy.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha = .33;
+			_countBack.alpha = _barEnergy.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha = .33;
 		}
 		else
 		{
 			
-			_meatBagCounter.alpha = _meatBagCounterIcon.alpha =  _barEnergy.alpha = .8;
+			_countBack.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha =  _barEnergy.alpha = .8;
 		}
 		
 		_grpDisplayObjs.sort("z");
@@ -193,6 +229,16 @@ class PlayState extends FlxState
 		else
 			_meatBagCounter.text = Std.string(living);
 	}	
+	
+	
+	private function pickupEnergy(P:FlxBasic, E:FlxBasic):Void
+	{
+		if (P.alive && P.exists && E.alive && E.exists && !cast(E, EnergyPickup).dying)
+		{
+			cast(E, EnergyPickup).startKilling();
+			_energy += 10;
+		}
+	}
 	
 	private function getLivingBags():Int
 	{
@@ -240,7 +286,7 @@ class PlayState extends FlxState
 		_barFadingIn = false;
 	}*/
 	
-	public function heartBurst(X:Float, Y:Float, Floor:Float):Void
+	public function heartBurst(X:Float, Y:Float, Floor:Float, MeatBagCenter:FlxPoint):Void
 	{
 		var h:ZEmitterExt=null;
 		
@@ -263,11 +309,11 @@ class PlayState extends FlxState
 			h.setRotation(0, 0);
 			h.setMotion(0, 10, .33, 360, 140,3);
 			h.particleClass = ZParticle;
-			h.gravity = 1200;
+			h.gravity = 600;
 			h.particleDrag.x = 400;
 			h.particleDrag.y = 600;
 
-			h.makeParticles("assets/images/heartparticles.png", 20, 0, true);
+			h.makeParticles("assets/images/heartparticles.png", 100, 0, true);
 			_grpDisplayObjs.add(h);
 		}
 		
@@ -278,6 +324,9 @@ class PlayState extends FlxState
 		h.y = Y;
 		h.start(true,.33,0,0,1);
 		h.update();
+		
+		_grpDisplayObjs.add(_grpPickups.recycle(EnergyPickup, [MeatBagCenter.x - 8, MeatBagCenter.y- 10]));
+		
 		
 	}
 	
