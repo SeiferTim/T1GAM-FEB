@@ -15,6 +15,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxAngle;
 import flixel.util.FlxGradient;
 import flixel.util.FlxPoint;
+import flixel.util.FlxSort;
 import flixel.util.FlxSpriteUtil;
 
 /**
@@ -220,7 +221,7 @@ class PlayState extends FlxState
 			_countBack.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha =  _barEnergy.alpha = .8;
 		}
 		
-		_grpDisplayObjs.sort("z");
+		_grpDisplayObjs.sort(zSort,FlxSort.ASCENDING);
 		
 		var living:Int = getLivingBags();
 			
@@ -230,6 +231,17 @@ class PlayState extends FlxState
 			_meatBagCounter.text = Std.string(living);
 	}	
 	
+	private function zSort(Order:Int, A:FlxBasic, B:FlxBasic):Int
+	{
+		var zA:Float = Type.getClassName(Type.getClass(A)) == "ZEmitterExt" ? cast(A, ZEmitterExt).z : cast(A, DisplaySprite).z;
+		var zB:Float = Type.getClassName(Type.getClass(B)) == "ZEmitterExt" ? cast(B, ZEmitterExt).z : cast(B, DisplaySprite).z;
+		var result:Int = 0;
+		if (zA < zB)
+			result = Order;
+		else if (zA > zB)
+			result = -Order;
+		return result;
+	}
 	
 	private function pickupEnergy(P:FlxBasic, E:FlxBasic):Void
 	{

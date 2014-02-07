@@ -2,10 +2,6 @@ package ;
 
 import flixel.addons.display.FlxNestedSprite;
 
-/**
- * ...
- * @author 
- */
 class DisplaySprite extends FlxNestedSprite
 {
 
@@ -14,7 +10,6 @@ class DisplaySprite extends FlxNestedSprite
 	public function new(X:Float=0, Y:Float=0) 
 	{
 		super(X, Y);
-		
 	}
 	
 	function get_z():Float 
