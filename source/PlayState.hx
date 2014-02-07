@@ -17,6 +17,7 @@ import flixel.util.FlxGradient;
 import flixel.util.FlxPoint;
 import flixel.util.FlxSort;
 import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxStringUtil;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -52,6 +53,10 @@ class PlayState extends FlxState
 	private var _meatBagCounterIcon:MeatBag;
 	private var _countBack:FlxSprite;
 	
+	private var _gameTimer:Float = 0;
+	private var _txtGameTimer:FlxBitmapFont;
+	private var _sprGameTimerBack:FlxSprite;
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -76,6 +81,10 @@ class PlayState extends FlxState
 		
 		player = new DisplaySprite(0, 0);
 		player.makeGraphic(32, 32, 0xff1F64B1);
+		player.width = 16;
+		player.height = 24;
+		player.offset.x = 8;
+		player.offset.y = 8;
 		
 		_grass = FlxGridOverlay.create(64, 64, FlxG.width, FlxG.height,false, true, 0xff77C450, 0xff2A9D0C);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
@@ -99,12 +108,12 @@ class PlayState extends FlxState
 		add(_grpFX);
 		add(_grpHUD);
 		
-		_barEnergy = new FlxBar(0, FlxG.height - 24, FlxBar.FILL_LEFT_TO_RIGHT, Std.int(FlxG.width * .6), 16, this, "_energy", 0, 100, true);
+		_barEnergy = new FlxBar(0, FlxG.height - 24, FlxBar.FILL_LEFT_TO_RIGHT, Std.int(FlxG.width * .4), 16, this, "_energy", 0, 100, true);
 		_barEnergy.createFilledBar(0xff006666, 0xff00ffff, true, 0xff003333);
 		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
 		_grpHUD.add(_barEnergy);
 		
-		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789", 11, 0, 0, 0, 0);
+		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
 		_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
 		_meatBagCounter.scrollFactor.x = _meatBagCounter.scrollFactor.y = 0;
 		_meatBagCounter.x = FlxG.width - 104;
@@ -123,11 +132,26 @@ class PlayState extends FlxState
 		_countBack.scrollFactor.x = _countBack.scrollFactor.y = 0;
 		_countBack.alpha = .8;
 		
+		_gameTimer = 60;
+		_txtGameTimer = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
+		_txtGameTimer.setText("60.0", false, 0, 0, FlxBitmapFont.ALIGN_LEFT);
+		_txtGameTimer.scrollFactor.x = _txtGameTimer.scrollFactor.y = 0;
+		_txtGameTimer.x = 40;
+		_txtGameTimer.y = FlxG.height - 40;
+		_txtGameTimer.alpha = .8;
 		
+		_sprGameTimerBack = FlxGradient.createGradientFlxSprite(120, 16, [0x00006666, 0xcc006666, 0xcc006666, 0xcc006666], 1, 0, true);
+		_sprGameTimerBack.x = 0;
+		_sprGameTimerBack.y = FlxG.height -24;
+		_sprGameTimerBack.scrollFactor.x = _sprGameTimerBack.scrollFactor.y = 0;
+		_sprGameTimerBack.alpha  = .8;
 		
 		_grpHUD.add(_countBack);
 		_grpHUD.add(_meatBagCounter);
 		_grpHUD.add(_meatBagCounterIcon);
+		
+		_grpHUD.add(_sprGameTimerBack);
+		_grpHUD.add(_txtGameTimer);
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
@@ -224,11 +248,18 @@ class PlayState extends FlxState
 		_grpDisplayObjs.sort(zSort,FlxSort.ASCENDING);
 		
 		var living:Int = getLivingBags();
-			
-		if (living < 10) 
-			_meatBagCounter.text = " " + Std.string(living);
+		_meatBagCounter.text = StringTools.lpad(Std.string(living)," ",2);
+		
+		if (_gameTimer>0)
+			_gameTimer -= FlxG.elapsed;
 		else
-			_meatBagCounter.text = Std.string(living);
+			_gameTimer = 0;
+		
+		var sec:Int = Std.int(_gameTimer);
+		var ms:String = Std.string(_gameTimer - sec).substr(2,1);
+		
+			
+		_txtGameTimer.text = StringTools.lpad(Std.string(sec), "0", 2) + "." + ms;
 	}	
 	
 	private function zSort(Order:Int, A:FlxBasic, B:FlxBasic):Int

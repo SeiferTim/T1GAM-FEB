@@ -39,8 +39,10 @@ class MeatBag extends DisplaySprite
 		super(X, Y);
 		
 		makeGraphic(16, 16, 0x0);
-		width = 16;
-		height = 16;
+		width = 8;
+		height = 8;
+		offset.x = 4;
+		offset.y = 4;
 		
 		_brain = new FSM();
 		_brain.setState(idle);
