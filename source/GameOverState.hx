@@ -14,6 +14,9 @@ class GameOverState extends FlxState
 	
 	private var _loaded:Bool = false;
 	private var _unloading:Bool = false;
+	
+	private var _won:Bool;
+	
 
 	override public function create():Void 
 	{
@@ -23,12 +26,32 @@ class GameOverState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
+		_won = Reg.gameTime <= 0 && Reg.leftAlive > 0;
+		
 		var _txtGo = new FlxText(0, 16, 200, "Game Over", 8);
 		
 		_txtGo.alignment = "center";
 		FlxSpriteUtil.screenCenter(_txtGo, true, false);
 		
 		add(_txtGo);
+		
+		var _txtScore:FlxText = new FlxText(0, 64, FlxG.width, "Score " +  StringTools.lpad("",".",40 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score);
+		_txtScore.alignment = "center";
+		add(_txtScore);
+		
+		var _txtLeft:FlxText = new FlxText(0, 72, FlxG.width, "Living " + StringTools.lpad("",".",40 - ("Living ".length + Std.string(Reg.leftAlive).length)) +  " " + Reg.leftAlive);
+		_txtLeft.alignment = "center";
+		add(_txtLeft);
+		
+		var _txtBonus:FlxText = new FlxText(0, 80, FlxG.width, "Bonus " + StringTools.lpad("",".",40 - ("Bonus ".length + Std.string(Reg.leftAlive * 100).length)) +  " " + Std.string(Reg.leftAlive * 100));
+		_txtBonus.alignment = "center";
+		add(_txtBonus);
+		
+		
+		var _txtTotal:FlxText = new FlxText(0, 88, FlxG.width, "Total " + StringTools.lpad("",".",40 - ("Total ".length + Std.string((Reg.leftAlive * 100) + Reg.score).length)) +  " " + Std.string((Reg.leftAlive * 100) + Reg.score));
+		_txtTotal.alignment = "center";
+		add(_txtTotal);
+		
 		
 		var _btnPlayAgain = new FlxButton(0, 0, "Play Again", goPlayAgain);
 		_btnPlayAgain.y = FlxG.height - _btnPlayAgain.height - 16;

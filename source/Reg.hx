@@ -40,5 +40,8 @@ class Reg
 	
 	static public var playState:PlayState;
 	
+	static public var leftAlive:Int;
+	static public var gameTime:Float;
+	
 	
 }

@@ -27,6 +27,7 @@ class PlayState extends FlxState
 {
 	private static inline var SPEED:Int = 480;
 	private static inline var FRICTION:Float = .8;
+	private static inline var GAMETIME:Float = 30;
 	
 	private var _loading:Bool = true;
 	private var _unloading:Bool = false;
@@ -63,6 +64,7 @@ class PlayState extends FlxState
 	private var _gameTimer:Float = 0;
 	
 	private var _score:Int = 0;
+	private var _leftAlive:Int = 0;
 	private var _txtScore:FlxBitmapFont;
 	private var _sprScore:FlxSprite;
 	
@@ -122,7 +124,7 @@ class PlayState extends FlxState
 		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
 		_grpHUD.add(_barEnergy);
 		
-		_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, 60, true);
+		_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, GAMETIME, true);
 		_barTime.createFilledBar(0xff666600, 0xffffff00, true, 0xff333300);
 		FlxSpriteUtil.screenCenter(_barTime, true, false);
 		_grpHUD.add(_barTime);
@@ -146,7 +148,7 @@ class PlayState extends FlxState
 		_countBack.scrollFactor.x = _countBack.scrollFactor.y = 0;
 		_countBack.alpha = .8;
 		
-		_gameTimer = 60;
+		_gameTimer = GAMETIME;
 		_score = 0;
 		_scoreTimer = 1;
 		
@@ -201,7 +203,7 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
-		if (_loading)
+		if (_loading || _unloading)
 		{
 			super.update();
 			return;
@@ -285,6 +287,9 @@ class PlayState extends FlxState
 		if ((living <= 0 || _gameTimer <= 0) && !_unloading)
 		{
 			_unloading = true;
+			Reg.leftAlive = _leftAlive;
+			Reg.score = _score;
+			Reg.gameTime = _gameTimer;
 			FlxG.camera.fade(FlxColor.BLACK, .2, false, goGameOver);
 		}
 	}	
@@ -292,6 +297,7 @@ class PlayState extends FlxState
 	private function goGameOver():Void
 	{
 		FlxG.switchState(new GameOverState());
+		
 	}
 	
 	private function zSort(Order:Int, A:FlxBasic, B:FlxBasic):Int
