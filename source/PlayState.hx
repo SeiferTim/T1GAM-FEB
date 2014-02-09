@@ -13,6 +13,7 @@ import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxAngle;
+import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxPoint;
 import flixel.util.FlxSort;
@@ -28,6 +29,7 @@ class PlayState extends FlxState
 	private static inline var FRICTION:Float = .8;
 	
 	private var _loading:Bool = true;
+	private var _unloading:Bool = false;
 	
 	public var player:DisplaySprite;
 	private var _grpMeat:FlxGroup;
@@ -49,13 +51,20 @@ class PlayState extends FlxState
 	private var _barFadingIn:Bool = false;
 	private var _idleTimer:Float = 0;
 	
+	private var _barTime:FlxBar;
+	private var _scoreTimer:Float;
+	
+	
+	
 	private var _meatBagCounter:FlxBitmapFont;
 	private var _meatBagCounterIcon:MeatBag;
 	private var _countBack:FlxSprite;
 	
 	private var _gameTimer:Float = 0;
-	private var _txtGameTimer:FlxBitmapFont;
-	private var _sprGameTimerBack:FlxSprite;
+	
+	private var _score:Int = 0;
+	private var _txtScore:FlxBitmapFont;
+	private var _sprScore:FlxSprite;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -113,6 +122,11 @@ class PlayState extends FlxState
 		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
 		_grpHUD.add(_barEnergy);
 		
+		_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, 60, true);
+		_barTime.createFilledBar(0xff666600, 0xffffff00, true, 0xff333300);
+		FlxSpriteUtil.screenCenter(_barTime, true, false);
+		_grpHUD.add(_barTime);
+		
 		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
 		_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
 		_meatBagCounter.scrollFactor.x = _meatBagCounter.scrollFactor.y = 0;
@@ -133,31 +147,30 @@ class PlayState extends FlxState
 		_countBack.alpha = .8;
 		
 		_gameTimer = 60;
-		_txtGameTimer = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
-		_txtGameTimer.setText("60.0", false, 0, 0, FlxBitmapFont.ALIGN_LEFT);
-		_txtGameTimer.scrollFactor.x = _txtGameTimer.scrollFactor.y = 0;
-		_txtGameTimer.x = 40;
-		_txtGameTimer.y = FlxG.height - 40;
-		_txtGameTimer.alpha = .8;
+		_score = 0;
+		_scoreTimer = 1;
 		
-		_sprGameTimerBack = FlxGradient.createGradientFlxSprite(120, 16, [0x00006666, 0xcc006666, 0xcc006666, 0xcc006666], 1, 0, true);
-		_sprGameTimerBack.x = 0;
-		_sprGameTimerBack.y = FlxG.height -24;
-		_sprGameTimerBack.scrollFactor.x = _sprGameTimerBack.scrollFactor.y = 0;
-		_sprGameTimerBack.alpha  = .8;
+		_txtScore = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
+		_txtScore.setText("0", false, 0, 0, FlxBitmapFont.ALIGN_LEFT);
+		_txtScore.scrollFactor.x = _txtScore.scrollFactor.y = 0;
+		_txtScore.x = 16;
+		_txtScore.y = FlxG.height - 40;
+		_txtScore.alpha = .8;
+		
+		_sprScore = FlxGradient.createGradientFlxSprite(120, 16, [0x00006666, 0xcc006666, 0xcc006666, 0xcc006666], 1, 180, true);
+		_sprScore.x = 0;
+		_sprScore.y = FlxG.height -24;
+		_sprScore.scrollFactor.x = _sprScore.scrollFactor.y = 0;
+		_sprScore.alpha  = .8;
 		
 		_grpHUD.add(_countBack);
 		_grpHUD.add(_meatBagCounter);
 		_grpHUD.add(_meatBagCounterIcon);
 		
-		_grpHUD.add(_sprGameTimerBack);
-		_grpHUD.add(_txtGameTimer);
+		_grpHUD.add(_sprScore);
+		_grpHUD.add(_txtScore);
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
-		
-		FlxG.watch.add(this, "_idleTimer");
-		FlxG.watch.add(player.velocity, "x");
-		FlxG.watch.add(player.velocity, "y");
 		
 		super.create();
 	}
@@ -258,9 +271,28 @@ class PlayState extends FlxState
 		var sec:Int = Std.int(_gameTimer);
 		var ms:String = Std.string(_gameTimer - sec).substr(2,1);
 		
-			
-		_txtGameTimer.text = StringTools.lpad(Std.string(sec), "0", 2) + "." + ms;
+		//_txtGameTimer.text = StringTools.lpad(Std.string(sec), "0", 2) + "." + ms;
+		
+		_scoreTimer -= FlxG.elapsed;
+		if (_scoreTimer <= 0)
+		{
+			_score += living * 10;
+			_scoreTimer += 1;
+		}
+		
+		_txtScore.text = Std.string(_score);
+		
+		if ((living <= 0 || _gameTimer <= 0) && !_unloading)
+		{
+			_unloading = true;
+			FlxG.camera.fade(FlxColor.BLACK, .2, false, goGameOver);
+		}
 	}	
+	
+	private function goGameOver():Void
+	{
+		FlxG.switchState(new GameOverState());
+	}
 	
 	private function zSort(Order:Int, A:FlxBasic, B:FlxBasic):Int
 	{

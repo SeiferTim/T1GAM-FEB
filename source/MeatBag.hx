@@ -128,18 +128,11 @@ class MeatBag extends DisplaySprite
 		}
 		else
 			_adjustDelay -= FlxG.elapsed;
+		
 		a += _adjust;
 		a  = FlxAngle.wrapAngle(a);
 		
-	
 		var v:FlxPoint = FlxAngle.rotatePoint(_speed * 4, 0, 0, 0, a);
-		
-		/*
-		if ((isTouching(FlxObject.LEFT) && v.x < 0) || (isTouching(FlxObject.RIGHT) && v.x > 0))
-			v.x *= -1;
-		if ((isTouching(FlxObject.UP) && v.y < 0) || (isTouching(FlxObject.DOWN) && v.y > 0))
-			v.y *= -1;
-		*/
 			
 		velocity.x = v.x;
 		velocity.y = v.y;
@@ -169,7 +162,6 @@ class MeatBag extends DisplaySprite
 			Reg.playState.heartBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint());
 			_body.heart.kill();
 			
-			
 			velocity.x = 0;
 			velocity.y = 0;
 			acceleration.x = 0;
@@ -185,6 +177,8 @@ class MeatBag extends DisplaySprite
 		{
 			if (!_dying)
 			{
+				if (!isOnScreen())
+					kill();
 				_brain.update();
 
 			}
