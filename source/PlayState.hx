@@ -54,9 +54,7 @@ class PlayState extends FlxState
 	
 	private var _barTime:FlxBar;
 	private var _scoreTimer:Float;
-	
-	
-	
+
 	private var _meatBagCounter:FlxBitmapFont;
 	private var _meatBagCounterIcon:MeatBag;
 	private var _countBack:FlxSprite;
@@ -64,7 +62,6 @@ class PlayState extends FlxState
 	private var _gameTimer:Float = 0;
 	
 	private var _score:Int = 0;
-	private var _leftAlive:Int = 0;
 	private var _txtScore:FlxBitmapFont;
 	private var _sprScore:FlxSprite;
 	
@@ -250,6 +247,17 @@ class PlayState extends FlxState
 		else if (_energy > 100)
 			_energy = 100;
 		
+		if (player.y  < 48)
+		{
+			_barTime.alpha = .33;
+		}
+		else
+		{
+			
+			_barTime.alpha = .8;
+		}
+			
+			
 		if (player.y + player.height > FlxG.height - 48)
 		{
 			_countBack.alpha = _barEnergy.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha = .33;
@@ -287,7 +295,7 @@ class PlayState extends FlxState
 		if ((living <= 0 || _gameTimer <= 0) && !_unloading)
 		{
 			_unloading = true;
-			Reg.leftAlive = _leftAlive;
+			Reg.leftAlive = living;
 			Reg.score = _score;
 			Reg.gameTime = _gameTimer;
 			FlxG.camera.fade(FlxColor.BLACK, .2, false, goGameOver);
@@ -367,7 +375,9 @@ class PlayState extends FlxState
 		_barFadingIn = false;
 	}*/
 	
-	public function heartBurst(X:Float, Y:Float, Floor:Float, MeatBagCenter:FlxPoint):Void
+	
+	
+	public function particleBurst(X:Float, Y:Float, Floor:Float, MeatBagCenter:FlxPoint, Style:Int = 0):Void
 	{
 		var h:ZEmitterExt=null;
 		
@@ -375,38 +385,69 @@ class PlayState extends FlxState
 		{
 			if (Type.getClassName(Type.getClass(o)) == "ZEmitterExt")
 			{
-				if (cast(o, ZEmitterExt).countLiving() == 0)
+				if (cast(o, ZEmitterExt).style == Style)
 				{
-					h = cast(o, ZEmitterExt);
-					//trace("revival!");
-					break;
+					if (cast(o, ZEmitterExt).countLiving() == 0)
+					{
+						h = cast(o, ZEmitterExt);
+						//trace("revival!");
+						break;
+					}
 				}
 			}
 		}
 		
 		if (h == null)
 		{
+			
 			h = new ZEmitterExt();
 			h.setRotation(0, 0);
-			h.setMotion(0, 10, .33, 360, 140,3);
 			h.particleClass = ZParticle;
-			h.gravity = 600;
-			h.particleDrag.x = 400;
-			h.particleDrag.y = 600;
-
-			h.makeParticles("assets/images/heartparticles.png", 100, 0, true);
+			
+			h.style = Style;
+			
+			if (Style == ZEmitterExt.STYLE_BLOOD)
+			{
+				h.setMotion(0, 10, .33, 360, 140,3);
+				h.gravity = 600;
+				h.particleDrag.x = 400;
+				h.particleDrag.y = 600;
+				h.makeParticles("assets/images/heartparticles.png", 100, 0, true);
+			}
+			else if (Style == ZEmitterExt.STYLE_CLOUD)
+			{
+				h.setMotion(0, 20, .66, 360, 100, .88);
+				h.gravity = 0;
+				h.particleDrag.x = 100;
+				h.particleDrag.y = 100;
+				h.makeParticles("assets/images/cloudparticles.png", 60, 0, true);
+			}
+			
 			_grpDisplayObjs.add(h);
 		}
 		
 		
 		h.z = Floor;
 		h.setAll("floor", Floor);
+		if (X < 1) 
+			X = 1;
+		else if (X > FlxG.width)
+			X = FlxG.width;
+		if (Y < 2) 
+			Y = 2;
+		else if (Y > FlxG.height)
+			Y = FlxG.height;
 		h.x = X;
 		h.y = Y;
-		h.start(true,.33,0,0,1);
+		if (Style == ZEmitterExt.STYLE_BLOOD)
+			h.start(true, .33, 0, 0, 1);
+		else if (Style == ZEmitterExt.STYLE_CLOUD)
+			h.start(true, .66, 0, 0, .88);
+
 		h.update();
 		
-		_grpDisplayObjs.add(_grpPickups.recycle(EnergyPickup, [MeatBagCenter.x - 8, MeatBagCenter.y- 10]));
+		if (Style == ZEmitterExt.STYLE_BLOOD)
+			_grpDisplayObjs.add(_grpPickups.recycle(EnergyPickup, [MeatBagCenter.x - 8, MeatBagCenter.y- 10]));
 		
 		
 	}

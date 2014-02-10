@@ -159,7 +159,7 @@ class MeatBag extends DisplaySprite
 		{
 			_dying = true;
 			// heart bursts!
-			Reg.playState.heartBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint());
+			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
 			_body.heart.kill();
 			
 			velocity.x = 0;
@@ -177,8 +177,13 @@ class MeatBag extends DisplaySprite
 		{
 			if (!_dying)
 			{
-				if (!isOnScreen())
+				if (!isOnScreen() && alive && exists)
+				{	
+					trace('cloud!');
+					Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_CLOUD);
 					kill();
+					return;
+				}
 				_brain.update();
 
 			}
