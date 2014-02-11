@@ -179,7 +179,7 @@ class MeatBag extends DisplaySprite
 			{
 				if (!isOnScreen() && alive && exists)
 				{	
-					trace('cloud!');
+					//trace('cloud!');
 					Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_CLOUD);
 					kill();
 					return;

@@ -275,7 +275,7 @@ class PlayState extends FlxState
 			
 			var pM:FlxPoint = player.getMidpoint();
 			
-			trace(pM.x + " " + pM.y);
+			//trace(pM.x + " " + pM.y);
 			
 			if (pM.x < 0)
 			{
