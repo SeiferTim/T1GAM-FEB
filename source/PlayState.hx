@@ -19,6 +19,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
+import flixel.util.FlxRect;
 import flixel.util.FlxSort;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
@@ -192,7 +193,7 @@ class PlayState extends FlxState
 		super.create();
 	}
 	
-	private function loadMeatZone(R:Rectangle):Void
+	private function loadMeatZone(R:FlxRect):Void
 	{
 		var m:MeatBag;
 		for (i in 0...11)
