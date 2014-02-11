@@ -38,7 +38,7 @@
       </ScrollFactor>
       <ExportMode>CSV</ExportMode>
     </LayerDefinition>
-    <LayerDefinition xsi:type="EntityLayerDefinition">
+    <LayerDefinition xsi:type="GridLayerDefinition">
       <Name>meats</Name>
       <Grid>
         <Width>16</Width>
@@ -48,6 +48,8 @@
         <X>1</X>
         <Y>1</Y>
       </ScrollFactor>
+      <Color A="255" R="255" G="0" B="0" />
+      <ExportMode>Rectangles</ExportMode>
     </LayerDefinition>
   </LayerDefinitions>
   <Tilesets>

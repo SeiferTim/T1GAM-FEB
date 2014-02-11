@@ -1,5 +1,6 @@
 package;
 
+import flash.geom.Rectangle;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.addons.text.FlxBitmapFont;
@@ -10,12 +11,14 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.tile.FlxTilemap;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxAngle;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxPoint;
+import flixel.util.FlxRandom;
 import flixel.util.FlxSort;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
@@ -25,7 +28,7 @@ import flixel.util.FlxStringUtil;
  */
 class PlayState extends FlxState
 {
-	private static inline var SPEED:Int = 480;
+	private static inline var SPEED:Int = 600;
 	private static inline var FRICTION:Float = .8;
 	private static inline var GAMETIME:Float = 30;
 	
@@ -65,6 +68,9 @@ class PlayState extends FlxState
 	private var _txtScore:FlxBitmapFont;
 	private var _sprScore:FlxSprite;
 	
+	private var _pointer:FlxSprite;
+	private var _twnPointer:FlxTween;
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -99,14 +105,16 @@ class PlayState extends FlxState
 		_grpMap.add(_grass);
 		
 		player.x = (FlxG.width - player.width) / 2;
-		player.y = (FlxG.height - player.height) / 2;
+		player.y = (FlxG.height - (player.height * 2));
 		player.forceComplexRender = true;
 		
 		_map = new FlxOgmoLoader("assets/data/level-0001.oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 16, 16, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
 		//trace(_walls.x + " " + _walls.y);
-		_map.loadEntities(loadEntity, "meats");
+		//_map.loadEntities(loadEntity, "meats");
+		_map.loadRectangles(loadMeatZone, "meats");
+		
 		
 		_grpMap.add(_walls);
 		
@@ -118,6 +126,7 @@ class PlayState extends FlxState
 		
 		_barEnergy = new FlxBar(0, FlxG.height - 24, FlxBar.FILL_LEFT_TO_RIGHT, Std.int(FlxG.width * .4), 16, this, "_energy", 0, 100, true);
 		_barEnergy.createFilledBar(0xff006666, 0xff00ffff, true, 0xff003333);
+		
 		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
 		_grpHUD.add(_barEnergy);
 		
@@ -169,9 +178,29 @@ class PlayState extends FlxState
 		_grpHUD.add(_sprScore);
 		_grpHUD.add(_txtScore);
 		
+		_pointer = new FlxSprite(0, 0).loadGraphic("assets/images/pointer.png", true, false, 16, 16);
+		_pointer.scrollFactor.x = _pointer.scrollFactor.y = 0;
+		_pointer.visible = false;
+		
+		_grpHUD.add(_pointer);
+		
+		_twnPointer = FlxTween.multiVar(_pointer, { alpha:.6 }, .1, { type:FlxTween.PINGPONG, ease:FlxEase.circInOut } );
+		
+		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
 		super.create();
+	}
+	
+	private function loadMeatZone(R:Rectangle):Void
+	{
+		var m:MeatBag;
+		for (i in 0...11)
+		{
+			m = new MeatBag(Std.int(FlxRandom.floatRanged(R.x, R.right)), Std.int(FlxRandom.floatRanged(R.y, R.bottom)));
+			_grpMeat.add(m);
+			_grpDisplayObjs.add(m);
+		}
 	}
 	
 	private function loadEntity(EType:String, EXml:Xml):Void
@@ -215,6 +244,102 @@ class PlayState extends FlxState
 		FlxG.collide(_grpMeat, _walls);
 		FlxG.overlap(player, _grpPickups, pickupEnergy);
 		
+		
+			
+		
+
+		if (!player.isOnScreen())
+		{
+			
+			if (player.x < -(player.width * 2))
+			{
+				player.x = -(player.width * 2);
+				player.velocity.x = 0;
+			}
+			else if (player.x > FlxG.width + (player.width * 3))
+			{
+				player.x = FlxG.width + (player.width * 3);
+				player.velocity.x = 0;
+			}
+			
+			if (player.y < -(player.height * 2))
+			{
+				player.y = -(player.height * 2);
+				player.velocity.y = 0;
+			}
+			else if (player.y > FlxG.height + (player.height * 3))
+			{
+				player.y = FlxG.height + (player.height * 3);
+				player.velocity.y = 0;
+			}
+			
+			var pM:FlxPoint = player.getMidpoint();
+			
+			trace(pM.x + " " + pM.y);
+			
+			if (pM.x < 0)
+			{
+				if (pM.y < 0)
+				{
+					_pointer.x = 2;
+					_pointer.y = 2;
+					_pointer.animation.frameIndex = 4;
+				}
+				else if (pM.y >= FlxG.height)
+				{
+					_pointer.animation.frameIndex = 6;
+					_pointer.x = 2;
+					_pointer.y = FlxG.height - _pointer.y - 2;
+				}
+				else
+				{
+					_pointer.animation.frameIndex = 0;
+					_pointer.x = 2;
+					_pointer.y = pM.y - (_pointer.height / 2);
+				}
+			}
+			else if (pM.x >= FlxG.width)
+			{
+				if (pM.y < 0)
+				{
+					_pointer.animation.frameIndex = 5;
+					_pointer.x = FlxG.width - _pointer.width - 2;
+					_pointer.y = 2;
+				}
+				else if (pM.y >= FlxG.height)
+				{
+					_pointer.animation.frameIndex = 7;
+					_pointer.x = FlxG.width - _pointer.width - 2;
+					_pointer.y = FlxG.height - _pointer.height - 2;
+				}
+				else
+				{
+					_pointer.animation.frameIndex = 1;
+					_pointer.x = FlxG.width - _pointer.width - 2;
+					_pointer.y = pM.y - (_pointer.height / 2);
+				}
+			}
+			else if (pM.y < 0)
+			{
+				_pointer.animation.frameIndex = 2;
+				_pointer.x = pM.x - (_pointer.width / 2);
+				_pointer.y = 2;
+			}
+			else if (pM.y >= FlxG.height)
+			{
+				_pointer.animation.frameIndex = 3;
+				_pointer.x = pM.x - (_pointer.width / 2);
+				_pointer.y = FlxG.height - _pointer.height - 2;
+			}
+			
+			
+			_pointer.visible = true;
+		}
+		else
+		{
+			_pointer.visible = false;
+		}
+		
 		if (Math.abs(player.velocity.x) < 10)
 			player.velocity.x = 0;
 		
@@ -223,7 +348,8 @@ class PlayState extends FlxState
 			
 		if (player.velocity.x != 0 || player.velocity.y != 0)
 		{
-			_idleTimer = 1;
+			_idleTimer = .25;
+			_energy -= FlxG.elapsed * 6;
 		}
 		else
 		{
@@ -232,12 +358,8 @@ class PlayState extends FlxState
 				_idleTimer -= FlxG.elapsed;
 			}
 		}
-				
-		if (_idleTimer > 0)
-		{
-			_energy -= FlxG.elapsed * 9;
-		}
-		else
+		
+		if (_idleTimer <= 0)
 		{
 			_energy += FlxG.elapsed * 3;
 		}
@@ -260,12 +382,12 @@ class PlayState extends FlxState
 			
 		if (player.y + player.height > FlxG.height - 48)
 		{
-			_countBack.alpha = _barEnergy.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha = .33;
+			_sprScore.alpha = _txtScore.alpha = _countBack.alpha = _barEnergy.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha = .33;
 		}
 		else
 		{
 			
-			_countBack.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha =  _barEnergy.alpha = .8;
+			_sprScore.alpha = _txtScore.alpha = _countBack.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha =  _barEnergy.alpha = .8;
 		}
 		
 		_grpDisplayObjs.sort(zSort,FlxSort.ASCENDING);
@@ -418,27 +540,36 @@ class PlayState extends FlxState
 			{
 				h.setMotion(0, 20, .66, 360, 100, .88);
 				h.gravity = 0;
-				h.particleDrag.x = 100;
-				h.particleDrag.y = 100;
+				h.particleDrag.x = 80;
+				h.particleDrag.y = 80;
 				h.makeParticles("assets/images/cloudparticles.png", 60, 0, true);
 			}
 			
 			_grpDisplayObjs.add(h);
 		}
 		
-		
-		h.z = Floor;
-		h.setAll("floor", Floor);
+		if (Style == ZEmitterExt.STYLE_CLOUD)
+			Floor += 20;
 		if (X < 1) 
 			X = 1;
 		else if (X > FlxG.width)
 			X = FlxG.width;
 		if (Y < 2) 
+		{
 			Y = 2;
+		//	Floor = 2;
+		}
 		else if (Y > FlxG.height)
 			Y = FlxG.height;
+		
+		h.z = Floor;
+		h.setAll("floor", Floor);
+		
 		h.x = X;
 		h.y = Y;
+		
+		//trace(h.x + " " + h.y);
+		
 		if (Style == ZEmitterExt.STYLE_BLOOD)
 			h.start(true, .33, 0, 0, 1);
 		else if (Style == ZEmitterExt.STYLE_CLOUD)
@@ -497,10 +628,10 @@ class PlayState extends FlxState
 			mA = -180;
 		else if (_pressingRight)
 			mA = 0;
-		
+		//trace(SPEED * Math.min(.5 * ((_energy / 75) / 2) , 1));
 		if (mA != -400)
 		{
-			var v:FlxPoint = FlxAngle.rotatePoint(Math.max(SPEED * Math.min(((_energy / 100) * 2), 1), 180), 0, 0, 0, mA);
+			var v:FlxPoint = FlxAngle.rotatePoint(SPEED * Math.min(.5 + ((_energy/75)/2) ,1), 0, 0, 0, mA);
 			player.velocity.x = v.x;
 			player.velocity.y = v.y;
 			
