@@ -21,8 +21,16 @@ class GameClass extends FlxGame
 	 */
 	public function new()
 	{
+		Reg.initGame();
+		
+		#if desktop
+		startFullscreen = Reg.IsFullscreen;
+		#end
+		
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
+		
+		
 
 		if (zoom == -1)
 		{

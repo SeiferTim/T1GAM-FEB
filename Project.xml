@@ -2,6 +2,7 @@
 <project>
 	<app title="T1GAM-FEB" file="T1GAM-FEB" main="Main" version="0.0.1" company="Tile Isle" />
 
+	<window background="0x0" />
 	<window width="683" height="384" fps="120" orientation="portrait" resizable="false" if="web" />
 	<window width="1366" height="768" fps="120" orientation="landscape" hardware="true" vsync="true" unless="web" /> || <window width="0" height="0" if="mobile" unless="web" />
 	<window antialiasing="0" if="cpp"/>
@@ -18,6 +19,20 @@
 	
 	<!--You can use rename="newName" to shorten the paths to the individual subdirectories!-->
 	<assets path="assets" />
+	
+	<assets path="assets/sounds" if="flash">
+		<sound path="energy_get.mp3" id="energy-get" />
+		<sound path="escape.mp3" id="escape" />
+		<sound path="kill.mp3" id="kill" />
+		<sound path="blip.mp3" id="blip" />
+	</assets>
+	
+	<assets path="assets/sounds" unless="flash">
+		<sound path="energy_get.ogg" id="energy-get" />
+		<sound path="escape.ogg" id="escape" />
+		<sound path="kill.ogg" id="kill" />
+		<sound path="blip.ogg" id="blip" />
+	</assets>
 	
 	<haxelib name="openfl" />
 	<haxelib name="flixel"/>
@@ -52,7 +67,7 @@
 	<haxedef name="FLX_NO_SOUND_TRAY" />
 	
 	<!--Disable the Flixel core focus lost screen-->
-	<!--<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />-->
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 	
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />

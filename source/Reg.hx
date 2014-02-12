@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.util.FlxSave;
 
 /**
@@ -43,5 +44,39 @@ class Reg
 	static public var leftAlive:Int;
 	static public var gameTime:Float;
 	
+	static public var mode:Int = 0;
+	static public var MODE_NORMAL:Int = 0;
+	static public var MODE_ENDLESS:Int = 1;
+	
+	static public var screensize:Int = 0;
+	static public var SIZE_SMALL:Int = 0;
+	static public var SIZE_LARGE:Int = 1;
+	
+	
+	static public var GameInitialized:Bool = false;
+	#if desktop
+	static public var IsFullscreen:Bool;
+	#end
+	
+	public static function initGame():Void
+	{
+		if (GameInitialized)
+			return;
+		saves.push(new FlxSave());
+		saves[0].bind("flixel");
+		if (saves[0].data.volume != null)
+		{
+			FlxG.sound.volume = saves[0].data.volume;
+		}
+		else
+			FlxG.sound.volume = 1;
+		
+		#if desktop
+		IsFullscreen = (saves[0].data.fullscreen != null) ? saves[0].data.fullscreen : true;
+		screensize = (saves[0].data.screensize != null) ? saves[0].data.screensize : SIZE_LARGE;
+		#end
+		
+		GameInitialized = true;
+	}	
 	
 }

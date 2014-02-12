@@ -10,6 +10,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.input.touch.FlxTouch;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -17,6 +18,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxAngle;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
+import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
 import flixel.util.FlxRect;
@@ -71,6 +73,14 @@ class PlayState extends FlxState
 	
 	private var _pointer:FlxSprite;
 	private var _twnPointer:FlxTween;
+	private var _moveToTarget:FlxPoint;
+	
+	private var _txtClock:FlxBitmapFont;
+	
+	private var _paused:Bool = false;
+	private var _pauseScreen:PauseScreen;
+	private var _twnPause:FlxTween;
+	
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -81,7 +91,7 @@ class PlayState extends FlxState
 		FlxG.cameras.bgColor = 0xff131c1b;
 		// Show the mouse (in case it hasn't been disabled)
 		#if !FLX_NO_MOUSE
-		FlxG.mouse.visible = false;
+		FlxG.mouse.visible = true;
 		#end
 		
 		Reg.playState = this;
@@ -106,13 +116,13 @@ class PlayState extends FlxState
 		_grpMap.add(_grass);
 		
 		player.x = (FlxG.width - player.width) / 2;
-		player.y = (FlxG.height - (player.height * 2));
+		player.y = (FlxG.height - (player.height * 3));
 		player.forceComplexRender = true;
 		
 		_map = new FlxOgmoLoader("assets/data/level-0001.oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 16, 16, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
-		//trace(_walls.x + " " + _walls.y);
+		
 		//_map.loadEntities(loadEntity, "meats");
 		_map.loadRectangles(loadMeatZone, "meats");
 		
@@ -129,12 +139,28 @@ class PlayState extends FlxState
 		_barEnergy.createFilledBar(0xff006666, 0xff00ffff, true, 0xff003333);
 		
 		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
+		_barEnergy.alpha = .8;
 		_grpHUD.add(_barEnergy);
 		
-		_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, GAMETIME, true);
-		_barTime.createFilledBar(0xff666600, 0xffffff00, true, 0xff333300);
-		FlxSpriteUtil.screenCenter(_barTime, true, false);
-		_grpHUD.add(_barTime);
+		if (Reg.mode == Reg.MODE_NORMAL)
+		{
+			_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, GAMETIME, true);
+			_barTime.createFilledBar(0xff666600, 0xffffff00, true, 0xff333300);
+			FlxSpriteUtil.screenCenter(_barTime, true, false);
+			_barTime.alpha = .8;
+			_grpHUD.add(_barTime);
+		}
+		else if (Reg.mode == Reg.MODE_ENDLESS)
+		{
+			_txtClock = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
+			_txtClock.setText(FlxStringUtil.formatTime(_gameTimer, true), false, 0, 0, FlxBitmapFont.ALIGN_CENTER);
+			_txtClock.scrollFactor.x = _txtClock.scrollFactor.y = 0;
+			_txtClock.y = 16;
+			FlxSpriteUtil.screenCenter(_txtClock, true, false);
+			_txtClock.alpha = .8;
+			_grpHUD.add(_txtClock);
+			
+		}
 		
 		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
 		_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
@@ -155,7 +181,7 @@ class PlayState extends FlxState
 		_countBack.scrollFactor.x = _countBack.scrollFactor.y = 0;
 		_countBack.alpha = .8;
 		
-		_gameTimer = GAMETIME;
+		_gameTimer = 0;
 		_score = 0;
 		_scoreTimer = 1;
 		
@@ -187,6 +213,11 @@ class PlayState extends FlxState
 		
 		_twnPointer = FlxTween.multiVar(_pointer, { alpha:.6 }, .1, { type:FlxTween.PINGPONG, ease:FlxEase.circInOut } );
 		
+		_pauseScreen = new PauseScreen();
+		_pauseScreen.visible = false;
+		_pauseScreen.alpha = 0;
+		_grpHUD.add(_pauseScreen);
+		
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
@@ -196,7 +227,7 @@ class PlayState extends FlxState
 	private function loadMeatZone(R:FlxRect):Void
 	{
 		var m:MeatBag;
-		for (i in 0...11)
+		for (i in 0...6)
 		{
 			m = new MeatBag(Std.int(FlxRandom.floatRanged(R.x, R.right)), Std.int(FlxRandom.floatRanged(R.y, R.bottom)));
 			_grpMeat.add(m);
@@ -230,10 +261,53 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
+		
+		
 		if (_loading || _unloading)
 		{
-			super.update();
+			//super.update();
+			FlxG.camera.update();
 			return;
+		}
+		
+		var _pressedPause:Bool = false;
+		
+		#if (!FLX_NO_KEYBOARD)
+		
+		if (FlxG.keys.anyJustReleased(["P", "ESCAPE"]))
+		{
+			_pressedPause = true;
+		}		
+		
+		#end
+		
+		#if (android)
+		{
+			if (FlxG.android.anyJustReleased(["MENU"]))
+			{
+				_pressedPause = true;
+			}
+		}
+		#end
+		
+		if (_paused)
+		{
+			if (_pauseScreen.clickedResume || _pressedPause)
+			{
+				// start unpausing
+				_pauseScreen.clickedResume = false;
+				_twnPause = FlxTween.singleVar(_pauseScreen, "alpha", 0, Reg.FADE_DUR, {type:FlxTween.ONESHOT,ease:FlxEase.circOut, complete: donePauseOut } );
+			}
+			//super.update();
+			_pauseScreen.update();
+			return;
+		}
+		else
+		{
+			if (_pressedPause)
+			{
+				startPause();
+			}
 		}
 		
 		playerMovement();
@@ -276,7 +350,7 @@ class PlayState extends FlxState
 			
 			var pM:FlxPoint = player.getMidpoint();
 			
-			//trace(pM.x + " " + pM.y);
+			
 			
 			if (pM.x < 0)
 			{
@@ -372,12 +446,26 @@ class PlayState extends FlxState
 		
 		if (player.y  < 48)
 		{
-			_barTime.alpha = .33;
+			if (Reg.mode == Reg.MODE_NORMAL)
+			{
+				_barTime.alpha = .33;
+			}
+			else if (Reg.mode == Reg.MODE_ENDLESS)
+			{
+				_txtClock.alpha = .33;
+			}
 		}
 		else
 		{
 			
-			_barTime.alpha = .8;
+			if (Reg.mode == Reg.MODE_NORMAL)
+			{
+				_barTime.alpha = .8;
+			}
+			else if (Reg.mode == Reg.MODE_ENDLESS)
+			{
+				_txtClock.alpha = .8;
+			}
 		}
 			
 			
@@ -396,16 +484,19 @@ class PlayState extends FlxState
 		var living:Int = getLivingBags();
 		_meatBagCounter.text = StringTools.lpad(Std.string(living)," ",2);
 		
-		if (_gameTimer>0)
-			_gameTimer -= FlxG.elapsed;
-		else
-			_gameTimer = 0;
+				
+		//if (_gameTimer < GAMETIME)
+		_gameTimer += FlxG.elapsed;
 		
-		var sec:Int = Std.int(_gameTimer);
-		var ms:String = Std.string(_gameTimer - sec).substr(2,1);
+		//else
+		//	_gameTimer = GAMETIME;
 		
-		//_txtGameTimer.text = StringTools.lpad(Std.string(sec), "0", 2) + "." + ms;
-		
+		if (Reg.mode == Reg.MODE_ENDLESS)
+		{
+			
+			_txtClock.text = FlxStringUtil.formatTime(_gameTimer, true);
+			FlxSpriteUtil.screenCenter(_txtClock, true, false);
+		}
 		_scoreTimer -= FlxG.elapsed;
 		if (_scoreTimer <= 0)
 		{
@@ -415,7 +506,7 @@ class PlayState extends FlxState
 		
 		_txtScore.text = Std.string(_score);
 		
-		if ((living <= 0 || _gameTimer <= 0) && !_unloading)
+		if ((living <= 0 || (_gameTimer >= GAMETIME && Reg.mode == Reg.MODE_NORMAL)) && !_unloading)
 		{
 			_unloading = true;
 			Reg.leftAlive = living;
@@ -424,6 +515,26 @@ class PlayState extends FlxState
 			FlxG.camera.fade(FlxColor.BLACK, .2, false, goGameOver);
 		}
 	}	
+	
+	private function startPause():Void
+	{
+		_paused = true;
+		_pauseScreen.visible = true;
+		_pauseScreen.active = true;
+		_twnPause = FlxTween.singleVar(_pauseScreen, "alpha", 1, Reg.FADE_DUR, {type:FlxTween.ONESHOT,ease:FlxEase.circOut, complete: donePauseIn } );
+	}
+	
+	private function donePauseIn(T:FlxTween):Void
+	{
+		
+	}
+	
+	private function donePauseOut(T:FlxTween):Void
+	{
+		_pauseScreen.visible = false;
+		_pauseScreen.active = false;
+		_paused = false;
+	}
 	
 	private function goGameOver():Void
 	{
@@ -448,7 +559,8 @@ class PlayState extends FlxState
 		if (P.alive && P.exists && E.alive && E.exists && !cast(E, EnergyPickup).dying)
 		{
 			cast(E, EnergyPickup).startKilling();
-			_energy += 10;
+			FlxG.sound.play("energy-get");
+			_energy += 50;
 		}
 	}
 	
@@ -513,7 +625,7 @@ class PlayState extends FlxState
 					if (cast(o, ZEmitterExt).countLiving() == 0)
 					{
 						h = cast(o, ZEmitterExt);
-						//trace("revival!");
+						
 						break;
 					}
 				}
@@ -569,8 +681,6 @@ class PlayState extends FlxState
 		h.x = X;
 		h.y = Y;
 		
-		//trace(h.x + " " + h.y);
-		
 		if (Style == ZEmitterExt.STYLE_BLOOD)
 			h.start(true, .33, 0, 0, 1);
 		else if (Style == ZEmitterExt.STYLE_CLOUD)
@@ -586,11 +696,15 @@ class PlayState extends FlxState
 	
 	private function playerMovement():Void
 	{
+		
+		#if (!FLX_NO_KEYBOARD || !FLX_NO_GAMEPAD) // only do this section if there is a keyboard or gamepad...
+		
+		
+		
 		var _pressingUp:Bool = false;
 		var _pressingDown:Bool = false;
 		var _pressingLeft:Bool = false;
 		var _pressingRight:Bool = false;
-		
 		#if !FLX_NO_KEYBOARD
 		_pressingUp = FlxG.keys.anyPressed(["W", "UP"]);
 		_pressingDown = FlxG.keys.anyPressed(["S", "DOWN"]);
@@ -629,9 +743,13 @@ class PlayState extends FlxState
 			mA = -180;
 		else if (_pressingRight)
 			mA = 0;
-		//trace(SPEED * Math.min(.5 * ((_energy / 75) / 2) , 1));
 		if (mA != -400)
 		{
+			if (_moveToTarget != null)
+			{
+				_moveToTarget.destroy();
+				_moveToTarget = null;
+			}
 			var v:FlxPoint = FlxAngle.rotatePoint(SPEED * Math.min(.5 + ((_energy/75)/2) ,1), 0, 0, 0, mA);
 			player.velocity.x = v.x;
 			player.velocity.y = v.y;
@@ -653,6 +771,54 @@ class PlayState extends FlxState
 			if (Math.abs(player.velocity.x) > 1)
 				player.velocity.x *= FRICTION;
 			
+		#end
+		#if (!FLX_NO_MOUSE || !FLX_NO_TOUCH)
+		#if !FLX_NO_MOUSE
+			if (FlxG.mouse.pressed)
+			{
+				if (_moveToTarget != null)
+				{
+					_moveToTarget.destroy();
+					_moveToTarget = null;
+				}
+				_moveToTarget = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
+				
+			}
+		#end
+		#if !FLX_NO_TOUCH
+			
+				var touch:FlxTouch = FlxG.touches.getFirst();//  touches[touches.length - 1];
+				if (touch != null)
+				{
+					if (_moveToTarget != null)
+					{
+						_moveToTarget.destroy();
+						_moveToTarget = null;
+					}
+					_moveToTarget = new FlxPoint(touch.x, touch.y);
+				}
+			
+		#end
+		if (_moveToTarget != null)
+		{
+			
+			if (FlxMath.getDistance(player.getMidpoint(), _moveToTarget) < 10)
+			{
+				_moveToTarget.destroy();
+				_moveToTarget = null;
+				player.velocity.x = 0;
+				player.velocity.y = 0;
+			}
+			else
+			{
+				var pA:Float = FlxAngle.getAngle(player.getMidpoint(),_moveToTarget)-90;
+				
+				var v:FlxPoint = FlxAngle.rotatePoint(SPEED * Math.min(.5 + ((_energy/75)/2) ,1), 0, 0, 0, pA);
+				player.velocity.x = v.x;
+				player.velocity.y = v.y;
+			}
+		}
+		#end
 		
 		
 	}

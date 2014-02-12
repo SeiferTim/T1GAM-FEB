@@ -48,15 +48,20 @@ class MeatBag extends DisplaySprite
 		_brain.setState(idle);
 		
 		_shadow = new MeatBagShadow(X, Y);
+		_shadow.calcZ = false;
 		_shadow.z = 0;
 		add(_shadow);
 		_body = new MeatBody(X, Y);
+		_body.calcZ = false;
 		_body.z = 10;
 		add(_body);
 		
 		head = new MeatBagHead(X, Y);
+		head.calcZ = false;
 		head.z = 15;
+		
 		add(head);
+		
 		
 		var dirs:Array<Int> = [FlxObject.UP, FlxObject.DOWN, FlxObject.RIGHT, FlxObject.LEFT];
 		facing = FlxRandom.getObject(dirs);
@@ -79,7 +84,7 @@ class MeatBag extends DisplaySprite
 			_delay = ACTION_DELAY;
 			velocity.x = 0;
 			velocity.y = 0;
-			if (FlxRandom.chanceRoll(2))
+			if (FlxRandom.chanceRoll(1))
 			{
 				_runTimer = 0;
 				_dir = FlxRandom.intRanged(0, 3) * 90;
@@ -105,11 +110,11 @@ class MeatBag extends DisplaySprite
 		else
 		{
 			_delay = ACTION_DELAY;
-			var v = FlxAngle.rotatePoint(_speed, 0, 0, 0, _dir);
+			var v = FlxAngle.rotatePoint(_speed *.8, 0, 0, 0, _dir);
 			velocity.x = v.x;
 			velocity.y = v.y;
 			
-			if (_runTimer > 3)
+			if (_runTimer > 2)
 				_brain.setState(idle);
 			else
 			{
@@ -161,7 +166,7 @@ class MeatBag extends DisplaySprite
 			// heart bursts!
 			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
 			_body.heart.kill();
-			
+			FlxG.sound.play("kill");
 			velocity.x = 0;
 			velocity.y = 0;
 			acceleration.x = 0;
@@ -179,8 +184,9 @@ class MeatBag extends DisplaySprite
 			{
 				if (!isOnScreen() && alive && exists)
 				{	
-					//trace('cloud!');
+					
 					Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_CLOUD);
+					FlxG.sound.play("escape");
 					kill();
 					return;
 				}
@@ -218,7 +224,7 @@ class MeatBag extends DisplaySprite
 		switch(facing)
 		{
 			case FlxObject.RIGHT:
-				head.relativeX =  _body.relativeX + width - 2;
+				head.relativeX =  _body.relativeX + _body.width - 2;
 				head.relativeY = _body.relativeY - 2;
 				head.z = 15;
 			case FlxObject.LEFT:
@@ -226,17 +232,18 @@ class MeatBag extends DisplaySprite
 				head.relativeY = _body.relativeY - 2;
 				head.z = 15;
 			case FlxObject.DOWN:
-				head.relativeX = _body.relativeX + (width/2) - (head.width/2);
+				head.relativeX = _body.relativeX + (_body.width/2) - (head.width/2);
 				head.relativeY = _body.relativeY + 2;
 				head.z = 15;
 			case FlxObject.UP:
-				head.relativeX = _body.relativeX + (width/2) - (head.width/2);
+				head.relativeX = _body.relativeX + (_body.width/2) - (head.width/2);
 				head.relativeY = _body.relativeY - 4;
 				head.z = 5;
 		}
 		
 		
-		_children.sort(sortZ);
+		children.sort(sortZ);
+		
 		super.update();
 		_shadow.relativeScaleX = 1.25 + (_body.relativeY / 10);
 		
@@ -244,12 +251,19 @@ class MeatBag extends DisplaySprite
 	
 	private function sortZ(O1:FlxNestedSprite, O2:FlxNestedSprite):Int
 	{
-		if (cast(O1,DisplaySprite).z > cast(O2,DisplaySprite).z)
-			return 1;
-		else if (cast(O1,DisplaySprite).z < cast(O2,DisplaySprite).z)
+		
+		var MBX:DisplaySprite = cast O1;
+		var MBY:DisplaySprite = cast O2;
+		
+		
+		
+		if (MBX.z < MBY.z)
 			return -1;
+		else if (MBX.z > MBY.z)
+			return 1;
 		else
 			return 0;
+		
 	}
 	
 	private function goDie(T:FlxTween):Void
