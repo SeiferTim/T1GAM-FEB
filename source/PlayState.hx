@@ -152,7 +152,7 @@ class PlayState extends FlxState
 		}
 		else if (Reg.mode == Reg.MODE_ENDLESS)
 		{
-			_txtClock = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
+			_txtClock = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
 			_txtClock.setText(FlxStringUtil.formatTime(_gameTimer, true), false, 0, 0, FlxBitmapFont.ALIGN_CENTER);
 			_txtClock.scrollFactor.x = _txtClock.scrollFactor.y = 0;
 			_txtClock.y = 16;
@@ -162,7 +162,7 @@ class PlayState extends FlxState
 			
 		}
 		
-		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
+		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
 		_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
 		_meatBagCounter.scrollFactor.x = _meatBagCounter.scrollFactor.y = 0;
 		_meatBagCounter.x = FlxG.width - 104;
@@ -185,7 +185,7 @@ class PlayState extends FlxState
 		_score = 0;
 		_scoreTimer = 1;
 		
-		_txtScore = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " 0123456789:.", 13, 0, 0, 0, 0);
+		_txtScore = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
 		_txtScore.setText("0", false, 0, 0, FlxBitmapFont.ALIGN_LEFT);
 		_txtScore.scrollFactor.x = _txtScore.scrollFactor.y = 0;
 		_txtScore.x = 16;

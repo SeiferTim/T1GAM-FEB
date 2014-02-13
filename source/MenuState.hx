@@ -1,13 +1,18 @@
 package;
 
+import flixel.FlxBasic;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxMath;
+import flixel.util.FlxRandom;
 import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxTimer;
 
 /**
  * A FlxState which can be used for the game's menu.
@@ -20,6 +25,9 @@ class MenuState extends FlxState
 	private var _btnOptions:FlxButton;
 	private var _leaving:Bool = false;
 	private var _loading:Bool = true;
+	private var _tmr:FlxTimer;
+	
+	private var _grpStampede:FlxGroup;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -34,6 +42,11 @@ class MenuState extends FlxState
 		#if !FLX_NO_MOUSE
 		FlxG.mouse.visible = true;
 		#end
+		
+		_grpStampede = new FlxGroup(300);
+		add(_grpStampede);
+		
+		_tmr = FlxTimer.start(FlxG.width/20000, SpawnMeatBag, 0);
 		
 		_btnPlay = new FlxButton(0, 0, "Play da Game", goGame);
 		
@@ -117,6 +130,37 @@ class MenuState extends FlxState
 	 */
 	override public function update():Void
 	{
+		
+		_grpStampede.forEachAlive(function(m) 
+			{
+				if (cast(m, MeatBag).x + cast(m, MeatBag).width < 0) 
+				cast(m, MeatBag).kill();
+			});
+		_grpStampede.sort(zSort);
+		
+		
+		
 		super.update();
 	}	
+	
+	private function zSort(Order:Int, A:FlxBasic, B:FlxBasic):Int
+	{
+		var zA:Float = Type.getClassName(Type.getClass(A)) == "ZEmitterExt" ? cast(A, ZEmitterExt).z : cast(A, DisplaySprite).z;
+		var zB:Float = Type.getClassName(Type.getClass(B)) == "ZEmitterExt" ? cast(B, ZEmitterExt).z : cast(B, DisplaySprite).z;
+		var result:Int = 0;
+		if (zA < zB)
+			result = Order;
+		else if (zA > zB)
+			result = -Order;
+		return result;
+	}
+	
+	private function SpawnMeatBag(T:FlxTimer):Void
+	{
+		var m:MeatBag;
+		m = cast _grpStampede.recycle(MeatBag, [FlxG.width + 16,  FlxRandom.intRanged( -16, FlxG.height + 16)] );
+		m.facing = FlxObject.LEFT;
+		m.velocity.x = -400;
+		m.isReal = false;
+	}
 }
