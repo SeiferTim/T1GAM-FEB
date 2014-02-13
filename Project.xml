@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
+	<meta title="T1GAM-FEB" package="com.timsworld.t1gam.feb" version="0.0.1" company="Tile Isle" />
 	<app title="T1GAM-FEB" file="T1GAM-FEB" main="Main" version="0.0.1" company="Tile Isle" />
 
 	<window background="0x0" />
