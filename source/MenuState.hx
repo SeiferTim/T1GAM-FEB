@@ -1,5 +1,7 @@
 package;
 
+import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.text.FlxBitmapFont;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -7,6 +9,8 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxMath;
@@ -29,13 +33,18 @@ class MenuState extends FlxState
 	
 	private var _grpStampede:FlxGroup;
 	
+	private var _txtSubtitle:FlxBitmapFont;
+	private var _twnSub:FlxTween;
+	private var _twnDelay:FlxTimer;
+
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
 	override public function create():Void
 	{
 		
-		
+		FlxG.autoPause = false;
 		// Set a background color
 		FlxG.cameras.bgColor = 0xff131c1b;
 		// Show the mouse (in case it hasn't been disabled)
@@ -43,37 +52,84 @@ class MenuState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		_grpStampede = new FlxGroup(300);
+		var _grass:FlxSprite = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
+		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_grass);
+		add(_grass);
+		
+		_grpStampede = new FlxGroup(60);
 		add(_grpStampede);
+
+		var m:MeatBag;
+		for (i in 0...15)
+		{
+			m = new MeatBag(FlxRandom.intRanged(-16,FlxG.width+16), FlxRandom.intRanged(-16,FlxG.height+16));
+			m.facing = FlxObject.LEFT;
+			m.velocity.x = -300 - FlxRandom.intRanged(0, 200);
+			m.velocity.y = FlxRandom.intRanged( -50, 50);
+			m.isReal = false;
+			_grpStampede.add(m);
+		}
 		
-		_tmr = FlxTimer.start(FlxG.width/20000, SpawnMeatBag, 0);
 		
-		_btnPlay = new FlxButton(0, 0, "Play da Game", goGame);
+		
+		_tmr = FlxTimer.start(FlxG.width/30000, SpawnMeatBag, 0);
+		
+		
+		_btnPlay = new FlxButton(0, 0, "Play", goLevelSelect);
 		
 		_btnPlay.x = (FlxG.width /2) - (_btnPlay.width * 1.5) - 32;
 		_btnPlay.y = FlxG.height - _btnPlay.height - 10;
 		
 		add(_btnPlay);
 		
-		_btnEndless = new FlxButton(0, 0, "Endless Mode", goEndless);
-		
-		_btnEndless.x = (FlxG.width /2) - (_btnPlay.width/2);
-		_btnEndless.y = _btnPlay.y;
-		add(_btnEndless);
 		
 		_btnOptions = new FlxButton(0, 0, "Options", goOptions);
 		_btnOptions.x = (FlxG.width / 2) + (_btnOptions.width / 2) + 32;
 		_btnOptions.y = _btnPlay.y;
 		add(_btnOptions);
 		
+		var titleFloor:Float  = (FlxG.height / 2) - 70;
+		add(new TitleLetter((FlxG.width/2)-195, -150, TitleLetter.LETTER_M, titleFloor,.1));
+		add(new TitleLetter((FlxG.width/2)-155, -150, TitleLetter.LETTER_E, titleFloor,.2));
+		add(new TitleLetter((FlxG.width/2)-115, -150, TitleLetter.LETTER_A, titleFloor,.3));
+		add(new TitleLetter((FlxG.width/2)-75, -150, TitleLetter.LETTER_T, titleFloor,.4));
+		add(new TitleLetter((FlxG.width/2)+25, -150, TitleLetter.LETTER_B, titleFloor,.6));
+		add(new TitleLetter((FlxG.width/2)+65, -150, TitleLetter.LETTER_A, titleFloor,.7));
+		add(new TitleLetter((FlxG.width/2)+105, -150, TitleLetter.LETTER_G, titleFloor,.8));
+		add(new TitleLetter((FlxG.width/2)+145, -150, TitleLetter.LETTER_S, titleFloor,.9));
+		
+		_txtSubtitle = new FlxBitmapFont("assets/images/small_white_font.png", 16,16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
+		_txtSubtitle.setText("- The Video Game -", false, 0, 0, FlxBitmapFont.ALIGN_CENTER, true);
+		_txtSubtitle.y = titleFloor + 75;
+		FlxSpriteUtil.screenCenter(_txtSubtitle, true, false);
+		_txtSubtitle.alpha = 0;
+		add(_txtSubtitle);
+		_twnDelay = FlxTimer.start(1.4, doneWaitSubtitle);
+		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
 		super.create();
 	}
 	
+	private function goLevelSelect():Void
+	{
+		if (_leaving || _loading )
+			return;
+		_leaving = true;		
+		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, false, goLevelSelectDone);
+	}
+	
+	
+	private function doneWaitSubtitle(T:FlxTimer):Void
+	{
+		_twnSub = FlxTween.singleVar(_txtSubtitle, "alpha", 1, .66, { type:FlxTween.ONESHOT, ease:FlxEase.quintOut } );
+	}
+	
 	private function fadeInDone():Void
 	{
 		_loading = false;
+		
 	}
 	
 	private function goOptions():Void
@@ -88,32 +144,12 @@ class MenuState extends FlxState
 	{
 		FlxG.switchState(new OptionsState());
 	}
+
 	
-	private function goEndless():Void
-	{
-		if (_leaving || _loading)
-			return;
-		_leaving = true;
-		Reg.mode = Reg.MODE_ENDLESS;
-		FlxG.camera.fade(FlxColor.BLACK, Reg.FADE_DUR, false, goGameDone);
-	}
-	
-	
-	private function goGame():Void
-	{
-		if (_leaving || _loading )
-			return;
-		_leaving = true;
-		Reg.mode = Reg.MODE_NORMAL;
-		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, false, goGameDone);
-	}
-	
-	
-	
-	private function goGameDone():Void
+	private function goLevelSelectDone():Void
 	{
 		
-		FlxG.switchState(new PlayState());
+		FlxG.switchState(new LevelsState());
 	}
 	
 	/**
@@ -131,13 +167,16 @@ class MenuState extends FlxState
 	override public function update():Void
 	{
 		
-		_grpStampede.forEachAlive(function(m) 
+		/*_grpStampede.forEachAlive(function(m) 
 			{
 				if (cast(m, MeatBag).x + cast(m, MeatBag).width < 0) 
-				cast(m, MeatBag).kill();
-			});
+				{
+					trace("kill");
+					cast(m, MeatBag).kill();
+				}
+				
+			});*/
 		_grpStampede.sort(zSort);
-		
 		
 		
 		super.update();
@@ -158,9 +197,18 @@ class MenuState extends FlxState
 	private function SpawnMeatBag(T:FlxTimer):Void
 	{
 		var m:MeatBag;
-		m = cast _grpStampede.recycle(MeatBag, [FlxG.width + 16,  FlxRandom.intRanged( -16, FlxG.height + 16)] );
-		m.facing = FlxObject.LEFT;
-		m.velocity.x = -400;
-		m.isReal = false;
+		m = cast _grpStampede.recycle(MeatBag, [-100,0]);
+		if (m != null)
+		{
+			if ( m.x + m.width < 0)
+			{
+				m.x = FlxG.width + 16;
+				m.y = FlxRandom.intRanged( -16, FlxG.height + 16);		
+				m.facing = FlxObject.LEFT;
+				m.velocity.x = -300 - FlxRandom.intRanged(0, 200);
+				m.velocity.y = FlxRandom.intRanged( -50, 50);
+				m.isReal = false;
+			}
+		}
 	}
 }

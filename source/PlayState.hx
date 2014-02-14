@@ -105,22 +105,23 @@ class PlayState extends FlxState
 		_grpPickups = new FlxGroup(20);
 		
 		player = new DisplaySprite(0, 0);
-		player.makeGraphic(32, 32, 0xff1F64B1);
-		player.width = 16;
-		player.height = 24;
-		player.offset.x = 8;
-		player.offset.y = 8;
+		player.makeGraphic(16, 16, 0xff1F64B1);
+		player.width = 8;
+		player.height = 12;
+		player.offset.x = 4;
+		player.offset.y = 4;
 		
-		_grass = FlxGridOverlay.create(64, 64, FlxG.width, FlxG.height,false, true, 0xff77C450, 0xff2A9D0C);
+		_grass = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_grass);
 		_grpMap.add(_grass);
 		
 		player.x = (FlxG.width - player.width) / 2;
 		player.y = (FlxG.height - (player.height * 3));
 		player.forceComplexRender = true;
 		
-		_map = new FlxOgmoLoader("assets/data/level-0001.oel");
-		_walls = _map.loadTilemap("assets/images/walls.png", 16, 16, "walls");
+		_map = new FlxOgmoLoader("assets/data/level-" + StringTools.lpad(Std.string(Reg.level),"0",4) +  ".oel");
+		_walls = _map.loadTilemap("assets/images/walls.png", 8, 8, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
 		
 		//_map.loadEntities(loadEntity, "meats");

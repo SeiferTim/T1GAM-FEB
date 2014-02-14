@@ -29,8 +29,8 @@
     <LayerDefinition xsi:type="TileLayerDefinition">
       <Name>walls</Name>
       <Grid>
-        <Width>16</Width>
-        <Height>16</Height>
+        <Width>8</Width>
+        <Height>8</Height>
       </Grid>
       <ScrollFactor>
         <X>1</X>
@@ -57,8 +57,8 @@
       <Name>walls</Name>
       <FilePath>..\images\walls.png</FilePath>
       <TileSize>
-        <Width>16</Width>
-        <Height>16</Height>
+        <Width>8</Width>
+        <Height>8</Height>
       </TileSize>
       <TileSep>0</TileSep>
     </Tileset>

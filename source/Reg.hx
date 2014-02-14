@@ -17,7 +17,7 @@ class Reg
 	 * Generic levels Array that can be used for cross-state stuff.
 	 * Example usage: Storing the levels of a platformer.
 	 */
-	static public var levels:Array<Dynamic> = [];
+	static public var levels:Array<Level> = [];
 	/**
 	 * Generic level variable that can be used for cross-state stuff.
 	 * Example usage: Storing the current level number.
@@ -75,6 +75,14 @@ class Reg
 		IsFullscreen = (saves[0].data.fullscreen != null) ? saves[0].data.fullscreen : true;
 		screensize = (saves[0].data.screensize != null) ? saves[0].data.screensize : SIZE_LARGE;
 		#end
+		
+		levels.push(new Level(0, 6, false, true));
+		levels.push(new Level(1, 10));
+		//levels.push(new Level(2, 14));
+		//levels.push(new Level(3, 3));
+		//levels.push(new Level(4, 6));
+		
+		
 		
 		GameInitialized = true;
 	}	

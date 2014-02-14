@@ -86,9 +86,37 @@ class MeatBag extends DisplaySprite
 			velocity.y = 0;
 			if (FlxRandom.chanceRoll(1))
 			{
-				_runTimer = 0;
-				_dir = FlxRandom.intRanged(0, 3) * 90;
-				_brain.setState(wander);
+				if (FlxRandom.chanceRoll(1))
+				{
+					var minX:Float = Math.min(x,FlxG.width - x);
+					var minY:Float = Math.min(y, FlxG.height - y);
+					
+					if (Math.abs(minX) < Math.abs(minY))
+					{
+						// run left or right
+						if (minX < FlxG.width / 2)
+							_dir = 180;
+						else 
+							_dir = 0;
+					}
+					else
+					{
+						// run up or down
+						if (minY < FlxG.height / 2)
+							_dir = -90;
+						else 
+							_dir = 90;
+					}
+					_brain.setState(escape);
+					
+				}
+				else
+				{
+					_runTimer = 0;
+					_dir = FlxRandom.intRanged(0, 3) * 90;
+					_brain.setState(wander);
+				}
+				
 			}
 		}
 	}
@@ -120,6 +148,22 @@ class MeatBag extends DisplaySprite
 			{
 				_runTimer += FlxG.elapsed * FlxRandom.intRanged(1,5);
 			}
+		}
+	}
+	
+	private function escape():Void
+	{
+		if (FlxMath.getDistance(getMidpoint(), Reg.playState.player.getMidpoint()) <= SCARE_RANGE)
+		{
+			_brain.setState(flee);
+			flee();	
+		}
+		else
+		{
+			var v = FlxAngle.rotatePoint(_speed *.8, 0, 0, 0, _dir);
+			velocity.x = v.x;
+			velocity.y = v.y;
+			
 		}
 	}
 	
@@ -199,6 +243,39 @@ class MeatBag extends DisplaySprite
 					_body.twnBounce.type = FlxTween.ONESHOT;
 				
 			}
+			
+			if ((justTouched(FlxObject.UP) && justTouched(FlxObject.LEFT)) || (justTouched(FlxObject.UP) && justTouched(FlxObject.RIGHT)) || (justTouched(FlxObject.DOWN) && justTouched(FlxObject.LEFT)) || (justTouched(FlxObject.DOWN) && justTouched(FlxObject.RIGHT)))
+			{
+				_dir = FlxAngle.wrapAngle(_dir + 180);
+				if (Math.abs(velocity.x) < Math.abs(velocity.y))
+					velocity.y *= -1;
+				else
+					velocity.x *= -1;
+			}
+			else
+			{
+				if (justTouched(FlxObject.LEFT) || justTouched(FlxObject.RIGHT) && Math.abs(velocity.x) > Math.abs(velocity.y))
+				{
+					_dir = FlxAngle.wrapAngle(_dir + 180);
+					if (Math.abs(velocity.y) > 1)
+						velocity.y *= 2;
+					else
+						velocity.y *= 5;
+				}
+				
+				if (justTouched(FlxObject.UP) || justTouched(FlxObject.DOWN) && Math.abs(velocity.x) < Math.abs(velocity.y))
+				{
+					_dir = FlxAngle.wrapAngle(_dir + 180);
+					if (Math.abs(velocity.x) > 1)
+						velocity.x *= 2;
+					else
+						velocity.x *= 5;
+				}
+			}
+			
+			
+			
+				
 			
 			if (velocity.x > 0 && Math.abs(velocity.x) > Math.abs(velocity.y))
 			{
