@@ -33,10 +33,12 @@ class MenuState extends FlxState
 	
 	private var _grpStampede:FlxGroup;
 	
-	private var _txtSubtitle:FlxBitmapFont;
+	private var _txtSubtitle:GameFont;
 	private var _twnSub:FlxTween;
 	private var _twnDelay:FlxTimer;
-
+	private var _twnBack:FlxTimer;
+	private var _titleBack:TitleBackBar;
+	
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -59,6 +61,9 @@ class MenuState extends FlxState
 		
 		_grpStampede = new FlxGroup(60);
 		add(_grpStampede);
+		
+		_titleBack = new TitleBackBar();
+		add(_titleBack);
 
 		var m:MeatBag;
 		for (i in 0...15)
@@ -99,17 +104,23 @@ class MenuState extends FlxState
 		add(new TitleLetter((FlxG.width/2)+105, -150, TitleLetter.LETTER_G, titleFloor,.8));
 		add(new TitleLetter((FlxG.width/2)+145, -150, TitleLetter.LETTER_S, titleFloor,.9));
 		
-		_txtSubtitle = new FlxBitmapFont("assets/images/small_white_font.png", 16,16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
-		_txtSubtitle.setText("- The Video Game -", false, 0, 0, FlxBitmapFont.ALIGN_CENTER, true);
+		_txtSubtitle = new GameFont("- The Video Game -", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16,16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
+		//_txtSubtitle.setText("- The Video Game -", false, 0, 0, FlxBitmapFont.ALIGN_CENTER, true);
 		_txtSubtitle.y = titleFloor + 75;
 		FlxSpriteUtil.screenCenter(_txtSubtitle, true, false);
 		_txtSubtitle.alpha = 0;
 		add(_txtSubtitle);
 		_twnDelay = FlxTimer.start(1.4, doneWaitSubtitle);
+		_twnBack = FlxTimer.start(.8, doneWaitStart);
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
 		super.create();
+	}
+	
+	private function doneWaitStart(T:FlxTimer):Void
+	{
+		_titleBack.start();
 	}
 	
 	private function goLevelSelect():Void
@@ -123,6 +134,7 @@ class MenuState extends FlxState
 	
 	private function doneWaitSubtitle(T:FlxTimer):Void
 	{
+		
 		_twnSub = FlxTween.singleVar(_txtSubtitle, "alpha", 1, .66, { type:FlxTween.ONESHOT, ease:FlxEase.quintOut } );
 	}
 	

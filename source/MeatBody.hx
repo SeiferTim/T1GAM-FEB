@@ -15,6 +15,7 @@ class MeatBody extends DisplaySprite
 	private var _bounceAmt:Float = 2;
 	private var _bounceStep:Float = 0;
 	public var twnBounce:FlxTween;
+	public var bang:MeatBagBang;
 	
 	public function new(X:Float=0, Y:Float=0) 
 	{
@@ -24,7 +25,11 @@ class MeatBody extends DisplaySprite
 		heart = new MeatBagHeart(0, 0);
 		add(heart);
 		
-		
+		bang = new MeatBagBang();
+		bang.relativeX = 0;
+		bang.relativeY = -8-16;
+		add(bang);
+		bang.visible = false;
 		
 		twnBounce = FlxTween.multiVar(this, { _bounceStep:4 }, .1, { type:FlxTween.PINGPONG, ease:FlxEase.quartOut } );
 		twnBounce.percent = FlxRandom.floatRanged(0, 1);

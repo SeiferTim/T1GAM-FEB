@@ -65,6 +65,9 @@ class MeatBag extends DisplaySprite
 		
 		var dirs:Array<Int> = [FlxObject.UP, FlxObject.DOWN, FlxObject.RIGHT, FlxObject.LEFT];
 		facing = FlxRandom.getObject(dirs);
+		
+		//FlxG.watch.add(this, "_fear");
+		//FlxG.watch.add(_body.heart, "duration");
 	}
 	
 	private function idle():Void
@@ -81,12 +84,13 @@ class MeatBag extends DisplaySprite
 		}
 		else
 		{
+			changeFear( -FlxG.elapsed * .5);
 			_delay = ACTION_DELAY;
 			velocity.x = 0;
 			velocity.y = 0;
 			if (FlxRandom.chanceRoll(1))
 			{
-				if (FlxRandom.chanceRoll(1))
+				if (_fear <= 25 && FlxRandom.chanceRoll(1))
 				{
 					var minX:Float = Math.min(x,FlxG.width - x);
 					var minY:Float = Math.min(y, FlxG.height - y);
@@ -122,6 +126,27 @@ class MeatBag extends DisplaySprite
 	}
 	
 
+	private function changeFear(Value:Float):Void
+	{
+		_fear += Value;
+		if (_fear < 0) 
+			_fear = 0;
+		if (_fear >= 100)
+		{
+			_dying = true;
+			// heart bursts!
+			_body.bang.visible = false;
+			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
+			_body.heart.kill();
+			FlxG.sound.play("kill");
+			velocity.x = 0;
+			velocity.y = 0;
+			acceleration.x = 0;
+			acceleration.y = 0;
+			_twnDeath = FlxTween.color(this, .66, 0x00ffffff, 0xffffffff, 1, 0, { type:FlxTween.ONESHOT, ease:FlxEase.circIn, complete:goDie } );
+		}
+		
+	}
 	
 	private function wander():Void
 	{
@@ -137,6 +162,7 @@ class MeatBag extends DisplaySprite
 		}
 		else
 		{
+			changeFear( -FlxG.elapsed * .5);
 			_delay = ACTION_DELAY;
 			var v = FlxAngle.rotatePoint(_speed *.8, 0, 0, 0, _dir);
 			velocity.x = v.x;
@@ -160,6 +186,7 @@ class MeatBag extends DisplaySprite
 		}
 		else
 		{
+			changeFear(FlxG.elapsed * 2);
 			var v = FlxAngle.rotatePoint(_speed *.8, 0, 0, 0, _dir);
 			velocity.x = v.x;
 			velocity.y = v.y;
@@ -186,12 +213,17 @@ class MeatBag extends DisplaySprite
 		velocity.x = v.x;
 		velocity.y = v.y;
 		
+		_body.bang.visible = true;
+		_body.bang.animation.play("scared");
+		if (_fear >= 70)
+			_body.bang.animation.play("dying");
+		
 		var _dist:Float = FlxMath.getDistance(getMidpoint(), Reg.playState.player.getMidpoint());
 		if (_dist > SCARE_RANGE)
 		{
 			if (_delay <= 0)
 			{
-				_fear = 0;
+				_body.bang.visible = false;
 				_brain.setState(idle);
 				_adjustDelay = 0;
 			}
@@ -201,22 +233,10 @@ class MeatBag extends DisplaySprite
 		else 
 		{
 			_delay = ACTION_DELAY;
-			_fear = (SCARE_RANGE - _dist) / (SCARE_RANGE * 3);
+			changeFear(((SCARE_RANGE - _dist) / (SCARE_RANGE)));
 		}
-		_body.heart.duration = .2 - _fear;
-		if (_body.heart.duration < FlxG.elapsed*5)
-		{
-			_dying = true;
-			// heart bursts!
-			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
-			_body.heart.kill();
-			FlxG.sound.play("kill");
-			velocity.x = 0;
-			velocity.y = 0;
-			acceleration.x = 0;
-			acceleration.y = 0;
-			_twnDeath = FlxTween.color(this, .66, 0x00ffffff, 0xffffffff, 1, 0, { type:FlxTween.ONESHOT, ease:FlxEase.circIn, complete:goDie } );
-		}
+		
+		
 		
 	}
 	
@@ -318,7 +338,7 @@ class MeatBag extends DisplaySprite
 				head.z = 5;
 		}
 		
-		
+		_body.heart.duration = .2 * ((100 - _fear) / 80);
 		children.sort(sortZ);
 		
 		super.update();

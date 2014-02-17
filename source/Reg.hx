@@ -37,7 +37,7 @@ class Reg
 	 * Generic bucket for storing different <code>FlxSaves</code>.
 	 * Especially useful for setting up multiple save slots.
 	 */
-	static public var saves:Array<FlxSave> = [];
+	static public var save:FlxSave;
 	
 	static public var playState:PlayState;
 	
@@ -62,29 +62,75 @@ class Reg
 	{
 		if (GameInitialized)
 			return;
-		saves.push(new FlxSave());
-		saves[0].bind("flixel");
-		if (saves[0].data.volume != null)
+		
+		
+		levels.push(new Level(0, 6));
+		levels.push(new Level(1, 10));
+		levels.push(new Level(2, 6));
+		levels.push(new Level(3, 10));
+		levels.push(new Level(4, 4));
+		levels.push(new Level(5, 5));
+		levels.push(new Level(6, 40));
+		levels.push(new Level(7, 50));
+
+		loadData();
+		
+		GameInitialized = true;
+	}
+	
+	public static function loadData():Void
+	{
+		save = new FlxSave();
+		save.bind("flixel");
+		if (save.data.volume != null)
 		{
-			FlxG.sound.volume = saves[0].data.volume;
+			FlxG.sound.volume = save.data.volume;
 		}
 		else
 			FlxG.sound.volume = 1;
 		
 		#if desktop
-		IsFullscreen = (saves[0].data.fullscreen != null) ? saves[0].data.fullscreen : true;
-		screensize = (saves[0].data.screensize != null) ? saves[0].data.screensize : SIZE_LARGE;
+		IsFullscreen = (save.data.fullscreen != null) ? save.data.fullscreen : true;
+		screensize = (save.data.screensize != null) ? save.data.screensize : SIZE_LARGE;
 		#end
+
+		var saveLength:Int = 0;
 		
-		levels.push(new Level(0, 6, false, true));
-		levels.push(new Level(1, 10));
-		//levels.push(new Level(2, 14));
-		//levels.push(new Level(3, 3));
-		//levels.push(new Level(4, 6));
+		if (save.data.scores != null)
+		{
+			saveLength = save.data.scores.length;
+
+		}
+		
+		for (i in 0...levels.length)
+		{
+			if (i < saveLength)
+			{
+				levels[i].bestScores = save.data.scores[i];
+			}
+			else
+			{
+				levels[i].bestScores = [0,0];
+			}
+		}
 		
 		
+		save.close();
 		
-		GameInitialized = true;
-	}	
+	}
+	
+	public static function saveScores():Void
+	{
+		
+		var s:Array<Array<Int>> = new Array<Array<Int>>();
+		for (l in levels)
+		{
+			s.push(l.bestScores);
+		}
+		save.bind("flixel");
+		save.data.scores = s;
+		save.close();
+	}
+	
 	
 }

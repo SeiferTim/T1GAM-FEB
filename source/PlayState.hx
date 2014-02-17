@@ -33,7 +33,7 @@ class PlayState extends FlxState
 {
 	private static inline var SPEED:Int = 600;
 	private static inline var FRICTION:Float = .8;
-	private static inline var GAMETIME:Float = 30;
+	public static inline var GAMETIME:Float = 30;
 	
 	private var _loading:Bool = true;
 	private var _unloading:Bool = false;
@@ -61,25 +61,26 @@ class PlayState extends FlxState
 	private var _barTime:FlxBar;
 	private var _scoreTimer:Float;
 
-	private var _meatBagCounter:FlxBitmapFont;
+	private var _meatBagCounter:GameFont;
 	private var _meatBagCounterIcon:MeatBag;
 	private var _countBack:FlxSprite;
 	
 	private var _gameTimer:Float = 0;
 	
 	private var _score:Int = 0;
-	private var _txtScore:FlxBitmapFont;
+	private var _txtScore:GameFont;
 	private var _sprScore:FlxSprite;
 	
 	private var _pointer:FlxSprite;
 	private var _twnPointer:FlxTween;
 	private var _moveToTarget:FlxPoint;
 	
-	private var _txtClock:FlxBitmapFont;
+	private var _txtClock:GameFont;
 	
 	private var _paused:Bool = false;
 	private var _pauseScreen:PauseScreen;
 	private var _twnPause:FlxTween;
+	
 	
 	
 	/**
@@ -116,16 +117,18 @@ class PlayState extends FlxState
 		FlxSpriteUtil.screenCenter(_grass);
 		_grpMap.add(_grass);
 		
-		player.x = (FlxG.width - player.width) / 2;
-		player.y = (FlxG.height - (player.height * 3));
+		//player.x = (FlxG.width - player.width) / 2;
+		//player.y = (FlxG.height - (player.height * 3));
 		player.forceComplexRender = true;
 		
 		_map = new FlxOgmoLoader("assets/data/level-" + StringTools.lpad(Std.string(Reg.level),"0",4) +  ".oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 8, 8, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
 		
-		//_map.loadEntities(loadEntity, "meats");
+		
 		_map.loadRectangles(loadMeatZone, "meats");
+		
+		_map.loadEntities(loadPStart, "playerStart");
 		
 		
 		_grpMap.add(_walls);
@@ -153,8 +156,8 @@ class PlayState extends FlxState
 		}
 		else if (Reg.mode == Reg.MODE_ENDLESS)
 		{
-			_txtClock = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
-			_txtClock.setText(FlxStringUtil.formatTime(_gameTimer, true), false, 0, 0, FlxBitmapFont.ALIGN_CENTER);
+			_txtClock = new GameFont(FlxStringUtil.formatTime(_gameTimer, true), GameFont.STYLE_LG_NUMBERS, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
+			//_txtClock.setText(FlxStringUtil.formatTime(_gameTimer, true), false, 0, 0, FlxBitmapFont.ALIGN_CENTER);
 			_txtClock.scrollFactor.x = _txtClock.scrollFactor.y = 0;
 			_txtClock.y = 16;
 			FlxSpriteUtil.screenCenter(_txtClock, true, false);
@@ -163,8 +166,8 @@ class PlayState extends FlxState
 			
 		}
 		
-		_meatBagCounter = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
-		_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
+		_meatBagCounter = new GameFont(" 0", GameFont.STYLE_LG_NUMBERS, FlxBitmapFont.ALIGN_RIGHT);//FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
+		//_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
 		_meatBagCounter.scrollFactor.x = _meatBagCounter.scrollFactor.y = 0;
 		_meatBagCounter.x = FlxG.width - 104;
 		_meatBagCounter.y = FlxG.height - 40;
@@ -186,8 +189,8 @@ class PlayState extends FlxState
 		_score = 0;
 		_scoreTimer = 1;
 		
-		_txtScore = new FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
-		_txtScore.setText("0", false, 0, 0, FlxBitmapFont.ALIGN_LEFT);
+		_txtScore = new GameFont("0", GameFont.STYLE_LG_NUMBERS);//FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
+		//_txtScore.setText("0", false, 0, 0, FlxBitmapFont.ALIGN_LEFT);
 		_txtScore.scrollFactor.x = _txtScore.scrollFactor.y = 0;
 		_txtScore.x = 16;
 		_txtScore.y = FlxG.height - 40;
@@ -228,7 +231,7 @@ class PlayState extends FlxState
 	private function loadMeatZone(R:FlxRect):Void
 	{
 		var m:MeatBag;
-		for (i in 0...6)
+		for (i in 0...Reg.levels[Reg.level].numberOfMBsPer)
 		{
 			m = new MeatBag(Std.int(FlxRandom.floatRanged(R.x, R.right)), Std.int(FlxRandom.floatRanged(R.y, R.bottom)));
 			_grpMeat.add(m);
@@ -236,11 +239,15 @@ class PlayState extends FlxState
 		}
 	}
 	
-	private function loadEntity(EType:String, EXml:Xml):Void
+	
+	
+	private function loadPStart(EType:String, EXml:Xml):Void
 	{
-		var mB:MeatBag = new MeatBag(Std.parseFloat(EXml.get("x")), Std.parseFloat(EXml.get("y")));
-		_grpMeat.add(mB);
-		_grpDisplayObjs.add(mB);
+		//var mB:MeatBag = new MeatBag(Std.parseFloat(EXml.get("x")), Std.parseFloat(EXml.get("y")));
+		//_grpMeat.add(mB);
+		//_grpDisplayObjs.add(mB);
+		player.x = Std.parseFloat(EXml.get("x"));
+		player.y = Std.parseFloat(EXml.get("y"));
 	}
 	
 	private function fadeInDone():Void
@@ -501,7 +508,7 @@ class PlayState extends FlxState
 		_scoreTimer -= FlxG.elapsed;
 		if (_scoreTimer <= 0)
 		{
-			_score += living * 10;
+			_score += living;
 			_scoreTimer += 1;
 		}
 		

@@ -1,7 +1,9 @@
 package ;
 
+import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.text.FlxBitmapFont;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.system.FlxAssets;
 import flixel.text.FlxText;
@@ -27,34 +29,55 @@ class GameOverState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		_won = Reg.gameTime <= 0 && Reg.leftAlive > 0;
+		var _grass:FlxSprite = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
+		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_grass);
+		add(_grass);
 		
-		var _txtGo = new FlxText(0, 16, 200, "Game Over", 8);
+		add(new FlxSprite(4, 4).makeGraphic(FlxG.width - 8, FlxG.height - 8, 0x99000000));
 		
-		_txtGo.alignment = "center";
+		
+		_won = Reg.gameTime >= PlayState.GAMETIME && Reg.leftAlive > 0;
+		
+		
+		var _txtGo:GameFont;
+		
+		if (Reg.mode == Reg.MODE_NORMAL && _won)
+		{
+			_txtGo = new GameFont("Complete!", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		}
+		else
+		{
+			_txtGo = new GameFont("Game Over!", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		}
+		_txtGo.y = 16;
 		FlxSpriteUtil.screenCenter(_txtGo, true, false);
-		
 		add(_txtGo);
 		
-		var _txtScore:FlxText = new FlxText(0, 64, FlxG.width, "Score " +  StringTools.lpad("",".",40 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score);
-		_txtScore.alignment = "center";
+		var _txtScore:GameFont = new GameFont("Score " +  StringTools.lpad("", ".", 30 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER); // (0, 64, FlxG.width, "Score " +  StringTools.lpad("",".",40 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score);
+		_txtScore.y = 64;
+		FlxSpriteUtil.screenCenter(_txtScore, true, false);
 		add(_txtScore);
 		
-		var _txtLeft:FlxText;
+		var _txtLeft:GameFont;
 		
 		if (Reg.mode == Reg.MODE_NORMAL)
 		{
-			_txtLeft = new FlxText(0, 72, FlxG.width, "Living " + StringTools.lpad("",".",40 - ("Living ".length + Std.string(Reg.leftAlive).length)) +  " " + Reg.leftAlive);
+			_txtLeft = new GameFont("Living " + StringTools.lpad("",".",30 - ("Living ".length + Std.string(Reg.leftAlive).length)) +  " " + Reg.leftAlive, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+			
+			//new FlxText(0, 72, FlxG.width, "Living " + StringTools.lpad("",".",40 - ("Living ".length + Std.string(Reg.leftAlive).length)) +  " " + Reg.leftAlive);
 		}
-		else //if (Reg.mode == Reg.MODE_ENDLESS)
+		else 
 		{
-			_txtLeft = new FlxText(0, 72, FlxG.width, "Time " + StringTools.lpad("",".",40 - ("Time ".length + FlxStringUtil.formatTime(Reg.gameTime,true).length)) +  " " + FlxStringUtil.formatTime(Reg.gameTime,true));
+			_txtLeft = new GameFont("Time " + StringTools.lpad("", ".", 30 - ("Time ".length + FlxStringUtil.formatTime(Reg.gameTime, true).length)) +  " " + FlxStringUtil.formatTime(Reg.gameTime, true), GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+			//new FlxText(0, 72, FlxG.width, "Time " + StringTools.lpad("",".",40 - ("Time ".length + FlxStringUtil.formatTime(Reg.gameTime,true).length)) +  " " + FlxStringUtil.formatTime(Reg.gameTime,true));
 		}
+		_txtLeft.y = 88;
+		FlxSpriteUtil.screenCenter(_txtLeft, true, false);
 		
-		_txtLeft.alignment = "center";
 		add(_txtLeft);
 		
-		var _txtBonus:FlxText;
+		var _txtBonus:GameFont;
 		var _bonusScore:Int;
 		
 		if (Reg.mode == Reg.MODE_NORMAL)
@@ -63,33 +86,53 @@ class GameOverState extends FlxState
 			
 			
 		}
-		else //if (Reg.mode == Reg.MODE_ENDLESS)
+		else 
 		{
 			_bonusScore = Std.int(Reg.gameTime * 10);
 		}
 		
-		_txtBonus = new FlxText(0, 80, FlxG.width, "Bonus " + StringTools.lpad("", ".", 40 - ("Bonus ".length + Std.string(_bonusScore).length)) +  " " + Std.string(_bonusScore));
+		_txtBonus = new GameFont("Bonus " + StringTools.lpad("", ".", 30 - ("Bonus ".length + Std.string(_bonusScore).length)) +  " " + Std.string(_bonusScore), GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
 		
-		_txtBonus.alignment = "center";
+		//new FlxText(0, 80, FlxG.width, "Bonus " + StringTools.lpad("", ".", 40 - ("Bonus ".length + Std.string(_bonusScore).length)) +  " " + Std.string(_bonusScore));
+		
+		//_txtBonus.alignment = "center";
+		_txtBonus.y = 112;
+		FlxSpriteUtil.screenCenter(_txtBonus, true, false);
 		add(_txtBonus);
 		
+		var totalScore:Int = _bonusScore + Reg.score;
 		
-		var _txtTotal:FlxText = new FlxText(0, 88, FlxG.width, "Total " + StringTools.lpad("",".",40 - ("Total ".length + Std.string((_bonusScore) + Reg.score).length)) +  " " + Std.string((_bonusScore) + Reg.score));
-		_txtTotal.alignment = "center";
+		var _txtTotal:GameFont = new GameFont("Total " + StringTools.lpad("", ".", 30 - ("Total ".length + Std.string(totalScore).length)) +  " " + Std.string(totalScore), GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		//new FlxText(0, 88, FlxG.width, "Total " + StringTools.lpad("",".",40 - ("Total ".length + Std.string(totalScore).length)) +  " " + Std.string(totalScore));
+		//_txtTotal.alignment = "center";
+		_txtTotal.y = 136;
+		FlxSpriteUtil.screenCenter(_txtTotal, true, false);
 		add(_txtTotal);
 		
 		
-		var _btnPlayAgain = new FlxButton(0, 0, "Play Normal", goPlayAgain);
-		_btnPlayAgain.y = FlxG.height - _btnPlayAgain.height - 16;
-		_btnPlayAgain.x = (FlxG.width / 2) - _btnPlayAgain.width - 16;
+		var _btnContinue = new FlxButton(0, 0, "Continue", goContinue);
+		_btnContinue.y = FlxG.height - _btnContinue.height - 16;
+		_btnContinue.x = (FlxG.width / 2) - _btnContinue.width - 16;
 		
-		add(_btnPlayAgain);
+		add(_btnContinue);
 		
-		var _btnEndless = new FlxButton(0, 0, "Play Endless", goEndless);
-		_btnEndless.y = _btnPlayAgain.y;
-		_btnEndless.x = (FlxG.width / 2) + 16;
+		var _btnMainMenu = new FlxButton(0, 0, "Main Menu", goMainMenu);
+		_btnMainMenu .y = _btnContinue.y;
+		_btnMainMenu .x = (FlxG.width / 2) + 16;
 		
-		add(_btnEndless	);
+		add(_btnMainMenu);
+		
+		
+		if (_won || Reg.mode != Reg.MODE_NORMAL)
+		{
+			
+			if (Reg.levels[Reg.level].bestScores[Reg.mode] < totalScore)
+			{
+				Reg.levels[Reg.level].bestScores[Reg.mode] = totalScore;
+				Reg.saveScores();
+			}
+			trace(Reg.levels[Reg.level].bestScores[Reg.mode]);
+		}
 		
 		FlxG.camera.fade(FlxColor.BLACK, .2, true, doneFadeIn);
 		
@@ -102,27 +145,30 @@ class GameOverState extends FlxState
 	}
 	
 	
-	private function goEndless():Void
+	private function goMainMenu():Void
 	{
 		if (!_loaded || _unloading)
 			return;
-		Reg.mode = Reg.MODE_ENDLESS;
 		_unloading = true;
-		FlxG.camera.fade(FlxColor.BLACK, .2, false, doneFadeOut);
+		FlxG.camera.fade(FlxColor.BLACK, .2, false, doneMainMenu);
 	}
 	
-	private function goPlayAgain():Void 
+	private function doneMainMenu():Void
+	{
+		FlxG.switchState(new MenuState());
+	}
+	
+	private function goContinue():Void 
 	{
 		if (!_loaded || _unloading)
 			return;
-		Reg.mode = Reg.MODE_NORMAL;
 		_unloading = true;
-		FlxG.camera.fade(FlxColor.BLACK, .2, false, doneFadeOut);
+		FlxG.camera.fade(FlxColor.BLACK, .2, false, doneContinue);
 	}
 	
-	private function doneFadeOut():Void
+	private function doneContinue():Void
 	{
-		FlxG.switchState(new PlayState());
+		FlxG.switchState(new LevelsState());
 	}
 	
 }
