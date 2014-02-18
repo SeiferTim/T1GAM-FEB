@@ -150,8 +150,8 @@ class OptionsState extends FlxState
 	{
 		FlxG.fullscreen = !FlxG.fullscreen;
 		Reg.IsFullscreen = FlxG.fullscreen;
-		Reg.saves[0].data.fullscreen = FlxG.fullscreen;
-		Reg.saves[0].flush();
+		Reg.save.data.fullscreen = FlxG.fullscreen;
+		Reg.save.flush();
 		if (FlxG.fullscreen)
 		{
 			_optScreen.label.text = "Fullscreen";

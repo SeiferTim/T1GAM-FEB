@@ -1,5 +1,6 @@
 package;
 
+import flash.system.System;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.text.FlxBitmapFont;
 import flixel.FlxBasic;
@@ -8,12 +9,11 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
-import flixel.util.FlxMath;
+import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
@@ -39,6 +39,9 @@ class MenuState extends FlxState
 	private var _twnBack:FlxTimer;
 	private var _titleBack:TitleBackBar;
 	
+	#if (desktop && !FLX_NO_MOUSE)
+	private var _sprExit:FlxSprite;
+	#end
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -78,7 +81,7 @@ class MenuState extends FlxState
 		
 		
 		
-		_tmr = FlxTimer.start(FlxG.width/30000, SpawnMeatBag, 0);
+		_tmr = FlxTimer.start(FlxG.width/30000, spawnMeatBag, 0);
 		
 		
 		_btnPlay = new FlxButton(0, 0, "Play", goLevelSelect);
@@ -112,6 +115,15 @@ class MenuState extends FlxState
 		add(_txtSubtitle);
 		_twnDelay = FlxTimer.start(1.4, doneWaitSubtitle);
 		_twnBack = FlxTimer.start(.8, doneWaitStart);
+		
+		#if (desktop && !FLX_NO_MOUSE)
+		_sprExit = new FlxSprite(FlxG.width - 32, 16).loadGraphic("assets/images/exit.png", true, false, 16, 16);
+		_sprExit.animation.add("off", [0]);
+		_sprExit.animation.add("on", [1]);
+		_sprExit.animation.play("off");
+		_sprExit.visible = true;
+		add(_sprExit);
+		#end
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
@@ -173,11 +185,47 @@ class MenuState extends FlxState
 		super.destroy();
 	}
 
+	#if (desktop && !FLX_NO_MOUSE)
+	private function ExitGame():Void
+	{
+		if (_leaving || _loading)
+			return;
+		_leaving = true;
+		FlxG.mouse.reset();
+		System.exit(0);
+	}
+	#end
+	
 	/**
 	 * Function that is called once every frame.
 	 */
 	override public function update():Void
 	{
+		
+		
+		#if (desktop && !FLX_NO_MOUSE)
+		
+		
+		if (!_leaving && !_loading)
+		{
+			if (_sprExit.overlapsPoint(new FlxPoint(FlxG.mouse.x, FlxG.mouse.y)))
+			{
+				if (FlxG.mouse.justReleased)
+				{
+					ExitGame();
+				}
+				if (_sprExit.animation.name != "on")
+					_sprExit.animation.play("on");
+			}
+			else
+			{
+				if (_sprExit.animation.name != "off")
+					_sprExit.animation.play("off");
+			}
+		}
+		#end
+
+		
 		_grpStampede.sort(zSort);
 		super.update();
 	}	
@@ -194,7 +242,7 @@ class MenuState extends FlxState
 		return result;
 	}
 	
-	private function SpawnMeatBag(T:FlxTimer):Void
+	private function spawnMeatBag(T:FlxTimer):Void
 	{
 		var m:MeatBag;
 		m = cast _grpStampede.recycle(MeatBag, [-100,0]);

@@ -321,13 +321,9 @@ class PlayState extends FlxState
 		super.update();
 		
 		FlxG.collide(player, _walls);
-		FlxG.collide(grpMeat, grpMeat);
+		//FlxG.collide(grpMeat, grpMeat);
 		FlxG.collide(grpMeat, _walls);
 		FlxG.overlap(player, _grpPickups, pickupEnergy);
-		
-		
-			
-		
 
 		if (!player.isOnScreen())
 		{
