@@ -6,9 +6,11 @@ import flixel.FlxObject;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxAngle;
+import flixel.util.FlxArrayUtil;
 import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
+import flixel.util.FlxVelocity;
 
 /**
  * ...
@@ -24,7 +26,7 @@ class MeatBag extends DisplaySprite
 	private var _brain:FSM;
 	public var head:MeatBagHead;
 	private var _dir:Int;
-	private var _runTimer:Float;
+	private var _runTimer:Float = 0;
 	private var _shadow:MeatBagShadow;
 	private var _dying:Bool = false;
 	private var _twnDeath:FlxTween;
@@ -32,6 +34,8 @@ class MeatBag extends DisplaySprite
 	private var _adjust:Float = 0;
 	private var _adjustDelay:Float = 0;
 	private var _isReal:Bool = true;
+	private var _target:MeatBag;
+	private var _state:String = "";
 	
 
 	public function new(X:Float=0, Y:Float=0) 
@@ -43,9 +47,11 @@ class MeatBag extends DisplaySprite
 		height = 8;
 		offset.x = 4;
 		offset.y = 4;
-		
+		_runTimer = 0;
 		_brain = new FSM();
 		_brain.setState(idle);
+		
+		_target = null;
 		
 		_shadow = new MeatBagShadow(X, Y);
 		_shadow.calcZ = false;
@@ -66,65 +72,152 @@ class MeatBag extends DisplaySprite
 		var dirs:Array<Int> = [FlxObject.UP, FlxObject.DOWN, FlxObject.RIGHT, FlxObject.LEFT];
 		facing = FlxRandom.getObject(dirs);
 		
-		//FlxG.watch.add(this, "_fear");
-		//FlxG.watch.add(_body.heart, "duration");
+		
+		FlxG.watch.add(this,"_state");
+		
 	}
 	
-	private function idle():Void
+	private function findTarget():Bool
+	{
+		var living:Array<MeatBag> = new Array<MeatBag>();
+		var m:MeatBag;
+		for (i in Reg.playState.grpMeat.members)
+		{
+			m = cast(i, MeatBag);
+			if (m != this && m.alive && m.exists && !m.dying && m.fear < 75 )
+			{
+				living.push(m);
+			}
+		}
+
+		if (living.length > 0)
+		{
+			_target = FlxArrayUtil.getRandom(living);
+			return true;
+		}
+		return false;
+	}
+	
+	private function flock():Void
+	{
+		_state = "flock";
+		// try to move towards other meatbags
+		if (!checkForPlayer())
+		{
+			
+			changeFear( -FlxG.elapsed * .5);
+			if (_target != null)
+			{
+				
+				if (_target.alive && _target.exists && !_target.dying)
+				{
+					// move to target
+					
+					FlxVelocity.moveTowardsObject(this, _target, _speed);
+					
+					if (_runTimer > 8)
+					{
+						_target = null;
+						chooseAction();
+					}
+					else
+					{	
+						_runTimer += FlxG.elapsed * FlxRandom.intRanged(1,5);
+					}
+					return;
+				}
+			}
+			chooseAction();
+		}
+	}
+	
+	private function checkForPlayer():Bool
 	{
 		if (FlxMath.getDistance(getMidpoint(), Reg.playState.player.getMidpoint()) <= SCARE_RANGE)
 		{
 			if (_delay <= 0)
 			{
+				_target = null;
 				_brain.setState(flee);
 				flee();
+				return true;
 			}
 			else
-				_delay -= FlxG.elapsed * FlxRandom.floatRanged(0, 1) * 6;
+			{
+				_delay -= FlxG.elapsed * FlxRandom.floatRanged(.01,1) * 2;
+				//return true;
+			}
+			
 		}
 		else
+			_delay = ACTION_DELAY;
+		return false;
+	}
+	
+	private function idle():Void
+	{
+		_state = "idle";
+		if (!checkForPlayer())
 		{
 			changeFear( -FlxG.elapsed * .5);
-			_delay = ACTION_DELAY;
 			velocity.x = 0;
 			velocity.y = 0;
-			if (FlxRandom.chanceRoll(1))
-			{
-				if (_fear <= 25 && FlxRandom.chanceRoll(1))
-				{
-					var minX:Float = Math.min(x,FlxG.width - x);
-					var minY:Float = Math.min(y, FlxG.height - y);
-					
-					if (Math.abs(minX) < Math.abs(minY))
-					{
-						// run left or right
-						if (minX < FlxG.width / 2)
-							_dir = 180;
-						else 
-							_dir = 0;
-					}
-					else
-					{
-						// run up or down
-						if (minY < FlxG.height / 2)
-							_dir = -90;
-						else 
-							_dir = 90;
-					}
-					_brain.setState(escape);
-					
-				}
-				else
-				{
-					_runTimer = 0;
-					_dir = FlxRandom.intRanged(0, 3) * 90;
-					_brain.setState(wander);
-				}
-				
+			if (_runTimer > 6)
+			{				
+				chooseAction();
 			}
+			else
+			{	
+				_runTimer += FlxG.elapsed * FlxRandom.intRanged(1,5);
+			}
+			
 		}
 	}
 	
+	private function chooseAction():Void
+	{
+		_runTimer = 0;
+		if (FlxRandom.chanceRoll(10 + (_fear / 3)))
+		{
+			if (findTarget())
+			{
+				_brain.setState(flock);
+				return;
+			}
+		}
+		else if (FlxRandom.chanceRoll(5*(_fear/100)))
+		{
+			var minX:Float = Math.min(x,FlxG.width - x);
+			var minY:Float = Math.min(y, FlxG.height - y);
+			
+			if (Math.abs(minX) < Math.abs(minY))
+			{
+				// run left or right
+				if (minX < FlxG.width / 2)
+					_dir = 180;
+				else 
+					_dir = 0;
+			}
+			else
+			{
+				// run up or down
+				if (minY < FlxG.height / 2)
+					_dir = -90;
+				else 
+					_dir = 90;
+			}
+			_brain.setState(escape);
+			return;
+		}
+		else if (FlxRandom.chanceRoll(10))
+		{
+			_brain.setState(idle);
+			return;
+		}
+		
+		_dir = FlxRandom.intRanged(0, 3) * 90;
+		_brain.setState(wander);
+	}
 
 	private function changeFear(Value:Float):Void
 	{
@@ -150,26 +243,19 @@ class MeatBag extends DisplaySprite
 	
 	private function wander():Void
 	{
-		if (FlxMath.getDistance(getMidpoint(), Reg.playState.player.getMidpoint()) <= SCARE_RANGE)
-		{
-			if (_delay <= 0)
-			{
-				_brain.setState(flee);
-				flee();
-			}
-			else
-				_delay -= FlxG.elapsed * FlxRandom.floatRanged(0, 1) * 6;
-		}
-		else
+		_state = "wander";
+		if (!checkForPlayer())
 		{
 			changeFear( -FlxG.elapsed * .5);
-			_delay = ACTION_DELAY;
+			
 			var v = FlxAngle.rotatePoint(_speed *.8, 0, 0, 0, _dir);
 			velocity.x = v.x;
 			velocity.y = v.y;
 			
-			if (_runTimer > 2)
-				_brain.setState(idle);
+			if (_runTimer > 4)
+			{
+				chooseAction();
+			}
 			else
 			{
 				_runTimer += FlxG.elapsed * FlxRandom.intRanged(1,5);
@@ -179,14 +265,10 @@ class MeatBag extends DisplaySprite
 	
 	private function escape():Void
 	{
-		if (FlxMath.getDistance(getMidpoint(), Reg.playState.player.getMidpoint()) <= SCARE_RANGE)
+		_state = "escape";
+		if (!checkForPlayer())
 		{
-			_brain.setState(flee);
-			flee();	
-		}
-		else
-		{
-			changeFear(FlxG.elapsed * 2);
+			changeFear(FlxG.elapsed * 4);
 			var v = FlxAngle.rotatePoint(_speed *.8, 0, 0, 0, _dir);
 			velocity.x = v.x;
 			velocity.y = v.y;
@@ -196,6 +278,7 @@ class MeatBag extends DisplaySprite
 	
 	private function flee():Void
 	{
+		_state = "flee";
 		var a:Float = FlxAngle.angleBetween(Reg.playState.player, this, true);
 		if (_adjustDelay <= 0)
 		{
@@ -224,7 +307,7 @@ class MeatBag extends DisplaySprite
 			if (_delay <= 0)
 			{
 				_body.bang.visible = false;
-				_brain.setState(idle);
+				chooseAction();
 				_adjustDelay = 0;
 			}
 			else 
@@ -233,7 +316,7 @@ class MeatBag extends DisplaySprite
 		else 
 		{
 			_delay = ACTION_DELAY;
-			changeFear(((SCARE_RANGE - _dist) / (SCARE_RANGE)));
+			changeFear(((SCARE_RANGE - _dist) / (SCARE_RANGE)) * 4);
 		}
 		
 		

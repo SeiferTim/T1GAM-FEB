@@ -6,7 +6,7 @@ package ;
  */
 class FSM
 {
-	private var _activeState:Void->Void;
+	public var activeState(default, null):Void->Void;
 	
 	public function new() 
 	{
@@ -15,13 +15,13 @@ class FSM
 	
 	public function setState(State:Void->Void):Void
 	{
-		_activeState = State;
+		activeState = State;
 	}
 	
 	public function update():Void
 	{
-		if (_activeState != null)
-			_activeState();
+		if (activeState != null)
+			activeState();
 	}
 	
 }

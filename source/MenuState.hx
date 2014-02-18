@@ -178,19 +178,7 @@ class MenuState extends FlxState
 	 */
 	override public function update():Void
 	{
-		
-		/*_grpStampede.forEachAlive(function(m) 
-			{
-				if (cast(m, MeatBag).x + cast(m, MeatBag).width < 0) 
-				{
-					trace("kill");
-					cast(m, MeatBag).kill();
-				}
-				
-			});*/
 		_grpStampede.sort(zSort);
-		
-		
 		super.update();
 	}	
 	

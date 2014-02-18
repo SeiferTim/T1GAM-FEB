@@ -22,6 +22,7 @@ class LevelsState extends FlxState
 	
 	private var _btnModeNormal:FlxUIButton;
 	private var _btnModeEndless:FlxUIButton;
+	private var _btnModeHunger:FlxUIButton;
 	private var _locks:Array<FlxSprite>;
 	private var _checks:Array<FlxSprite>;
 	private var _txtMode:FlxBitmapFont;
@@ -52,14 +53,18 @@ class LevelsState extends FlxState
 		FlxSpriteUtil.screenCenter(_txtMode, true, false);
 		add(_txtMode);
 		
-		_btnModeNormal = new FlxUIButton((FlxG.width / 2) - 88, 40, "Normal Mode", changeMode.bind(Reg.MODE_NORMAL));
-		_btnModeEndless = new FlxUIButton((FlxG.width / 2) + 8, 40, "Endless Mode", changeMode.bind(Reg.MODE_ENDLESS));
+		_btnModeNormal = new FlxUIButton((FlxG.width / 2) - 80 - 40 - 16, 40, "Normal Mode", changeMode.bind(Reg.MODE_NORMAL));
+		_btnModeEndless = new FlxUIButton((FlxG.width / 2)-(_btnModeNormal.width/2), 40, "Endless Mode", changeMode.bind(Reg.MODE_ENDLESS));
 		_btnModeEndless.broadcastToFlxUI = false;
 		_btnModeNormal.status = FlxButton.PRESSED;
 		_btnModeNormal.skipButtonUpdate = true;
 		_btnModeNormal.broadcastToFlxUI = false;
+		_btnModeHunger = new FlxUIButton((FlxG.width / 2) + 40 + 16, 40, "Hunger Mode", changeMode.bind(Reg.MODE_HUNGER));
+		_btnModeHunger.broadcastToFlxUI = false;
+		
 		add(_btnModeNormal);
 		add(_btnModeEndless);
+		add(_btnModeHunger);
 		
 		_txtLevel = new GameFont("Select Level", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
 		_txtLevel.scrollFactor.x = _txtLevel.scrollFactor.y = 0;
@@ -116,7 +121,7 @@ class LevelsState extends FlxState
 			{
 				_isAvailable = true;
 			}
-			else if (Reg.mode == Reg.MODE_ENDLESS && Reg.levels[i].bestScores[0] > 0)
+			else if ((Reg.mode == Reg.MODE_ENDLESS || Reg.mode == Reg.MODE_HUNGER) && Reg.levels[i].bestScores[0] > 0)
 			{
 				_isAvailable = true;
 			}
@@ -166,18 +171,29 @@ class LevelsState extends FlxState
 			case Reg.MODE_NORMAL:
 				_btnModeNormal.status = FlxButton.PRESSED;
 				_btnModeEndless.status = FlxButton.NORMAL;
+				_btnModeHunger.status = FlxButton.NORMAL;
 				_btnModeNormal.skipButtonUpdate = true;
 				_btnModeEndless.skipButtonUpdate = false;
-				Reg.mode = Reg.MODE_NORMAL;
+				_btnModeHunger.skipButtonUpdate = false;
 				
 			case Reg.MODE_ENDLESS:
 				_btnModeEndless.status = FlxButton.PRESSED;
 				_btnModeNormal.status = FlxButton.NORMAL;
+				_btnModeHunger.status = FlxButton.NORMAL;
 				_btnModeEndless.skipButtonUpdate = true;
 				_btnModeNormal.skipButtonUpdate = false;
-				Reg.mode = Reg.MODE_ENDLESS;
+				_btnModeHunger.skipButtonUpdate = false;
 				
+			case Reg.MODE_HUNGER:
+				_btnModeEndless.status = FlxButton.NORMAL;
+				_btnModeNormal.status = FlxButton.NORMAL;
+				_btnModeHunger.status = FlxButton.PRESSED;
+				_btnModeEndless.skipButtonUpdate = false;
+				_btnModeNormal.skipButtonUpdate = false;
+				_btnModeHunger.skipButtonUpdate = true;
+
 		}
+		Reg.mode = Mode;
 		setButtons();
 	}
 	

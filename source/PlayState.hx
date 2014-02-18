@@ -39,7 +39,7 @@ class PlayState extends FlxState
 	private var _unloading:Bool = false;
 	
 	public var player:DisplaySprite;
-	private var _grpMeat:FlxGroup;
+	public var grpMeat(default, null):FlxGroup;
 	private var _grpMap:FlxGroup;
 	private var _grpDisplayObjs:FlxGroup;
 	private var _grpFX:FlxGroup;
@@ -83,6 +83,7 @@ class PlayState extends FlxState
 	
 	
 	
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -100,7 +101,7 @@ class PlayState extends FlxState
 		_grpDisplayObjs = new FlxGroup();
 		
 		_grpMap = new FlxGroup();
-		_grpMeat = new FlxGroup();
+		grpMeat = new FlxGroup();
 		_grpFX = new FlxGroup();
 		_grpHUD = new FlxGroup();
 		_grpPickups = new FlxGroup(20);
@@ -146,7 +147,7 @@ class PlayState extends FlxState
 		_barEnergy.alpha = .8;
 		_grpHUD.add(_barEnergy);
 		
-		if (Reg.mode == Reg.MODE_NORMAL)
+		if (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER)
 		{
 			_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, GAMETIME, true);
 			_barTime.createFilledBar(0xff666600, 0xffffff00, true, 0xff333300);
@@ -234,7 +235,7 @@ class PlayState extends FlxState
 		for (i in 0...Reg.levels[Reg.level].numberOfMBsPer)
 		{
 			m = new MeatBag(Std.int(FlxRandom.floatRanged(R.x, R.right)), Std.int(FlxRandom.floatRanged(R.y, R.bottom)));
-			_grpMeat.add(m);
+			grpMeat.add(m);
 			_grpDisplayObjs.add(m);
 		}
 	}
@@ -243,9 +244,6 @@ class PlayState extends FlxState
 	
 	private function loadPStart(EType:String, EXml:Xml):Void
 	{
-		//var mB:MeatBag = new MeatBag(Std.parseFloat(EXml.get("x")), Std.parseFloat(EXml.get("y")));
-		//_grpMeat.add(mB);
-		//_grpDisplayObjs.add(mB);
 		player.x = Std.parseFloat(EXml.get("x"));
 		player.y = Std.parseFloat(EXml.get("y"));
 	}
@@ -323,8 +321,8 @@ class PlayState extends FlxState
 		super.update();
 		
 		FlxG.collide(player, _walls);
-		FlxG.collide(_grpMeat, _grpMeat);
-		FlxG.collide(_grpMeat, _walls);
+		FlxG.collide(grpMeat, grpMeat);
+		FlxG.collide(grpMeat, _walls);
 		FlxG.overlap(player, _grpPickups, pickupEnergy);
 		
 		
@@ -454,7 +452,7 @@ class PlayState extends FlxState
 		
 		if (player.y  < 48)
 		{
-			if (Reg.mode == Reg.MODE_NORMAL)
+			if (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER)
 			{
 				_barTime.alpha = .33;
 			}
@@ -466,7 +464,7 @@ class PlayState extends FlxState
 		else
 		{
 			
-			if (Reg.mode == Reg.MODE_NORMAL)
+			if (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER)
 			{
 				_barTime.alpha = .8;
 			}
@@ -505,16 +503,19 @@ class PlayState extends FlxState
 			_txtClock.text = FlxStringUtil.formatTime(_gameTimer, true);
 			FlxSpriteUtil.screenCenter(_txtClock, true, false);
 		}
-		_scoreTimer -= FlxG.elapsed;
-		if (_scoreTimer <= 0)
+		if (Reg.mode != Reg.MODE_HUNGER)
 		{
-			_score += living;
-			_scoreTimer += 1;
+			_scoreTimer -= FlxG.elapsed;
+			if (_scoreTimer <= 0)
+			{
+				_score += living;
+				_scoreTimer += 1;
+			}
 		}
 		
 		_txtScore.text = Std.string(_score);
 		
-		if ((living <= 0 || (_gameTimer >= GAMETIME && Reg.mode == Reg.MODE_NORMAL)) && !_unloading)
+		if ((living <= 0 || (_gameTimer >= GAMETIME && (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER))) && !_unloading)
 		{
 			_unloading = true;
 			Reg.leftAlive = living;
@@ -575,7 +576,7 @@ class PlayState extends FlxState
 	private function getLivingBags():Int
 	{
 		var count:Int = 0;
-		for (o in _grpMeat.members)
+		for (o in grpMeat.members)
 		{
 			if (!cast(o, MeatBag).dying && o.alive && o.exists && o.visible)
 				count++;
@@ -697,7 +698,13 @@ class PlayState extends FlxState
 		h.update();
 		
 		if (Style == ZEmitterExt.STYLE_BLOOD)
+		{
+			if (Reg.mode == Reg.MODE_HUNGER)
+			{
+				_score += 50;
+			}
 			_grpDisplayObjs.add(_grpPickups.recycle(EnergyPickup, [MeatBagCenter.x - 8, MeatBagCenter.y- 10]));
+		}
 		
 		
 	}

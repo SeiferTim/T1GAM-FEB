@@ -47,6 +47,7 @@ class Reg
 	static public var mode:Int = 0;
 	static public var MODE_NORMAL:Int = 0;
 	static public var MODE_ENDLESS:Int = 1;
+	static public var MODE_HUNGER:Int = 2;
 	
 	static public var screensize:Int = 0;
 	static public var SIZE_SMALL:Int = 0;
@@ -63,7 +64,6 @@ class Reg
 		if (GameInitialized)
 			return;
 		
-		
 		levels.push(new Level(0, 6));
 		levels.push(new Level(1, 10));
 		levels.push(new Level(2, 6));
@@ -72,6 +72,8 @@ class Reg
 		levels.push(new Level(5, 5));
 		levels.push(new Level(6, 40));
 		levels.push(new Level(7, 50));
+		levels.push(new Level(8, 10));
+		levels.push(new Level(9, 50));
 
 		loadData();
 		
