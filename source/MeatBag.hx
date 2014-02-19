@@ -113,9 +113,11 @@ class MeatBag extends DisplaySprite
 				{
 					// move to target
 					
+					
 					FlxVelocity.moveTowardsObject(this, _target, _speed);
 					
-					if (_runTimer > 8)
+					
+					if (_runTimer > 8 || FlxMath.distanceBetween(this, _target) < 8)
 					{
 						_target = null;
 						chooseAction();
@@ -228,6 +230,8 @@ class MeatBag extends DisplaySprite
 		{
 			_dying = true;
 			// heart bursts!
+			head.animation.frameIndex = 1;
+	
 			_body.bang.visible = false;
 			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
 			_body.heart.kill();
@@ -384,6 +388,7 @@ class MeatBag extends DisplaySprite
 			{
 				facing = FlxObject.RIGHT;
 				
+				
 			}
 			else if (velocity.x < 0 && Math.abs(velocity.x) > Math.abs(velocity.y))
 			{
@@ -407,18 +412,22 @@ class MeatBag extends DisplaySprite
 				head.relativeX =  _body.relativeX + _body.width - 2;
 				head.relativeY = _body.relativeY - 2;
 				head.z = 15;
+				//head.animation.frameIndex = 0;
 			case FlxObject.LEFT:
 				head.relativeX = _body.relativeX - head.width + 2; 
 				head.relativeY = _body.relativeY - 2;
 				head.z = 15;
+				//head.animation.frameIndex = 2;
 			case FlxObject.DOWN:
 				head.relativeX = _body.relativeX + (_body.width/2) - (head.width/2);
 				head.relativeY = _body.relativeY + 2;
 				head.z = 15;
+				//head.animation.frameIndex = 0;
 			case FlxObject.UP:
 				head.relativeX = _body.relativeX + (_body.width/2) - (head.width/2);
 				head.relativeY = _body.relativeY - 4;
 				head.z = 5;
+				//head.animation.frameIndex = 2;
 		}
 		
 		_body.heart.duration = .2 * ((100 - _fear) / 80);

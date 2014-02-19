@@ -113,7 +113,8 @@ class PlayState extends FlxState
 		player.offset.x = 4;
 		player.offset.y = 4;
 		
-		_grass = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
+		//_grass = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
+		_grass = new FlxSprite(0, 0, "assets/images/ground.png");
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		_grpMap.add(_grass);
