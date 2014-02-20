@@ -74,6 +74,7 @@ class Reg
 		levels.push(new Level(7, 50));
 		levels.push(new Level(8, 10));
 		levels.push(new Level(9, 50));
+		levels.push(new Level(10, 20));
 
 		loadData();
 		

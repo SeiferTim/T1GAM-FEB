@@ -73,7 +73,7 @@ class MeatBag extends DisplaySprite
 		facing = FlxRandom.getObject(dirs);
 		
 		
-		FlxG.watch.add(this,"_state");
+		
 		
 	}
 	
