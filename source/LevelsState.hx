@@ -18,16 +18,17 @@ class LevelsState extends FlxState
 {
 
 	private var _loading:Bool = true;
-	private var _buttons:Array<FlxUIButton>;
+	private var _buttons:Array<GameButton>;
 	
-	private var _btnModeNormal:FlxUIButton;
-	private var _btnModeEndless:FlxUIButton;
-	private var _btnModeHunger:FlxUIButton;
+	private var _btnModeNormal:GameButton;
+	private var _btnModeEndless:GameButton;
+	private var _btnModeHunger:GameButton;
 	private var _locks:Array<FlxSprite>;
 	private var _checks:Array<FlxSprite>;
 	private var _txtMode:FlxBitmapFont;
 	private var _txtLevel:FlxBitmapFont;
-	private var _btnMenu:FlxButton;
+	private var _btnMenu:GameButton;
+	private var _selected:FlxSprite;
 	
 	override public function create() 
 	{
@@ -53,18 +54,20 @@ class LevelsState extends FlxState
 		FlxSpriteUtil.screenCenter(_txtMode, true, false);
 		add(_txtMode);
 		
-		_btnModeNormal = new FlxUIButton((FlxG.width / 2) - 80 - 40 - 16, 40, "Normal Mode", changeMode.bind(Reg.MODE_NORMAL));
-		_btnModeEndless = new FlxUIButton((FlxG.width / 2)-(_btnModeNormal.width/2), 40, "Endless Mode", changeMode.bind(Reg.MODE_ENDLESS));
-		_btnModeEndless.broadcastToFlxUI = false;
+		_btnModeNormal = new GameButton((FlxG.width / 2) - (200 * 1.5) - 16, 40, "Normal", changeMode.bind(Reg.MODE_NORMAL),GameButton.STYLE_LARGE,200);
+		_btnModeEndless = new GameButton((FlxG.width / 2)-(200/2), 40, "Endless", changeMode.bind(Reg.MODE_ENDLESS),GameButton.STYLE_LARGE,200);
 		_btnModeNormal.status = FlxButton.PRESSED;
 		_btnModeNormal.skipButtonUpdate = true;
-		_btnModeNormal.broadcastToFlxUI = false;
-		_btnModeHunger = new FlxUIButton((FlxG.width / 2) + 40 + 16, 40, "Hunger Mode", changeMode.bind(Reg.MODE_HUNGER));
+		_btnModeHunger = new GameButton((FlxG.width / 2) + (200/2) + 16, 40, "Hunger", changeMode.bind(Reg.MODE_HUNGER),GameButton.STYLE_LARGE,200);
 		_btnModeHunger.broadcastToFlxUI = false;
 		
 		add(_btnModeNormal);
 		add(_btnModeEndless);
 		add(_btnModeHunger);
+		
+		_selected = new FlxSprite(_btnModeNormal.x + 8, _btnModeNormal.y + (_btnModeNormal.height/2) - 8, "assets/images/selected.png");
+		add(_selected);
+		
 		
 		_txtLevel = new GameFont("Select Level", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
 		_txtLevel.scrollFactor.x = _txtLevel.scrollFactor.y = 0;
@@ -72,10 +75,10 @@ class LevelsState extends FlxState
 		FlxSpriteUtil.screenCenter(_txtLevel, true, false);
 		add(_txtLevel);
 		
-		_buttons = new Array<FlxUIButton>();
-		var b:FlxUIButton;
-		var buttonAndGapWidth:Float = 80 + 16;
-		var buttonAndGapHeight:Float = 20 + 16;
+		_buttons = new Array<GameButton>();
+		var b:GameButton;
+		var buttonAndGapWidth:Float = GameButton.SIZE_LG_W + 16;
+		var buttonAndGapHeight:Float = GameButton.SIZE_LG_H + 16;
 		var screenWidth:Float = Math.floor((FlxG.width - 64) / (buttonAndGapWidth));
 		var startX:Float = (FlxG.width/2) -  (((screenWidth * buttonAndGapWidth)-16) / 2);
 		_locks = new Array<FlxSprite>();		
@@ -86,12 +89,12 @@ class LevelsState extends FlxState
 			var bX:Float = startX + (Math.floor(l.number % screenWidth) * buttonAndGapWidth);
 			var bY:Float = 104 + (Math.floor(l.number / screenWidth) * buttonAndGapHeight);
 
-			b = new FlxUIButton(bX, bY, Std.string(l.number + 1), levelButtonClick.bind(l.number));
+			b = new GameButton(bX, bY, Std.string(l.number + 1), levelButtonClick.bind(l.number),GameButton.STYLE_LARGE);
 			b.broadcastToFlxUI = false;
 			add(b);
 			_buttons.push(b);
 			
-			_locks[l.number] = new FlxSprite(b.x - 8 + (b.width/2) , b.y +  10, "assets/images/lock.png");
+			_locks[l.number] = new FlxSprite(b.x + 4 , b.y + (b.height/2) - 8, "assets/images/lock.png");
 			add(_locks[l.number]);
 			_locks[l.number].visible = false;
 			_checks[l.number] = new FlxSprite(b.x + 4 , b.y + (b.height/2) - 8, "assets/images/check.png");
@@ -101,9 +104,9 @@ class LevelsState extends FlxState
 		
 		setButtons();
 		
-		_btnMenu = new FlxButton(0, 0, "Main Menu", clickMainMenu);
+		_btnMenu = new GameButton(0, 0, "Main Menu", clickMainMenu, GameButton.STYLE_SMALL,0, true);
 		_btnMenu.x = FlxG.width - _btnMenu.width - 16;
-		_btnMenu.y = FlxG.height - _btnMenu.height - 16;
+		_btnMenu.y = FlxG.height - GameButton.SIZE_LG_H - 16;
 		add(_btnMenu);	
 		
 		FlxG.camera.fade(FlxColor.BLACK, Reg.FADE_DUR, true, doneFadeIn);
@@ -175,7 +178,7 @@ class LevelsState extends FlxState
 				_btnModeNormal.skipButtonUpdate = true;
 				_btnModeEndless.skipButtonUpdate = false;
 				_btnModeHunger.skipButtonUpdate = false;
-				
+				_selected.x = _btnModeNormal.x + 8;
 			case Reg.MODE_ENDLESS:
 				_btnModeEndless.status = FlxButton.PRESSED;
 				_btnModeNormal.status = FlxButton.NORMAL;
@@ -183,7 +186,7 @@ class LevelsState extends FlxState
 				_btnModeEndless.skipButtonUpdate = true;
 				_btnModeNormal.skipButtonUpdate = false;
 				_btnModeHunger.skipButtonUpdate = false;
-				
+				_selected.x = _btnModeEndless.x + 8;
 			case Reg.MODE_HUNGER:
 				_btnModeEndless.status = FlxButton.NORMAL;
 				_btnModeNormal.status = FlxButton.NORMAL;
@@ -191,7 +194,7 @@ class LevelsState extends FlxState
 				_btnModeEndless.skipButtonUpdate = false;
 				_btnModeNormal.skipButtonUpdate = false;
 				_btnModeHunger.skipButtonUpdate = true;
-
+				_selected.x = _btnModeHunger.x + 8;
 		}
 		Reg.mode = Mode;
 		setButtons();

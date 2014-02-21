@@ -2,12 +2,13 @@ package ;
 
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.text.FlxBitmapFont;
+import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.addons.ui.FlxUIButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.system.FlxAssets;
 import flixel.text.FlxText;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
@@ -104,13 +105,14 @@ class GameOverState extends FlxState
 		add(_txtTotal);
 		
 		
-		var _btnContinue = new FlxButton(0, 0, "Continue", goContinue);
+		var _btnContinue = new GameButton(0, 0, "Continue", goContinue,GameButton.STYLE_LARGE);
+		
 		_btnContinue.y = FlxG.height - _btnContinue.height - 16;
 		_btnContinue.x = (FlxG.width / 2) - _btnContinue.width - 16;
 		
 		add(_btnContinue);
 		
-		var _btnMainMenu = new FlxButton(0, 0, "Main Menu", goMainMenu);
+		var _btnMainMenu = new GameButton(0, 0, "Main Menu", goMainMenu,GameButton.STYLE_LARGE);
 		_btnMainMenu .y = _btnContinue.y;
 		_btnMainMenu .x = (FlxG.width / 2) + 16;
 		

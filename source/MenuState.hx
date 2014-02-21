@@ -1,17 +1,22 @@
 package;
 
+import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.system.System;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.text.FlxBitmapFont;
+import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.addons.ui.FlxUIButton;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.system.FlxAssets;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
@@ -24,9 +29,9 @@ import flixel.util.FlxTimer;
 class MenuState extends FlxState
 {
 	
-	private var _btnPlay:FlxButton;
-	private var _btnEndless:FlxButton;
-	private var _btnOptions:FlxButton;
+	private var _btnPlay:GameButton;
+	private var _btnOptions:GameButton;
+	private var _btnCredits:GameButton;
 	private var _leaving:Bool = false;
 	private var _loading:Bool = true;
 	private var _tmr:FlxTimer;
@@ -82,20 +87,24 @@ class MenuState extends FlxState
 		
 		
 		_tmr = FlxTimer.start(FlxG.width/30000, spawnMeatBag, 0);
-		
-		
-		_btnPlay = new FlxButton(0, 0, "Play", goLevelSelect);
-		
-		_btnPlay.x = (FlxG.width /2) - (_btnPlay.width * 1.5) - 32;
-		_btnPlay.y = FlxG.height - _btnPlay.height - 10;
-		
+
+		_btnPlay = new GameButton(0, 0, "Play", goLevelSelect, GameButton.STYLE_LARGE);
+		_btnPlay.x = (FlxG.width -_btnPlay.width) / 2;
+		_btnPlay.y = FlxG.height - _btnPlay.height - 16;
 		add(_btnPlay);
 		
 		
-		_btnOptions = new FlxButton(0, 0, "Options", goOptions);
-		_btnOptions.x = (FlxG.width / 2) + (_btnOptions.width / 2) + 32;
-		_btnOptions.y = _btnPlay.y;
+		_btnOptions = new GameButton(0, 0, "Options", goOptions, GameButton.STYLE_SMALL);
+		_btnOptions.x = (FlxG.width / 2) - (_btnOptions.width * 2);
+		_btnOptions.y =FlxG.height - _btnOptions.height - 16;
 		add(_btnOptions);
+		
+		_btnCredits = new GameButton(0, 0, "Credits", goCredits, GameButton.STYLE_SMALL);
+		_btnCredits.x = (FlxG.width / 2) + (_btnCredits.width);
+		_btnCredits.y = FlxG.height - _btnCredits.height - 16;
+		add(_btnCredits);
+		
+		
 		
 		var titleFloor:Float  = (FlxG.height / 2) - 70;
 		add(new TitleLetter((FlxG.width/2)-195, -150, TitleLetter.LETTER_M, titleFloor,.1));
@@ -128,6 +137,11 @@ class MenuState extends FlxState
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
 		super.create();
+	}
+	
+	private function goCredits():Void
+	{
+		
 	}
 	
 	private function doneWaitStart(T:FlxTimer):Void

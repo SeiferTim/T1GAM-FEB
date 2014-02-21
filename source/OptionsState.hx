@@ -17,8 +17,8 @@ class OptionsState extends FlxState
 	private var _loaded:Bool = false;
 	private var _leaving:Bool = false;
 	#if desktop
-	private var _optScreen:FlxButton;
-	private var _optSize:FlxButton;
+	private var _optScreen:GameButton;
+	private var _optSize:GameButton;
 	#end
 
 	private var _grpMain:FlxGroup;
@@ -44,11 +44,14 @@ class OptionsState extends FlxState
 		_grpMain = new FlxGroup();
 		add(_grpMain);
 		
-		var _txtOpts:FlxText = new FlxText(0, 16, FlxG.width, "Options", 8);
-		_txtOpts.alignment = "center";
+		var _txtOpts:GameFont = new GameFont("Options", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		_txtOpts.y = 16;
+		FlxSpriteUtil.screenCenter(_txtOpts, true, false);
 		_grpMain.add(_txtOpts);
 		
-		var _optText1:FlxText = new FlxText(16, 48, 100, "Volume", 8);
+		var _optText1:GameFont = new GameFont("Volume", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_RIGHT);  //(16, 48, 100, "Volume", 8);
+		_optText1.x = 16;
+		_optText1.y = 48;
 		_grpMain.add(_optText1);
 		
 		_optSlide1 = new CustomSlider(_optText1.x + _optText1.width + 16, _optText1.y, Std.int (FlxG.width - _optText1.width - 80), 64, 16, 14, 0, 1, SlideChange);
@@ -58,22 +61,24 @@ class OptionsState extends FlxState
 		
 		
 		#if desktop
-		var _optText2:FlxText = new FlxText(16, 72, 100, "Screen Mode", 8);
+		var _optText2:GameFont = new GameFont("Screen Mode", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_RIGHT);// (16, 72, 100, "Screen Mode", 8);
+		_optText2.x = 16;
+		_optText2.y = 72;
 		_grpMain.add(_optText2);
 		
-		_optScreen = new FlxButton(_optText2.x + _optText2.width + 16, _optText2.y , FlxG.fullscreen ? "Fullscreen" : "Window", changeScreen);
+		_optScreen = new  GameButton(_optText2.x + _optText2.width + 16, _optText2.y , FlxG.fullscreen ? "Fullscreen" : "Window", changeScreen, GameButton.STYLE_LARGE, 200);
 		_grpMain.add(_optScreen);
 		
 		#end
 		
-		var _btnDone:FlxButton = new FlxButton(0, 0, "Done", goDone);
+		var _btnDone:GameButton = new GameButton(0, 0, "Done", goDone,GameButton.STYLE_LARGE);
 		FlxSpriteUtil.screenCenter(_btnDone, true, false);
 		_btnDone.y = FlxG.height - _btnDone.height - 16;
 		_grpMain.add(_btnDone);
 		
 		
 		
-		var _btnClear:FlxButton = new FlxButton(0, 0, "Clear Data", goClearData);
+		var _btnClear:GameButton = new GameButton(0, 0, "Clear Data", goClearData, GameButton.STYLE_SMALL, 0, true);
 		_btnClear.y = FlxG.height - _btnClear.height - 16;
 		_btnClear.x = FlxG.width - _btnClear.width - 16;
 		_grpMain.add(_btnClear);
@@ -92,12 +97,12 @@ class OptionsState extends FlxState
 		FlxSpriteUtil.screenCenter(_txtConfirmWarn, true, false);
 		_grpConfirm.add(_txtConfirmWarn);
 		
-		var _btnYes:FlxButton = new FlxButton(0, 0, "Yes", goClearYes);
+		var _btnYes:GameButton = new GameButton(0, 0, "Yes", goClearYes, GameButton.STYLE_LARGE);
 		_btnYes.x = (FlxG.width / 2) - _btnYes.width - 16;
 		_btnYes.y = 64;
 		_grpConfirm.add(_btnYes);
 		
-		var _btnNo:FlxButton = new FlxButton(0, 0, "No", goClearNo);
+		var _btnNo:GameButton = new GameButton(0, 0, "No", goClearNo, GameButton.STYLE_LARGE);
 		_btnNo.x = (FlxG.width / 2) + 16;
 		_btnNo.y = 64;
 		_grpConfirm.add(_btnNo);
