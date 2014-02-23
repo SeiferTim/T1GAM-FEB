@@ -26,6 +26,8 @@
 		<sound path="escape.mp3" id="escape" />
 		<sound path="kill.mp3" id="kill" />
 		<sound path="blip.mp3" id="blip" />
+		<sound path="blip.mp3" id="blip" />
+		<sound path="madeinstl.mp3" id="madeinstl" />
 	</assets>
 	
 	<assets path="assets/sounds" unless="flash">
@@ -33,6 +35,15 @@
 		<sound path="escape.ogg" id="escape" />
 		<sound path="kill.ogg" id="kill" />
 		<sound path="blip.ogg" id="blip" />
+		<sound path="madeinstl.ogg" id="madeinstl" />
+	</assets>
+	
+	<assets path="assets/music" if="flash">
+		<music path="Meat Bags Theme Higher Quality.mp3" id="theme" />
+	</assets>
+	
+	<assets path="assets/music" unless="flash">
+		<music path="Meat Bags Theme Higher Quality.ogg" id="theme" />
 	</assets>
 	
 	<haxelib name="openfl" />

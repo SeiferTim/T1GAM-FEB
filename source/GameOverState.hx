@@ -9,6 +9,8 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.system.FlxAssets;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
@@ -18,7 +20,7 @@ class GameOverState extends FlxState
 	
 	private var _loaded:Bool = false;
 	private var _unloading:Bool = false;
-	
+	private var _hiScore:GameFont;
 	private var _won:Bool;
 	
 
@@ -105,16 +107,16 @@ class GameOverState extends FlxState
 		add(_txtTotal);
 		
 		
-		var _btnContinue = new GameButton(0, 0, "Continue", goContinue,GameButton.STYLE_LARGE);
+		var _btnContinue = new GameButton(0, 0, "Continue", goContinue,GameButton.STYLE_LARGE, 200);
 		
 		_btnContinue.y = FlxG.height - _btnContinue.height - 16;
-		_btnContinue.x = (FlxG.width / 2) - _btnContinue.width - 16;
+		_btnContinue.x = (FlxG.width / 2) - _btnContinue.width - 32;
 		
 		add(_btnContinue);
 		
-		var _btnMainMenu = new GameButton(0, 0, "Main Menu", goMainMenu,GameButton.STYLE_LARGE);
+		var _btnMainMenu = new GameButton(0, 0, "Main Menu", goMainMenu,GameButton.STYLE_LARGE,200);
 		_btnMainMenu .y = _btnContinue.y;
-		_btnMainMenu .x = (FlxG.width / 2) + 16;
+		_btnMainMenu .x = (FlxG.width / 2) + 32;
 		
 		add(_btnMainMenu);
 		
@@ -126,6 +128,12 @@ class GameOverState extends FlxState
 			{
 				Reg.levels[Reg.level].bestScores[Reg.mode] = totalScore;
 				Reg.saveScores();
+				// put a 'hi score' thing?
+				_hiScore = new GameFont("HIGH SCORE!", GameFont.STYLE_TINY_WHITE);
+				_hiScore.x = _txtTotal.x + _txtTotal.width - _hiScore.width;
+				_hiScore.y = _txtTotal.y + _txtTotal.height +8;
+				add(_hiScore);
+				var hiTwn:FlxTween = FlxTween.singleVar(_hiScore, "alpha", .6, Reg.FADE_DUR, { type:FlxTween.PINGPONG, ease:FlxEase.circInOut } );
 			}
 		}
 		

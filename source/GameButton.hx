@@ -27,8 +27,9 @@ class GameButton extends FlxUITypedButton<GameFont>
 	
 	private static var  _slices:Array<Array<Int>> = [[6, 6, 12, 12], [6, 6, 12, 12], [6, 6, 12, 12], [6, 6, 12, 12]];
 	
-	public function new(X:Float = 0, Y:Float = 0, ?Label:String, ?OnClick:Void -> Void, Style:Int = 0, Width:Int = 0, FitText:Bool = false) 
+	public function new(X:Float = 0, Y:Float = 0, Label:String, OnClick:Void -> Void, Style:Int = 0, Width:Int = 0, FitText:Bool = false) 
 	{
+		
 		super(X, Y, Label, OnClick);
 		
 		switch(Style)

@@ -45,9 +45,9 @@ class Reg
 	static public var gameTime:Float;
 	
 	static public var mode:Int = 0;
-	static public var MODE_NORMAL:Int = 0;
-	static public var MODE_ENDLESS:Int = 1;
-	static public var MODE_HUNGER:Int = 2;
+	static public inline var MODE_NORMAL:Int = 0;
+	static public inline var MODE_ENDLESS:Int = 1;
+	static public inline var MODE_HUNGER:Int = 2;
 	
 	static public var screensize:Int = 0;
 	static public var SIZE_SMALL:Int = 0;
@@ -75,6 +75,7 @@ class Reg
 		levels.push(new Level(8, 10));
 		levels.push(new Level(9, 50));
 		levels.push(new Level(10, 20));
+		levels.push(new Level(11, 8));
 
 		loadData();
 		

@@ -32,6 +32,7 @@ class MenuState extends FlxState
 	private var _btnPlay:GameButton;
 	private var _btnOptions:GameButton;
 	private var _btnCredits:GameButton;
+	private var _btnHowTo:GameButton;
 	private var _leaving:Bool = false;
 	private var _loading:Bool = true;
 	private var _tmr:FlxTimer;
@@ -74,9 +75,9 @@ class MenuState extends FlxState
 		add(_titleBack);
 
 		var m:MeatBag;
-		for (i in 0...15)
+		for (i in 0...4)
 		{
-			m = new MeatBag(FlxRandom.intRanged(-16,FlxG.width+16), FlxRandom.intRanged(-16,FlxG.height+16));
+			m = new MeatBag(FlxRandom.intRanged(FlxG.width,FlxG.width+16), FlxRandom.intRanged(-16,FlxG.height+16));
 			m.facing = FlxObject.LEFT;
 			m.velocity.x = -300 - FlxRandom.intRanged(0, 200);
 			m.velocity.y = FlxRandom.intRanged( -50, 50);
@@ -90,31 +91,34 @@ class MenuState extends FlxState
 
 		_btnPlay = new GameButton(0, 0, "Play", goLevelSelect, GameButton.STYLE_LARGE);
 		_btnPlay.x = (FlxG.width -_btnPlay.width) / 2;
-		_btnPlay.y = FlxG.height - _btnPlay.height - 16;
+		_btnPlay.y = FlxG.height - _btnPlay.height - 64;
 		add(_btnPlay);
 		
 		
-		_btnOptions = new GameButton(0, 0, "Options", goOptions, GameButton.STYLE_SMALL);
-		_btnOptions.x = (FlxG.width / 2) - (_btnOptions.width * 2);
+		_btnOptions = new GameButton(0, 0, "Options", goOptions, GameButton.STYLE_SMALL,120);
+		_btnOptions.x = (FlxG.width / 2) - (_btnOptions.width/2);
 		_btnOptions.y =FlxG.height - _btnOptions.height - 16;
 		add(_btnOptions);
 		
-		_btnCredits = new GameButton(0, 0, "Credits", goCredits, GameButton.STYLE_SMALL);
-		_btnCredits.x = (FlxG.width / 2) + (_btnCredits.width);
+		_btnCredits = new GameButton(0, 0, "Credits", goCredits, GameButton.STYLE_SMALL,120);
+		_btnCredits.x = (FlxG.width / 2) + (_btnOptions.width/2) +  32;
 		_btnCredits.y = FlxG.height - _btnCredits.height - 16;
 		add(_btnCredits);
 		
-		
+		_btnHowTo = new GameButton(0, 0, "How To Play", goHowTo, GameButton.STYLE_SMALL,120);
+		_btnHowTo.x = (FlxG.width / 2) - (_btnOptions.width/2) - _btnHowTo.width - 32;
+		_btnHowTo.y = FlxG.height - _btnHowTo.height - 16;
+		add(_btnHowTo);
 		
 		var titleFloor:Float  = (FlxG.height / 2) - 70;
-		add(new TitleLetter((FlxG.width/2)-195, -150, TitleLetter.LETTER_M, titleFloor,.1));
-		add(new TitleLetter((FlxG.width/2)-155, -150, TitleLetter.LETTER_E, titleFloor,.2));
-		add(new TitleLetter((FlxG.width/2)-115, -150, TitleLetter.LETTER_A, titleFloor,.3));
-		add(new TitleLetter((FlxG.width/2)-75, -150, TitleLetter.LETTER_T, titleFloor,.4));
-		add(new TitleLetter((FlxG.width/2)+25, -150, TitleLetter.LETTER_B, titleFloor,.6));
-		add(new TitleLetter((FlxG.width/2)+65, -150, TitleLetter.LETTER_A, titleFloor,.7));
-		add(new TitleLetter((FlxG.width/2)+105, -150, TitleLetter.LETTER_G, titleFloor,.8));
-		add(new TitleLetter((FlxG.width/2)+145, -150, TitleLetter.LETTER_S, titleFloor,.9));
+		add(new TitleLetter((FlxG.width/2)-50, -150, TitleLetter.LETTER_T, titleFloor,.4));
+		add(new TitleLetter((FlxG.width/2)-80, -150, TitleLetter.LETTER_A, titleFloor,.3));
+		add(new TitleLetter((FlxG.width/2)-110, -150, TitleLetter.LETTER_E, titleFloor,.2));
+		add(new TitleLetter((FlxG.width/2)-140, -150, TitleLetter.LETTER_M, titleFloor,.1));
+		add(new TitleLetter((FlxG.width/2)+90, -150, TitleLetter.LETTER_S, titleFloor,.9));
+		add(new TitleLetter((FlxG.width/2)+60, -150, TitleLetter.LETTER_G, titleFloor,.8));
+		add(new TitleLetter((FlxG.width/2)+30, -150, TitleLetter.LETTER_A, titleFloor,.7));
+		add(new TitleLetter((FlxG.width/2)+0, -150, TitleLetter.LETTER_B, titleFloor,.6));
 		
 		_txtSubtitle = new GameFont("- The Video Game -", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16,16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
 		//_txtSubtitle.setText("- The Video Game -", false, 0, 0, FlxBitmapFont.ALIGN_CENTER, true);
@@ -139,9 +143,19 @@ class MenuState extends FlxState
 		super.create();
 	}
 	
+	private function goHowTo():Void
+	{
+		if (_leaving || _loading )
+			return;
+		_leaving = true;		
+		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, false, goHowToDone);
+	}
 	private function goCredits():Void
 	{
-		
+		if (_leaving || _loading )
+			return;
+		_leaving = true;		
+		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, false, goCreditsDone);
 	}
 	
 	private function doneWaitStart(T:FlxTimer):Void
@@ -183,6 +197,16 @@ class MenuState extends FlxState
 		FlxG.switchState(new OptionsState());
 	}
 
+	private function goCreditsDone():Void
+	{
+		FlxG.switchState(new CreditsState());
+	}
+	
+	
+	private function goHowToDone():Void
+	{
+		FlxG.switchState(new HowToState());
+	}
 	
 	private function goLevelSelectDone():Void
 	{

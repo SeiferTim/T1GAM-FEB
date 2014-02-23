@@ -1,5 +1,6 @@
 package ;
 
+import flixel.addons.text.FlxBitmapFont;
 import flixel.addons.ui.FlxButtonPlus;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -16,9 +17,9 @@ class PauseScreen extends FlxGroup
 	private var _back:FlxSprite;
 	
 	private var _grpMain:FlxGroup;
-	private var _txtPause:FlxText;
-	private var _btnResume:FlxButton;
-	private var _btnQuit:FlxButton;
+	private var _txtPause:GameFont;
+	private var _btnResume:GameButton;
+	private var _btnQuit:GameButton;
 	
 	public var clickedResume:Bool = false;
 	
@@ -26,9 +27,9 @@ class PauseScreen extends FlxGroup
 	
 	
 	private var _grpConfirm:FlxGroup;
-	private var _txtConfirm:FlxText;
-	private var _btnYes:FlxButton;
-	private var _btnNo:FlxButton;
+	private var _txtConfirm:GameFont;
+	private var _btnYes:GameButton;
+	private var _btnNo:GameButton;
 	
 	
 	public function new() 
@@ -43,17 +44,17 @@ class PauseScreen extends FlxGroup
 		_grpMain = new FlxGroup();
 		add(_grpMain);
 		
-		_txtPause = new FlxText(0, 16, FlxG.width, "Paused", 8);
-		_txtPause.alignment = "center";
-		_txtPause.scrollFactor.x = _txtPause.scrollFactor.y = 0;
+		_txtPause = new GameFont("***   Paused   ***", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_txtPause.y = 32;
+		FlxSpriteUtil.screenCenter(_txtPause, true, false);
 		_grpMain.add(_txtPause);
 		
-		_btnResume = new FlxButton(0, 0, "Resume", goResume);
+		_btnResume = new GameButton(0, 0, "Resume", goResume,GameButton.STYLE_LARGE);
 		_btnResume.scrollFactor.x = _btnResume.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_btnResume);
 		_grpMain.add(_btnResume);
 		
-		_btnQuit = new FlxButton(0, 0, "Quit", goQuit);
+		_btnQuit = new GameButton(0, 0, "Quit", goQuit,GameButton.STYLE_LARGE);
 		_btnQuit.scrollFactor.x = _btnQuit.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_btnQuit, true, false);
 		_btnQuit.y = _btnResume.y + _btnResume.height + 16;
@@ -66,18 +67,18 @@ class PauseScreen extends FlxGroup
 		
 		
 		
-		_txtConfirm = new FlxText(0, 16, FlxG.width, "Really Quit?", 8);
-		_txtConfirm.alignment = "center";
-		_txtConfirm.scrollFactor.x = _txtConfirm.scrollFactor.y = 0;
+		_txtConfirm = new GameFont("Really Quit?",GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_txtConfirm.y = 32;
+		FlxSpriteUtil.screenCenter(_txtConfirm, true, false);
 		_grpConfirm.add(_txtConfirm);
 		
-		_btnYes = new FlxButton(0, 0, "Yes", onConfirmYes);
+		_btnYes = new GameButton(0, 0, "Yes", onConfirmYes,GameButton.STYLE_LARGE);
 		_btnYes.scrollFactor.x = _btnYes.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_btnYes, false, true);
 		_btnYes.x = (FlxG.width / 2) - _btnYes.width - 16;
 		_grpConfirm.add(_btnYes);
 		
-		_btnNo = new FlxButton(0, 0, "No", onConfirmNo);
+		_btnNo = new GameButton(0, 0, "No", onConfirmNo,GameButton.STYLE_LARGE);
 		_btnNo.scrollFactor.x = _btnNo.scrollFactor.y = 0;
 		_btnNo.x = (FlxG.width / 2) + 16;
 		FlxSpriteUtil.screenCenter(_btnNo, false, true);
