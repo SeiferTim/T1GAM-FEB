@@ -21,7 +21,8 @@ class MeatBody extends DisplaySprite
 	{
 		super(X, Y);
 		immovable = true;
-		makeGraphic(16, 16, 0xffFFEDFD);
+		//makeGraphic(16, 16, 0xffFFEDFD);
+		loadGraphic("assets/images/body.png", false, true, 16, 16);
 		heart = new MeatBagHeart(0, 0);
 		add(heart);
 		
