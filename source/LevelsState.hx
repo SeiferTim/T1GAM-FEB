@@ -238,7 +238,7 @@ class LevelsState extends FlxState
 	
 	private function levelButtonClick(Number:Int):Void
 	{
-		trace("levelButtonClick: " + Number);
+		
 		if (_loading || _buttons[Number].skipButtonUpdate)
 			return;
 		Reg.level = Number;

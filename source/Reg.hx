@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.system.FlxSound;
 import flixel.util.FlxSave;
 
 /**
@@ -52,7 +53,6 @@ class Reg
 	static public var screensize:Int = 0;
 	static public var SIZE_SMALL:Int = 0;
 	static public var SIZE_LARGE:Int = 1;
-	
 	
 	static public var GameInitialized:Bool = false;
 	#if desktop

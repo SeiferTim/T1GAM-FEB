@@ -25,6 +25,7 @@ import flixel.util.FlxRect;
 import flixel.util.FlxSort;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimer;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -33,7 +34,7 @@ class PlayState extends FlxState
 {
 	private static inline var SPEED:Int = 600;
 	private static inline var FRICTION:Float = .8;
-	public static inline var GAMETIME:Float = 30;
+	public static inline var GAMETIME:Float = 28;
 	
 	private var _loading:Bool = true;
 	private var _unloading:Bool = false;
@@ -81,7 +82,7 @@ class PlayState extends FlxState
 	private var _pauseScreen:PauseScreen;
 	private var _twnPause:FlxTween;
 	
-	
+	//private var _realTimer:FlxTimer;
 	
 	
 	/**
@@ -152,6 +153,7 @@ class PlayState extends FlxState
 		{
 			_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, GAMETIME, true);
 			_barTime.createFilledBar(0xff666600, 0xffffff00, true, 0xff333300);
+			
 			FlxSpriteUtil.screenCenter(_barTime, true, false);
 			_barTime.alpha = .8;
 			_grpHUD.add(_barTime);
@@ -163,7 +165,7 @@ class PlayState extends FlxState
 			_txtClock.scrollFactor.x = _txtClock.scrollFactor.y = 0;
 			_txtClock.y = 16;
 			FlxSpriteUtil.screenCenter(_txtClock, true, false);
-			_txtClock.alpha = .8;
+			_txtClock.alpha = .9;
 			_grpHUD.add(_txtClock);
 			
 		}
@@ -171,9 +173,9 @@ class PlayState extends FlxState
 		_meatBagCounter = new GameFont(" 0", GameFont.STYLE_LG_NUMBERS, FlxBitmapFont.ALIGN_RIGHT);//FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
 		//_meatBagCounter.setText(" 0", false, 0, 0, FlxBitmapFont.ALIGN_RIGHT);
 		_meatBagCounter.scrollFactor.x = _meatBagCounter.scrollFactor.y = 0;
-		_meatBagCounter.x = FlxG.width - 104;
-		_meatBagCounter.y = FlxG.height - 40;
-		_meatBagCounter.alpha = .8;
+		_meatBagCounter.x = FlxG.width - 108;
+		_meatBagCounter.y = FlxG.height - 48;
+		_meatBagCounter.alpha = .9;
 		
 		_meatBagCounterIcon = new MeatBag(FlxG.width - 28, _meatBagCounter.y + 12);
 		_meatBagCounterIcon.isReal = false;
@@ -190,13 +192,14 @@ class PlayState extends FlxState
 		_gameTimer = 0;
 		_score = 0;
 		_scoreTimer = 1;
+		//_realTimer = FlxTimer.start(1, updateGameTime, 0);
 		
 		_txtScore = new GameFont("0", GameFont.STYLE_LG_NUMBERS);//FlxBitmapFont("assets/images/huge_numbers.png", 32, 32, " .0123456789:", 13, 0, 0, 0, 0);
 		//_txtScore.setText("0", false, 0, 0, FlxBitmapFont.ALIGN_LEFT);
 		_txtScore.scrollFactor.x = _txtScore.scrollFactor.y = 0;
 		_txtScore.x = 16;
-		_txtScore.y = FlxG.height - 40;
-		_txtScore.alpha = .8;
+		_txtScore.y = FlxG.height - 48;
+		_txtScore.alpha = .9;
 		
 		_sprScore = FlxGradient.createGradientFlxSprite(120, 16, [0x00006666, 0xcc006666, 0xcc006666, 0xcc006666], 1, 180, true);
 		_sprScore.x = 0;
@@ -224,10 +227,25 @@ class PlayState extends FlxState
 		_pauseScreen.alpha = 0;
 		_grpHUD.add(_pauseScreen);
 		
+		switch(Reg.mode)
+		{
+			case Reg.MODE_NORMAL, Reg.MODE_HUNGER:
+				FlxG.sound.playMusic("normal", 1, false);
+				
+			case Reg.MODE_ENDLESS:
+				FlxG.sound.playMusic("endless");
+		}
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
+		FlxG.watch.add(this, "_gameTimer");
+		
 		super.create();
+	}
+	
+	private function updateGameTime(T:FlxTimer):Void
+	{
+		_gameTimer++;
 	}
 	
 	private function loadMeatZone(R:FlxRect):Void
@@ -274,6 +292,7 @@ class PlayState extends FlxState
 		{
 			//super.update();
 			FlxG.camera.update();
+			
 			return;
 		}
 		
@@ -302,6 +321,10 @@ class PlayState extends FlxState
 			if (_pauseScreen.clickedResume || _pressedPause)
 			{
 				// start unpausing
+				/*if (_realTimer != null)
+				{
+					_realTimer.paused = false;
+				}*/
 				_pauseScreen.clickedResume = false;
 				_twnPause = FlxTween.singleVar(_pauseScreen, "alpha", 0, Reg.FADE_DUR, {type:FlxTween.ONESHOT,ease:FlxEase.circOut, complete: donePauseOut } );
 			}
@@ -311,8 +334,13 @@ class PlayState extends FlxState
 		}
 		else
 		{
+			
 			if (_pressedPause)
 			{
+				/*if (_realTimer != null)
+				{
+					_realTimer.paused = true;
+				}*/
 				startPause();
 			}
 		}
@@ -451,11 +479,11 @@ class PlayState extends FlxState
 		{
 			if (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER)
 			{
-				_barTime.alpha = .33;
+				_barTime.alpha = .3;
 			}
 			else if (Reg.mode == Reg.MODE_ENDLESS)
 			{
-				_txtClock.alpha = .33;
+				_txtClock.alpha = .4;
 			}
 		}
 		else
@@ -467,19 +495,21 @@ class PlayState extends FlxState
 			}
 			else if (Reg.mode == Reg.MODE_ENDLESS)
 			{
-				_txtClock.alpha = .8;
+				_txtClock.alpha = .9;
 			}
 		}
 			
 			
 		if (player.y + player.height > FlxG.height - 48)
 		{
-			_sprScore.alpha = _txtScore.alpha = _countBack.alpha = _barEnergy.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha = .33;
+			_sprScore.alpha =  _countBack.alpha = _barEnergy.alpha =  _meatBagCounterIcon.alpha = .3;
+			_txtScore.alpha = _meatBagCounter.alpha = .4;
 		}
 		else
 		{
 			
-			_sprScore.alpha = _txtScore.alpha = _countBack.alpha = _meatBagCounter.alpha = _meatBagCounterIcon.alpha =  _barEnergy.alpha = .8;
+			_sprScore.alpha =  _countBack.alpha = _meatBagCounter.alpha =   _barEnergy.alpha = .8;
+			_meatBagCounterIcon.alpha = _txtScore.alpha = .9;
 		}
 		
 		_grpDisplayObjs.sort(zSort,FlxSort.ASCENDING);
@@ -514,6 +544,10 @@ class PlayState extends FlxState
 		
 		if ((living <= 0 || (_gameTimer >= GAMETIME && (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER))) && !_unloading)
 		{
+			/*if (_realTimer != null)
+			{
+				_realTimer.paused = true;
+			}*/
 			_unloading = true;
 			Reg.leftAlive = living;
 			Reg.score = _score;
@@ -525,6 +559,7 @@ class PlayState extends FlxState
 	private function startPause():Void
 	{
 		_paused = true;
+		FlxG.sound.music.pause();
 		_pauseScreen.visible = true;
 		_pauseScreen.active = true;
 		_twnPause = FlxTween.singleVar(_pauseScreen, "alpha", 1, Reg.FADE_DUR, {type:FlxTween.ONESHOT,ease:FlxEase.circOut, complete: donePauseIn } );
@@ -540,10 +575,12 @@ class PlayState extends FlxState
 		_pauseScreen.visible = false;
 		_pauseScreen.active = false;
 		_paused = false;
+		FlxG.sound.music.resume();
 	}
 	
 	private function goGameOver():Void
 	{
+		FlxG.sound.playMusic("title");
 		FlxG.switchState(new GameOverState());
 		
 	}
@@ -796,6 +833,14 @@ class PlayState extends FlxState
 				_moveToTarget = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
 				
 			}
+			if (FlxG.mouse.justPressed)
+			{
+				FlxG.sound.play("mouse-down");
+			}
+			else if (FlxG.mouse.justReleased)
+			{
+				FlxG.sound.play("mouse-up");
+			}
 		#end
 		#if !FLX_NO_TOUCH
 			
@@ -808,7 +853,16 @@ class PlayState extends FlxState
 						_moveToTarget = null;
 					}
 					_moveToTarget = new FlxPoint(touch.x, touch.y);
+					if (touch.justPressed)
+					{
+						FlxG.sound.play("mouse-down");
+					}
+					else if (touch.justReleased)
+					{
+						FlxG.sound.play("mouse-up");
+					}
 				}
+				
 			
 		#end
 		if (_moveToTarget != null)

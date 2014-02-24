@@ -54,7 +54,7 @@ class PauseScreen extends FlxGroup
 		FlxSpriteUtil.screenCenter(_btnResume);
 		_grpMain.add(_btnResume);
 		
-		_btnQuit = new GameButton(0, 0, "Quit", goQuit,GameButton.STYLE_LARGE);
+		_btnQuit = new GameButton(0, 0, "Quit", goQuit,GameButton.STYLE_LARGE_RED);
 		_btnQuit.scrollFactor.x = _btnQuit.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_btnQuit, true, false);
 		_btnQuit.y = _btnResume.y + _btnResume.height + 16;
@@ -72,13 +72,13 @@ class PauseScreen extends FlxGroup
 		FlxSpriteUtil.screenCenter(_txtConfirm, true, false);
 		_grpConfirm.add(_txtConfirm);
 		
-		_btnYes = new GameButton(0, 0, "Yes", onConfirmYes,GameButton.STYLE_LARGE);
+		_btnYes = new GameButton(0, 0, "Yes", onConfirmYes,GameButton.STYLE_LARGE_RED);
 		_btnYes.scrollFactor.x = _btnYes.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_btnYes, false, true);
 		_btnYes.x = (FlxG.width / 2) - _btnYes.width - 16;
 		_grpConfirm.add(_btnYes);
 		
-		_btnNo = new GameButton(0, 0, "No", onConfirmNo,GameButton.STYLE_LARGE);
+		_btnNo = new GameButton(0, 0, "No", onConfirmNo,GameButton.STYLE_LARGE_GREEN);
 		_btnNo.scrollFactor.x = _btnNo.scrollFactor.y = 0;
 		_btnNo.x = (FlxG.width / 2) + 16;
 		FlxSpriteUtil.screenCenter(_btnNo, false, true);
@@ -108,6 +108,7 @@ class PauseScreen extends FlxGroup
 	
 	private function doneFadeQuit():Void
 	{
+		FlxG.sound.playMusic("title");
 		FlxG.switchState(new MenuState());
 	}
 	

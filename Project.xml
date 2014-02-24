@@ -28,6 +28,11 @@
 		<sound path="blip.mp3" id="blip" />
 		<sound path="blip.mp3" id="blip" />
 		<sound path="madeinstl.mp3" id="madeinstl" />
+		<sound path="click1.mp3" id="click" />
+		<sound path="mouseclick1.mp3" id="mouse-down" />
+		<sound path="mouserelease1.mp3" id="mouse-up" />
+		<sound path="rollover5.mp3" id="mouse-over" />
+		
 	</assets>
 	
 	<assets path="assets/sounds" unless="flash">
@@ -36,14 +41,23 @@
 		<sound path="kill.ogg" id="kill" />
 		<sound path="blip.ogg" id="blip" />
 		<sound path="madeinstl.ogg" id="madeinstl" />
+		<sound path="madeinstl.ogg" id="madeinstl" />
+		<sound path="click1.ogg" id="click" />
+		<sound path="mouseclick1.ogg" id="mouse-down" />
+		<sound path="mouserelease1.ogg" id="mouse-up" />
+		<sound path="rollover5.ogg" id="mouse-over" />
 	</assets>
 	
 	<assets path="assets/music" if="flash">
-		<music path="Meat Bags Theme Higher Quality.mp3" id="theme" />
+		<music path="Meat Bags Title and Score Theme.mp3" id="title" />
+		<music path="Meat Bags Normal Theme.mp3" id="normal" />
+		<music path="Meat Bags Endless Theme.mp3" id="endless" />
 	</assets>
 	
 	<assets path="assets/music" unless="flash">
-		<music path="Meat Bags Theme Higher Quality.ogg" id="theme" />
+		<music path="Meat Bags Title and Score Theme.ogg" id="title" />
+		<music path="Meat Bags Normal Theme.ogg" id="normal" />
+		<music path="Meat Bags Endless Theme.ogg" id="endless" />
 	</assets>
 	
 	<haxelib name="openfl" />

@@ -78,7 +78,7 @@ class OptionsState extends FlxState
 		
 		
 		
-		var _btnClear:GameButton = new GameButton(0, 0, "Clear Data", goClearData, GameButton.STYLE_SMALL, 0, true);
+		var _btnClear:GameButton = new GameButton(0, 0, "Clear Data", goClearData, GameButton.STYLE_SMALL_RED, 0, true);
 		_btnClear.y = FlxG.height - _btnClear.height - 16;
 		_btnClear.x = FlxG.width - _btnClear.width - 16;
 		_grpMain.add(_btnClear);
@@ -97,12 +97,12 @@ class OptionsState extends FlxState
 		FlxSpriteUtil.screenCenter(_txtConfirmWarn, true, false);
 		_grpConfirm.add(_txtConfirmWarn);
 		
-		var _btnYes:GameButton = new GameButton(0, 0, "Yes", goClearYes, GameButton.STYLE_LARGE);
+		var _btnYes:GameButton = new GameButton(0, 0, "Yes", goClearYes, GameButton.STYLE_LARGE_RED);
 		_btnYes.x = (FlxG.width / 2) - _btnYes.width - 16;
 		_btnYes.y = 64;
 		_grpConfirm.add(_btnYes);
 		
-		var _btnNo:GameButton = new GameButton(0, 0, "No", goClearNo, GameButton.STYLE_LARGE);
+		var _btnNo:GameButton = new GameButton(0, 0, "No", goClearNo, GameButton.STYLE_LARGE_GREEN);
 		_btnNo.x = (FlxG.width / 2) + 16;
 		_btnNo.y = 64;
 		_grpConfirm.add(_btnNo);

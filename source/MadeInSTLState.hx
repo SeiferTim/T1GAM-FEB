@@ -85,7 +85,7 @@ class MadeInSTLState extends FlxState
 		if (_doneM && _doneL && _doneF && !_leaving)
 		{
 			_leaving = true;
-			FlxG.sound.playMusic("theme");
+			FlxG.sound.playMusic("title");
 			FlxG.camera.fade(FlxColor.BLACK, Reg.FADE_DUR, false, doneFadeOut);
 		}
 		
