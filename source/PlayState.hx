@@ -10,6 +10,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.input.keyboard.FlxKey;
 import flixel.input.touch.FlxTouch;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxEase;
@@ -48,6 +49,8 @@ class PlayState extends FlxState
 	private var _grpPickups:FlxGroup;
 	
 	private var _grass:FlxSprite;
+	private var _grpBlips:FlxGroup;
+	
 	private var _map:FlxOgmoLoader;
 	private var _walls:FlxTilemap;
 	
@@ -81,6 +84,11 @@ class PlayState extends FlxState
 	private var _paused:Bool = false;
 	private var _pauseScreen:PauseScreen;
 	private var _twnPause:FlxTween;
+	
+	private var _helpAlpha:Float = .6;
+	private var _helpKeys:FlxSprite;
+	private var _helpTouch:FlxSprite;
+	private var _helpMouse:FlxSprite;
 	
 	//private var _realTimer:FlxTimer;
 	
@@ -120,8 +128,9 @@ class PlayState extends FlxState
 		FlxSpriteUtil.screenCenter(_grass);
 		_grpMap.add(_grass);
 		
-		//player.x = (FlxG.width - player.width) / 2;
-		//player.y = (FlxG.height - (player.height * 3));
+		
+		
+		
 		player.forceComplexRender = true;
 		
 		_map = new FlxOgmoLoader("assets/data/level-" + StringTools.lpad(Std.string(Reg.level),"0",4) +  ".oel");
@@ -137,10 +146,39 @@ class PlayState extends FlxState
 		_grpMap.add(_walls);
 		
 		add(_grpMap);
+		
+		if (Reg.level == 0)
+		{
+			#if !FLX_NO_KEYBOARD
+			_helpKeys = new FlxSprite(0, 0, "assets/images/keyboard-controls.png");
+			_helpKeys.x = (FlxG.width / 2) - _helpKeys.width - 96;
+			_helpKeys.y = FlxG.height - _helpKeys.height - 48;
+			_helpKeys.alpha = .8;
+			add(_helpKeys);
+			#end
+			#if (!FLX_NO_MOUSE && !FLX_NO_TOUCH)
+			_helpMouse = new FlxSprite(0, 0).loadGraphic("assets/images/touch-controls.png", true, false, 207, 56);
+			_helpMouse.animation.add("play", [0, 1], 2);
+			_helpMouse.animation.play("play");
+			_helpMouse.x = (FlxG.width / 2) + 96;
+			_helpMouse.y = FlxG.height - _helpMouse.height - 48;
+			_helpMouse.alpha = .8;
+			add(_helpMouse);
+			#end
+			var t:FlxTimer = FlxTimer.start(3, doneHelpWait, 1);
+			
+			
+		}
+		
+		_grpBlips = new FlxGroup(100);
+		add(_grpBlips);
+		
 		add(_grpDisplayObjs);
 		_grpDisplayObjs.add(player);
 		add(_grpFX);
 		add(_grpHUD);
+		
+		
 		
 		_barEnergy = new FlxBar(0, FlxG.height - 24, FlxBar.FILL_LEFT_TO_RIGHT, Std.int(FlxG.width * .4), 16, this, "_energy", 0, 100, true);
 		_barEnergy.createFilledBar(0xff006666, 0xff00ffff, true, 0xff003333);
@@ -236,16 +274,18 @@ class PlayState extends FlxState
 				FlxG.sound.playMusic("endless");
 		}
 		
+		
+		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
-		FlxG.watch.add(this, "_gameTimer");
+		
 		
 		super.create();
 	}
 	
-	private function updateGameTime(T:FlxTimer):Void
+	private function doneHelpWait(T:FlxTimer):Void
 	{
-		_gameTimer++;
+		var t:FlxTween = FlxTween.singleVar(this, "_helpAlpha", 0, Reg.FADE_DUR * 4, { type:FlxTween.ONESHOT, ease:FlxEase.quintOut});
 	}
 	
 	private function loadMeatZone(R:FlxRect):Void
@@ -346,6 +386,23 @@ class PlayState extends FlxState
 		}
 		
 		playerMovement();
+		
+		if (Reg.level == 0)
+		{
+			#if !FLX_NO_KEYBOARD
+			if (_helpKeys.alpha != _helpAlpha)
+			{
+				_helpKeys.alpha = _helpAlpha;
+			}
+			#end
+			
+			#if (!FLX_NO_MOUSE && !FLX_NO_TOUCH)
+			if (_helpMouse.alpha != _helpAlpha)
+			{
+				_helpMouse.alpha = _helpAlpha;
+			}
+			#end
+		}
 		
 		super.update();
 		
@@ -602,7 +659,7 @@ class PlayState extends FlxState
 		if (P.alive && P.exists && E.alive && E.exists && !cast(E, EnergyPickup).dying)
 		{
 			cast(E, EnergyPickup).startKilling();
-			FlxG.sound.play("energy-get");
+			FlxG.sound.play("energy-get",.25);
 			_energy += 50;
 		}
 	}
@@ -822,6 +879,7 @@ class PlayState extends FlxState
 			
 		#end
 		#if (!FLX_NO_MOUSE || !FLX_NO_TOUCH)
+		var b:Blip;
 		#if !FLX_NO_MOUSE
 			if (FlxG.mouse.pressed)
 			{
@@ -831,6 +889,14 @@ class PlayState extends FlxState
 					_moveToTarget = null;
 				}
 				_moveToTarget = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
+				//_grpBlips.add(_grpBlips.recycle(Blip, [FlxG.mouse.x, FlxG.mouse.y]));
+				
+				b = cast _grpBlips.recycle(Blip);
+				if (b != null)
+				{
+					b.reset(FlxG.mouse.x, FlxG.mouse.y);
+				}
+				
 				
 			}
 			if (FlxG.mouse.justPressed)
@@ -853,6 +919,12 @@ class PlayState extends FlxState
 						_moveToTarget = null;
 					}
 					_moveToTarget = new FlxPoint(touch.x, touch.y);
+					
+					b = cast _grpBlips.recycle(Blip);
+					if (b != null)
+					{
+						b.reset(touch.x, touch.y);
+					}
 					if (touch.justPressed)
 					{
 						FlxG.sound.play("mouse-down");

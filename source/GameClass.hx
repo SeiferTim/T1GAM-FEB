@@ -1,6 +1,7 @@
 package;
 
 import flash.Lib;
+import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 
@@ -46,5 +47,7 @@ class GameClass extends FlxGame
 		#end
 
 		super(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
+		FlxG.autoPause = false;
+		FlxG.mouse.load("assets/images/cursor.png", 2, 0, 0);
 	}
 }

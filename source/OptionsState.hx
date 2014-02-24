@@ -80,7 +80,7 @@ class OptionsState extends FlxState
 		
 		var _btnClear:GameButton = new GameButton(0, 0, "Clear Data", goClearData, GameButton.STYLE_SMALL_RED, 0, true);
 		_btnClear.y = FlxG.height - _btnClear.height - 16;
-		_btnClear.x = FlxG.width - _btnClear.width - 16;
+		_btnClear.x = 16;
 		_grpMain.add(_btnClear);
 		
 		_grpConfirm = new FlxGroup();
@@ -189,7 +189,7 @@ class OptionsState extends FlxState
 		FlxG.sound.volume = Value;
 		Reg.save.data.volume = FlxG.sound.volume;
 		Reg.save.flush();
-		FlxG.sound.play("blip");
+		FlxG.sound.play("blip",.25);
 	}
 	
 	private function doneFadeIn():Void

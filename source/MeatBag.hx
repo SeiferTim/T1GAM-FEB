@@ -235,7 +235,7 @@ class MeatBag extends DisplaySprite
 			_body.bang.visible = false;
 			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
 			_body.heart.kill();
-			FlxG.sound.play("kill");
+			FlxG.sound.play("kill",.25);
 			velocity.x = 0;
 			velocity.y = 0;
 			acceleration.x = 0;
@@ -337,7 +337,7 @@ class MeatBag extends DisplaySprite
 				{	
 					
 					Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_CLOUD);
-					FlxG.sound.play("escape");
+					FlxG.sound.play("escape",.25);
 					kill();
 					return;
 				}

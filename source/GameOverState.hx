@@ -107,16 +107,22 @@ class GameOverState extends FlxState
 		add(_txtTotal);
 		
 		
-		var _btnContinue = new GameButton(0, 0, "Continue", goContinue,GameButton.STYLE_LARGE, 200);
+		var _btnContinue = new GameButton(0, 0, "Level Select", goContinue,GameButton.STYLE_SMALL, 110);
 		
 		_btnContinue.y = FlxG.height - _btnContinue.height - 16;
-		_btnContinue.x = (FlxG.width / 2) - _btnContinue.width - 32;
+		_btnContinue.x = (FlxG.width / 2) + 32;
 		
 		add(_btnContinue);
 		
-		var _btnMainMenu = new GameButton(0, 0, "Main Menu", goMainMenu,GameButton.STYLE_LARGE,200);
+		
+		var _btnRetry = new GameButton(0, 0, "Replay", goRetry, GameButton.STYLE_LARGE, 0, true);
+		_btnRetry.y = FlxG.height - _btnRetry.height - _btnContinue.height - 32;
+		FlxSpriteUtil.screenCenter(_btnRetry, true, false);
+		add(_btnRetry);
+		
+		var _btnMainMenu = new GameButton(0, 0, "Main Menu", goMainMenu,GameButton.STYLE_SMALL,110);
 		_btnMainMenu .y = _btnContinue.y;
-		_btnMainMenu .x = (FlxG.width / 2) + 32;
+		_btnMainMenu .x = (FlxG.width / 2) - _btnMainMenu.width - 32;
 		
 		add(_btnMainMenu);
 		
@@ -173,6 +179,19 @@ class GameOverState extends FlxState
 	private function doneContinue():Void
 	{
 		FlxG.switchState(new LevelsState());
+	}
+	
+	private function goRetry():Void
+	{
+		if (!_loaded || _unloading)
+			return;
+		_unloading = true;
+		FlxG.camera.fade(FlxColor.BLACK, .2, false, doneRetry);
+	}
+	
+	private function doneRetry():Void 
+	{
+		FlxG.switchState(new PlayState());
 	}
 	
 }

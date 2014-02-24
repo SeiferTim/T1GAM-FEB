@@ -97,19 +97,19 @@ class MenuState extends FlxState
 		
 		
 		_btnOptions = new GameButton(0, 0, "Options", goOptions, GameButton.STYLE_SMALL,120);
-		_btnOptions.x = (FlxG.width / 2) - (_btnOptions.width/2);
+		_btnOptions.x = (FlxG.width / 2) - (_btnOptions.width) - 32;
 		_btnOptions.y =FlxG.height - _btnOptions.height - 16;
 		add(_btnOptions);
 		
 		_btnCredits = new GameButton(0, 0, "Credits", goCredits, GameButton.STYLE_SMALL,120);
-		_btnCredits.x = (FlxG.width / 2) + (_btnOptions.width/2) +  32;
+		_btnCredits.x = (FlxG.width / 2) +   32;
 		_btnCredits.y = FlxG.height - _btnCredits.height - 16;
 		add(_btnCredits);
 		
-		_btnHowTo = new GameButton(0, 0, "How To Play", goHowTo, GameButton.STYLE_SMALL,120);
-		_btnHowTo.x = (FlxG.width / 2) - (_btnOptions.width/2) - _btnHowTo.width - 32;
-		_btnHowTo.y = FlxG.height - _btnHowTo.height - 16;
-		add(_btnHowTo);
+		//_btnHowTo = new GameButton(0, 0, "How To Play", goHowTo, GameButton.STYLE_SMALL,120);
+		//_btnHowTo.x = (FlxG.width / 2) - (_btnOptions.width/2) - _btnHowTo.width - 32;
+		//_btnHowTo.y = FlxG.height - _btnHowTo.height - 16;
+		//add(_btnHowTo);
 		
 		var titleFloor:Float  = (FlxG.height / 2) - 70;
 		add(new TitleLetter((FlxG.width/2)-50, -150, TitleLetter.LETTER_T, titleFloor,.4));
