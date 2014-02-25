@@ -8,6 +8,7 @@ import flixel.addons.ui.FlxUIButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.debug.FlxDebugger.ButtonAlignment;
+import flixel.tile.FlxTileblock;
 
 import flixel.FlxState;
 import flixel.ui.FlxButton;
@@ -30,6 +31,7 @@ class LevelsState extends FlxState
 	private var _btnMenu:GameButton;
 	private var _selected:FlxSprite;
 	private var _scores:Array<GameFont>;
+	private var _txtGoal:GameFont;
 	
 	override public function create() 
 	{
@@ -42,14 +44,20 @@ class LevelsState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		var _grass:FlxSprite = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite =  FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);
 		
+		var _random:FlxTileblock = new FlxTileblock(0, 0, FlxG.width+64, FlxG.height+64);
+		_random.loadTiles("assets/images/random_junk.png", 32, 32, 64);
+		_random.scrollFactor.x = _random.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_random);
+		add(_random);
+		
 		add(new FlxSprite(4, 4).makeGraphic(FlxG.width - 8, FlxG.height - 8, 0x99000000));
 		
-		_txtMode = new GameFont("Game Mode", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16, 16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
+		_txtMode = new GameFont("Choose Game Mode", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16, 16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
 		_txtMode.scrollFactor.x = _txtMode.scrollFactor.y = 0;
 		_txtMode.y = 16;
 		FlxSpriteUtil.screenCenter(_txtMode, true, false);
@@ -71,17 +79,21 @@ class LevelsState extends FlxState
 		_selected = new FlxSprite(_btnModeNormal.x + 8, _btnModeNormal.y + (_btnModeNormal.height/2) - 8, "assets/images/selected.png");
 		add(_selected);
 		
+		_txtGoal = new GameFont("Goal: Keep them safe in their pens!", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		_txtGoal.y = 40 + GameButton.SIZE_LG_H + 8;
+		FlxSpriteUtil.screenCenter(_txtGoal, true, false);
+		add(_txtGoal);
 		
 		_txtLevel = new GameFont("Select Level", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
 		_txtLevel.scrollFactor.x = _txtLevel.scrollFactor.y = 0;
-		_txtLevel.y = 80;
+		_txtLevel.y = 120;
 		FlxSpriteUtil.screenCenter(_txtLevel, true, false);
 		add(_txtLevel);
 		
 		_buttons = new Array<GameButton>();
 		var b:GameButton;
 		var buttonAndGapWidth:Float = GameButton.SIZE_LG_W + 16;
-		var buttonAndGapHeight:Float = GameButton.SIZE_LG_H + 48;
+		var buttonAndGapHeight:Float = GameButton.SIZE_LG_H + 32;
 		var screenWidth:Float = Math.floor((FlxG.width - 64) / (buttonAndGapWidth));
 		var startX:Float = (FlxG.width / 2) -  (((screenWidth * buttonAndGapWidth) - 16) / 2) + 8;
 		var txtScore:GameFont;
@@ -92,7 +104,7 @@ class LevelsState extends FlxState
 		for (l in Reg.levels)
 		{
 			var bX:Float = startX + (Math.floor(l.number % screenWidth) * buttonAndGapWidth);
-			var bY:Float = 120 + (Math.floor(l.number / screenWidth) * buttonAndGapHeight);
+			var bY:Float = 152 + (Math.floor(l.number / screenWidth) * buttonAndGapHeight);
 			//trace(l.number);
 			b = new GameButton(bX, bY, Std.string(l.number + 1), levelButtonClick.bind(l.number),GameButton.STYLE_LARGE);
 			b.broadcastToFlxUI = false;
@@ -202,6 +214,8 @@ class LevelsState extends FlxState
 				_btnModeHunger.skipButtonUpdate = false;
 				_selected.x = _btnModeNormal.x + 8;
 				_btnModeNormal.update();
+				_txtGoal.text = "Goal: Keep them safe in their pens!";
+				FlxSpriteUtil.screenCenter(_txtGoal, true, false);
 			case Reg.MODE_ENDLESS:
 				_btnModeEndless.status = FlxButton.PRESSED;
 				_btnModeNormal.status = FlxButton.NORMAL;
@@ -214,6 +228,8 @@ class LevelsState extends FlxState
 				_btnModeHunger.skipButtonUpdate = false;
 				_selected.x = _btnModeEndless.x + 8;
 				_btnModeEndless.update();
+				_txtGoal.text = "Goal: Keep them safe in their pens!";
+				FlxSpriteUtil.screenCenter(_txtGoal, true, false);
 			case Reg.MODE_HUNGER:
 				_btnModeEndless.status = FlxButton.NORMAL;
 				_btnModeNormal.status = FlxButton.NORMAL;
@@ -226,6 +242,8 @@ class LevelsState extends FlxState
 				_btnModeHunger.skipButtonUpdate = true;
 				_selected.x = _btnModeHunger.x + 8;
 				_btnModeHunger.update();
+				_txtGoal.text = "Goal: Kill them all!";
+				FlxSpriteUtil.screenCenter(_txtGoal, true, false);
 		}
 		Reg.mode = Mode;
 		setButtons();

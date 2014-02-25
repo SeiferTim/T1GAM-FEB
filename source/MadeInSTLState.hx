@@ -6,6 +6,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.tile.FlxTileblock;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -33,10 +34,17 @@ class MadeInSTLState extends FlxState
 		FlxG.mouse.visible = false;
 		#end
 		
-		var _grass:FlxSprite = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite = FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);
+		
+		var _random:FlxTileblock = new FlxTileblock(0, 0, FlxG.width+64, FlxG.height+64);
+		_random.loadTiles("assets/images/random_junk.png", 32, 32, 64);
+		_random.scrollFactor.x = _random.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_random);
+		add(_random);
+		
 		
 		_grpStampede = new FlxGroup(1);
 		add(_grpStampede);

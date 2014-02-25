@@ -4,6 +4,7 @@ import flash.geom.Rectangle;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.addons.text.FlxBitmapFont;
+import flixel.addons.ui.FlxUIButton;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -12,6 +13,7 @@ import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.touch.FlxTouch;
+import flixel.tile.FlxTileblock;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -49,6 +51,7 @@ class PlayState extends FlxState
 	private var _grpPickups:FlxGroup;
 	
 	private var _grass:FlxSprite;
+	private var _random:FlxTileblock;
 	private var _grpBlips:FlxGroup;
 	
 	private var _map:FlxOgmoLoader;
@@ -87,8 +90,14 @@ class PlayState extends FlxState
 	
 	private var _helpAlpha:Float = .6;
 	private var _helpKeys:FlxSprite;
-	private var _helpTouch:FlxSprite;
 	private var _helpMouse:FlxSprite;
+	
+	private var _btnPause:FlxUIButton;
+	
+	private var _grpPointers:FlxGroup;
+	private var _timeIcon:FlxSprite;
+	private var _energyIcon:FlxSprite;
+	private var _energyEndCap:FlxSprite;
 	
 	//private var _realTimer:FlxTimer;
 	
@@ -122,11 +131,17 @@ class PlayState extends FlxState
 		player.offset.x = 4;
 		player.offset.y = 4;
 		
-		//_grass = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
-		_grass = new FlxSprite(0, 0, "assets/images/ground.png");
+		_grass = FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
+		//_grass = new FlxSprite(0, 0, "assets/images/ground.png");
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		_grpMap.add(_grass);
+		
+		_random = new FlxTileblock(0, 0, FlxG.width+64, FlxG.height+64);
+		_random.loadTiles("assets/images/random_junk.png", 32, 32, 64);
+		_random.scrollFactor.x = _random.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_random);
+		_grpMap.add(_random);
 		
 		
 		
@@ -180,21 +195,40 @@ class PlayState extends FlxState
 		
 		
 		
-		_barEnergy = new FlxBar(0, FlxG.height - 24, FlxBar.FILL_LEFT_TO_RIGHT, Std.int(FlxG.width * .4), 16, this, "_energy", 0, 100, true);
+		_barEnergy = new FlxBar(0, FlxG.height - 24, FlxBar.FILL_LEFT_TO_RIGHT, 160, 16, this, "_energy", 0, 100, true);
 		_barEnergy.createFilledBar(0xff006666, 0xff00ffff, true, 0xff003333);
+		
+		_barEnergy.createImageBar("assets/images/empty_energy_bar.png", "assets/images/fill_energy_bar.png");
+		
 		
 		FlxSpriteUtil.screenCenter(_barEnergy, true, false);
 		_barEnergy.alpha = .8;
 		_grpHUD.add(_barEnergy);
 		
+		_energyIcon = new FlxSprite(0, 0, "assets/images/energy-icon.png");
+		_energyIcon.x = _barEnergy.x - (_energyIcon.width / 2);
+		_energyIcon.y = _barEnergy.y + (_barEnergy.height / 2) - (_energyIcon.height / 2);
+		_grpHUD.add(_energyIcon);
+		_barEnergy.x += _energyIcon.width / 2;
+		_energyIcon.alpha = .8;
+		
+		
+		
 		if (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER)
 		{
-			_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, FlxG.width - 64, 16, this, "_gameTimer", 0, GAMETIME, true);
-			_barTime.createFilledBar(0xff666600, 0xffffff00, true, 0xff333300);
+			_barTime = new FlxBar(0, 8, FlxBar.FILL_LEFT_TO_RIGHT, 300, 16, this, "_gameTimer", 0, GAMETIME, true);
+			_barTime.createFilledBar(0xffffff00, 0xff666600, true, 0xff333300);
+			_barTime.createImageBar("assets/images/empty_time_bar.png", "assets/images/fill_time_bar.png");
 			
 			FlxSpriteUtil.screenCenter(_barTime, true, false);
 			_barTime.alpha = .8;
 			_grpHUD.add(_barTime);
+			_timeIcon = new FlxSprite(0, 0, "assets/images/time-icon.png");
+			_timeIcon.x = _barTime.x - (_timeIcon.width / 2);
+			_timeIcon.y = _barTime.y + (_barTime.height / 2) - (_timeIcon.height / 2);
+			_grpHUD.add(_timeIcon);
+			_timeIcon.alpha = .8;
+			_barTime.x += _timeIcon.width / 2;
 		}
 		else if (Reg.mode == Reg.MODE_ENDLESS)
 		{
@@ -258,7 +292,12 @@ class PlayState extends FlxState
 		
 		_grpHUD.add(_pointer);
 		
+		
 		_twnPointer = FlxTween.multiVar(_pointer, { alpha:.6 }, .1, { type:FlxTween.PINGPONG, ease:FlxEase.circInOut } );
+		
+		_btnPause = new FlxUIButton(FlxG.width - 48, 16, "", clickPause);
+		_btnPause.loadGraphicsUpOverDown("assets/images/pause.png");
+		_grpHUD.add(_btnPause);
 		
 		_pauseScreen = new PauseScreen();
 		_pauseScreen.visible = false;
@@ -274,13 +313,20 @@ class PlayState extends FlxState
 				FlxG.sound.playMusic("endless");
 		}
 		
-		
+		_grpPointers = new FlxGroup(100);
+		add(_grpPointers);
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
 		
 		
 		
 		super.create();
+	}
+	
+	private function clickPause():Void
+	{
+		if (!_paused && !_loading && !_unloading)
+			startPause();
 	}
 	
 	private function doneHelpWait(T:FlxTimer):Void
@@ -536,7 +582,7 @@ class PlayState extends FlxState
 		{
 			if (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER)
 			{
-				_barTime.alpha = .3;
+				_timeIcon.alpha = _barTime.alpha = .3;
 			}
 			else if (Reg.mode == Reg.MODE_ENDLESS)
 			{
@@ -548,7 +594,7 @@ class PlayState extends FlxState
 			
 			if (Reg.mode == Reg.MODE_NORMAL || Reg.mode == Reg.MODE_HUNGER)
 			{
-				_barTime.alpha = .8;
+				_timeIcon.alpha = _barTime.alpha = .8;
 			}
 			else if (Reg.mode == Reg.MODE_ENDLESS)
 			{
@@ -559,13 +605,13 @@ class PlayState extends FlxState
 			
 		if (player.y + player.height > FlxG.height - 48)
 		{
-			_sprScore.alpha =  _countBack.alpha = _barEnergy.alpha =  _meatBagCounterIcon.alpha = .3;
+			_energyIcon.alpha = _sprScore.alpha =  _countBack.alpha = _barEnergy.alpha =  _meatBagCounterIcon.alpha = .3;
 			_txtScore.alpha = _meatBagCounter.alpha = .4;
 		}
 		else
 		{
 			
-			_sprScore.alpha =  _countBack.alpha = _meatBagCounter.alpha =   _barEnergy.alpha = .8;
+			_energyIcon.alpha = _sprScore.alpha =  _countBack.alpha = _meatBagCounter.alpha =   _barEnergy.alpha = .8;
 			_meatBagCounterIcon.alpha = _txtScore.alpha = .9;
 		}
 		
@@ -667,10 +713,31 @@ class PlayState extends FlxState
 	private function getLivingBags():Int
 	{
 		var count:Int = 0;
+		var mp:FlxPoint;
+		var p:Pointer;
 		for (o in grpMeat.members)
 		{
 			if (!cast(o, MeatBag).dying && o.alive && o.exists && o.visible)
+			{
 				count++;
+				if (cast(o, MeatBag).pointer == null)
+				{
+					
+					mp = cast(o, MeatBag).getMidpoint();
+					
+					if ((mp.x < 64 || mp.x > FlxG.width - 64) || (mp.y < 64 || mp.y > FlxG.height - 64))
+					{
+						trace(mp);
+						p = cast _grpPointers.recycle(Pointer);
+						if (p != null)
+						{
+							p.reset(mp.x, mp.y);
+							cast(o, MeatBag).pointer = p;
+						}
+					}
+				}
+				
+			}
 		}
 		return count;
 	}
@@ -889,15 +956,6 @@ class PlayState extends FlxState
 					_moveToTarget = null;
 				}
 				_moveToTarget = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
-				//_grpBlips.add(_grpBlips.recycle(Blip, [FlxG.mouse.x, FlxG.mouse.y]));
-				
-				b = cast _grpBlips.recycle(Blip);
-				if (b != null)
-				{
-					b.reset(FlxG.mouse.x, FlxG.mouse.y);
-				}
-				
-				
 			}
 			if (FlxG.mouse.justPressed)
 			{
@@ -906,6 +964,11 @@ class PlayState extends FlxState
 			else if (FlxG.mouse.justReleased)
 			{
 				FlxG.sound.play("mouse-up");
+				b = cast _grpBlips.recycle(Blip);
+				if (b != null)
+				{
+					b.reset(FlxG.mouse.x, FlxG.mouse.y);
+				}
 			}
 		#end
 		#if !FLX_NO_TOUCH
@@ -920,11 +983,7 @@ class PlayState extends FlxState
 					}
 					_moveToTarget = new FlxPoint(touch.x, touch.y);
 					
-					b = cast _grpBlips.recycle(Blip);
-					if (b != null)
-					{
-						b.reset(touch.x, touch.y);
-					}
+					
 					if (touch.justPressed)
 					{
 						FlxG.sound.play("mouse-down");
@@ -932,6 +991,11 @@ class PlayState extends FlxState
 					else if (touch.justReleased)
 					{
 						FlxG.sound.play("mouse-up");
+						b = cast _grpBlips.recycle(Blip);
+						if (b != null)
+						{
+							b.reset(touch.x, touch.y);
+						}
 					}
 				}
 				

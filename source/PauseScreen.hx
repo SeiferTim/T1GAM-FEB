@@ -20,6 +20,8 @@ class PauseScreen extends FlxGroup
 	private var _txtPause:GameFont;
 	private var _btnResume:GameButton;
 	private var _btnQuit:GameButton;
+	private var _btnRetry:GameButton;
+	private var _quitting:Bool = false;
 	
 	public var clickedResume:Bool = false;
 	
@@ -31,6 +33,9 @@ class PauseScreen extends FlxGroup
 	private var _btnYes:GameButton;
 	private var _btnNo:GameButton;
 	
+	
+	private var _helpKeys:FlxSprite;
+	private var _helpMouse:FlxSprite;
 	
 	public function new() 
 	{
@@ -49,15 +54,23 @@ class PauseScreen extends FlxGroup
 		FlxSpriteUtil.screenCenter(_txtPause, true, false);
 		_grpMain.add(_txtPause);
 		
+		
+		
 		_btnResume = new GameButton(0, 0, "Resume", goResume,GameButton.STYLE_LARGE);
 		_btnResume.scrollFactor.x = _btnResume.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_btnResume);
 		_grpMain.add(_btnResume);
 		
+		_btnRetry = new GameButton(0, 0, "Retry", goRetry, GameButton.STYLE_LARGE_GREEN);
+		_btnRetry.scrollFactor.x = _btnRetry.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_btnRetry, true, false);
+		_btnRetry.y = _btnResume.y + _btnResume.height + 16;
+		_grpMain.add(_btnRetry);
+		
 		_btnQuit = new GameButton(0, 0, "Quit", goQuit,GameButton.STYLE_LARGE_RED);
 		_btnQuit.scrollFactor.x = _btnQuit.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_btnQuit, true, false);
-		_btnQuit.y = _btnResume.y + _btnResume.height + 16;
+		_btnQuit.y = _btnRetry.y + _btnRetry.height + 16;
 		_grpMain.add(_btnQuit);
 		
 		_grpConfirm = new FlxGroup();
@@ -84,18 +97,53 @@ class PauseScreen extends FlxGroup
 		FlxSpriteUtil.screenCenter(_btnNo, false, true);
 		_grpConfirm.add(_btnNo);
 		
+		#if !FLX_NO_KEYBOARD
+		_helpKeys = new FlxSprite(0, 0, "assets/images/keyboard-controls.png");
+		_helpKeys.x = (FlxG.width / 2) - _helpKeys.width - 96;
+		_helpKeys.y = FlxG.height - _helpKeys.height - 48;
+		_helpKeys.alpha = .8;
+		add(_helpKeys);
+		#end
+		#if (!FLX_NO_MOUSE && !FLX_NO_TOUCH)
+		_helpMouse = new FlxSprite(0, 0).loadGraphic("assets/images/touch-controls.png", true, false, 207, 56);
+		_helpMouse.animation.add("play", [0, 1], 2);
+		_helpMouse.animation.play("play");
+		_helpMouse.x = (FlxG.width / 2) + 96;
+		_helpMouse.y = FlxG.height - _helpMouse.height - 48;
+		_helpMouse.alpha = .8;
+		add(_helpMouse);
+		#end
+		
 		alpha = 0;
+	}
+	
+	private function goRetry():Void
+	{
+		if (alpha >= 1 && !_askingConfirm)
+		{
+			_quitting = false;
+			_askingConfirm = true;
+			_grpConfirm.active = true;
+			_grpConfirm.visible = true;
+			_grpMain.active = false;
+			_grpMain.visible = false;
+			_txtConfirm.text = "Really Retry?";
+			FlxSpriteUtil.screenCenter(_txtConfirm, true, false);
+		}
 	}
 	
 	private function goQuit():Void
 	{
 		if (alpha >= 1 && !_askingConfirm)
 		{
+			_quitting = true;
 			_askingConfirm = true;
 			_grpConfirm.active = true;
 			_grpConfirm.visible = true;
 			_grpMain.active = false;
 			_grpMain.visible = false;
+			_txtConfirm.text = "Really Quit?";
+			FlxSpriteUtil.screenCenter(_txtConfirm, true, false);
 		}
 	}
 	
@@ -103,13 +151,20 @@ class PauseScreen extends FlxGroup
 	{
 		if (alpha < 1 || !_askingConfirm)
 			return;
+		
 		FlxG.camera.fade(FlxColor.BLACK, Reg.FADE_DUR, false, doneFadeQuit);
+		
 	}
 	
 	private function doneFadeQuit():Void
 	{
-		FlxG.sound.playMusic("title");
-		FlxG.switchState(new MenuState());
+		if (_quitting)
+		{
+			FlxG.sound.playMusic("title");
+			FlxG.switchState(new MenuState());
+		}
+		else
+			FlxG.switchState(new PlayState());
 	}
 	
 	private function onConfirmNo():Void

@@ -1,6 +1,7 @@
 package ;
 
 import flixel.addons.display.FlxNestedSprite;
+import flixel.FlxObject;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxRandom;
@@ -22,7 +23,11 @@ class MeatBody extends DisplaySprite
 		super(X, Y);
 		immovable = true;
 		//makeGraphic(16, 16, 0xffFFEDFD);
-		loadGraphic("assets/images/body.png", false, true, 16, 16);
+		loadGraphic("assets/images/body-new.png", true, true, 16, 16);
+		animation.add("lr", [0, 1], 4);
+		animation.add("ud", [2, 3], 4);
+		animation.play("lr");
+		
 		heart = new MeatBagHeart(0, 0);
 		add(heart);
 		
@@ -41,6 +46,11 @@ class MeatBody extends DisplaySprite
 	override public function update():Void 
 	{
 		relativeY = -_bounceStep * _bounceAmt;
+		
+		if ((facing == FlxObject.LEFT || facing == FlxObject.RIGHT) && animation.name != "lr")
+			animation.play("lr", true);
+		else if ((facing == FlxObject.UP || facing == FlxObject.DOWN) && animation.name != "ud")
+			animation.play("ud", true);
 		
 		super.update();
 	}

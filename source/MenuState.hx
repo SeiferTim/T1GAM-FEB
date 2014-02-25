@@ -5,6 +5,7 @@ import flash.geom.Rectangle;
 import flash.system.System;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.text.FlxBitmapFont;
+import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUIButton;
 import flixel.FlxBasic;
@@ -15,6 +16,7 @@ import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.system.FlxAssets;
 import flixel.text.FlxText;
+import flixel.tile.FlxTileblock;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -46,7 +48,8 @@ class MenuState extends FlxState
 	private var _titleBack:TitleBackBar;
 	
 	#if (desktop && !FLX_NO_MOUSE)
-	private var _sprExit:FlxSprite;
+	//private var _sprExit:FlxSprite;
+	private var _btnExit:FlxUIButton;
 	#end
 	
 	/**
@@ -64,10 +67,17 @@ class MenuState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		var _grass:FlxSprite = FlxGridOverlay.create(16, 16, (Math.ceil(FlxG.width/16)*16)+8, (Math.ceil(FlxG.height/16)*16)+8,false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite = FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);
+		
+		
+		var _random:FlxTileblock = new FlxTileblock(0, 0, FlxG.width+64, FlxG.height+64);
+		_random.loadTiles("assets/images/random_junk.png", 32, 32, 64);
+		_random.scrollFactor.x = _random.scrollFactor.y = 0;
+		FlxSpriteUtil.screenCenter(_random);
+		add(_random);
 		
 		_grpStampede = new FlxGroup(60);
 		add(_grpStampede);
@@ -131,12 +141,14 @@ class MenuState extends FlxState
 		_twnBack = FlxTimer.start(.8, doneWaitStart);
 		
 		#if (desktop && !FLX_NO_MOUSE)
-		_sprExit = new FlxSprite(FlxG.width - 32, 16).loadGraphic("assets/images/exit.png", true, false, 16, 16);
-		_sprExit.animation.add("off", [0]);
-		_sprExit.animation.add("on", [1]);
-		_sprExit.animation.play("off");
-		_sprExit.visible = true;
-		add(_sprExit);
+		//_sprExit = new FlxSprite(FlxG.width - 32, 16).loadGraphic("assets/images/exit.png", true, false, 16, 16);
+		//_sprExit.animation.add("off", [0]);
+		//_sprExit.animation.add("on", [1]);
+		//_sprExit.animation.play("off");
+		//_sprExit.visible = true;
+		//add(_sprExit);
+		_btnExit = new FlxUIButton(FlxG.width - 48, 16, "", exitGame).loadGraphicsUpOverDown("assets/images/exit.png");
+		add(_btnExit);
 		#end
 		
 		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, true, fadeInDone);
@@ -225,7 +237,7 @@ class MenuState extends FlxState
 	}
 
 	#if (desktop && !FLX_NO_MOUSE)
-	private function ExitGame():Void
+	private function exitGame():Void
 	{
 		if (_leaving || _loading)
 			return;
@@ -240,31 +252,6 @@ class MenuState extends FlxState
 	 */
 	override public function update():Void
 	{
-		
-		
-		#if (desktop && !FLX_NO_MOUSE)
-		
-		
-		if (!_leaving && !_loading)
-		{
-			if (_sprExit.overlapsPoint(new FlxPoint(FlxG.mouse.x, FlxG.mouse.y)))
-			{
-				if (FlxG.mouse.justReleased)
-				{
-					ExitGame();
-				}
-				if (_sprExit.animation.name != "on")
-					_sprExit.animation.play("on");
-			}
-			else
-			{
-				if (_sprExit.animation.name != "off")
-					_sprExit.animation.play("off");
-			}
-		}
-		#end
-
-		
 		_grpStampede.sort(zSort);
 		super.update();
 	}	

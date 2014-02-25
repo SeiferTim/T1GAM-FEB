@@ -36,6 +36,7 @@ class MeatBag extends DisplaySprite
 	private var _isReal:Bool = true;
 	private var _target:MeatBag;
 	private var _state:String = "";
+	public var pointer:Pointer = null;
 	
 
 	public function new(X:Float=0, Y:Float=0) 
@@ -230,9 +231,10 @@ class MeatBag extends DisplaySprite
 		{
 			_dying = true;
 			// heart bursts!
-			head.animation.frameIndex = 1;
-	
+			//head.animation.frameIndex = 1;
+			head.dying = true;
 			_body.bang.visible = false;
+			_body.animation.paused = true;
 			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
 			_body.heart.kill();
 			FlxG.sound.play("kill",.25);
@@ -433,6 +435,22 @@ class MeatBag extends DisplaySprite
 		_body.heart.duration = .2 * ((100 - _fear) / 80);
 		children.sort(sortZ);
 		
+		if (pointer != null)
+		{
+			var mp:FlxPoint = getMidpoint();
+			if ((mp.x > 64 && mp.x < FlxG.width - 64) && (mp.y > 64 && mp.y < FlxG.height - 64))
+			{
+				pointer.kill();
+				pointer = null;
+			}
+			else
+			{
+				pointer.target.x = mp.x;
+				pointer.target.y = mp.y;
+			}
+			
+		}
+		
 		super.update();
 		_shadow.relativeScaleX = 1.25 + (_body.relativeY / 10);
 		
@@ -457,6 +475,7 @@ class MeatBag extends DisplaySprite
 	
 	private function goDie(T:FlxTween):Void
 	{
+		
 		kill();
 	}
 	
@@ -485,5 +504,15 @@ class MeatBag extends DisplaySprite
 	}
 	
 	public var dying(get_dying, null):Bool;
+	
+	override public function kill():Void 
+	{
+		if(pointer!=null)
+		{
+			pointer.kill();
+			pointer = null;
+		}
+		super.kill();
+	}
 	
 }

@@ -48,6 +48,8 @@ class GameClass extends FlxGame
 
 		super(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
 		FlxG.autoPause = false;
+		#if !FLX_NO_MOUSE
 		FlxG.mouse.load("assets/images/cursor.png", 2, 0, 0);
+		#end
 	}
 }
