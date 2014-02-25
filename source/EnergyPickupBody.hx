@@ -2,10 +2,6 @@ package ;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
-/**
- * ...
- * @author Tile Isle
- */
 class EnergyPickupBody extends DisplaySprite
 {
 

@@ -1,7 +1,6 @@
 package;
 
 import flixel.FlxG;
-import flixel.system.FlxSound;
 import flixel.util.FlxSave;
 
 /**

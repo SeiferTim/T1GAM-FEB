@@ -1,15 +1,10 @@
 package ;
 
-import flixel.addons.display.FlxNestedSprite;
 import flixel.FlxObject;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxRandom;
 
-/**
- * ...
- * @author 
- */
 class MeatBody extends DisplaySprite
 {
 	public var heart:MeatBagHeart;

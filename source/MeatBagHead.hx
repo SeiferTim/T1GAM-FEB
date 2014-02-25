@@ -1,12 +1,7 @@
 package ;
 
-import flixel.addons.display.FlxNestedSprite;
 import flixel.FlxObject;
 
-/**
- * ...
- * @author 
- */
 class MeatBagHead extends DisplaySprite
 {
 	

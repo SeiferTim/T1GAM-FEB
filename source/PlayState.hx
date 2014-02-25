@@ -1,6 +1,5 @@
 package;
 
-import flash.geom.Rectangle;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.addons.text.FlxBitmapFont;
@@ -11,7 +10,6 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
-import flixel.input.keyboard.FlxKey;
 import flixel.input.touch.FlxTouch;
 import flixel.tile.FlxTileblock;
 import flixel.tile.FlxTilemap;
@@ -727,7 +725,6 @@ class PlayState extends FlxState
 					
 					if ((mp.x < 64 || mp.x > FlxG.width - 64) || (mp.y < 64 || mp.y > FlxG.height - 64))
 					{
-						trace(mp);
 						p = cast _grpPointers.recycle(Pointer);
 						if (p != null)
 						{
@@ -741,43 +738,6 @@ class PlayState extends FlxState
 		}
 		return count;
 	}
-	
-	/*
-	private function fadeOutEnergyBar():Void
-	{
-		if (_barFadingOut || _barEnergy.alpha <= .4)
-			return;
-		_barFadingOut = true;
-		if (_barFadingIn)
-			_twnBar.cancel();
-		_barFadingIn = false;
-		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:.4 }, .2, { type:FlxTween.ONESHOT, complete:finishBarFadeOut } );
-		
-	}
-	
-	private function finishBarFadeOut(T:FlxTween):Void
-	{
-		_barFadingOut = false;
-	}
-	
-	private function fadeInEnergyBar():Void
-	{
-		if (_barFadingIn || _barEnergy.alpha >= 1)
-			return;
-		_barFadingIn = true;
-		if (_barFadingOut)
-			_twnBar.cancel();
-		_barFadingOut = false;
-		_twnBar = FlxTween.multiVar(_barEnergy, { alpha:1 }, .2, { type:FlxTween.ONESHOT, complete:finishBarFadeIn } );
-	
-	}
-	
-	private function finishBarFadeIn(T:FlxTween):Void
-	{
-		_barFadingIn = false;
-	}*/
-	
-	
 	
 	public function particleBurst(X:Float, Y:Float, Floor:Float, MeatBagCenter:FlxPoint, Style:Int = 0):Void
 	{

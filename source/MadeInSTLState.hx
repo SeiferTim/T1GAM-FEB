@@ -11,7 +11,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
-import flixel.util.FlxTimer;
 
 class MadeInSTLState extends FlxState
 {

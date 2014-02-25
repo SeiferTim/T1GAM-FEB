@@ -1,9 +1,5 @@
 package ;
 
-/**
- * ...
- * @author Tile Isle
- */
 class FSM
 {
 	public var activeState(default, null):Void->Void;

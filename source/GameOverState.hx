@@ -2,13 +2,9 @@ package ;
 
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.text.FlxBitmapFont;
-import flixel.addons.ui.FlxUI9SliceSprite;
-import flixel.addons.ui.FlxUIButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.system.FlxAssets;
-import flixel.text.FlxText;
 import flixel.tile.FlxTileblock;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;

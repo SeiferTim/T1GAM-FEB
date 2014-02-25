@@ -6,10 +6,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
-import flixel.group.FlxSpriteGroup;
-import flixel.text.FlxText;
 import flixel.tile.FlxTileblock;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 

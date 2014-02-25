@@ -12,10 +12,6 @@ import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
 import flixel.util.FlxVelocity;
 
-/**
- * ...
- * @author 
- */
 class MeatBag extends DisplaySprite
 {
 	private inline static var SCARE_RANGE:Int = 100;
@@ -237,7 +233,7 @@ class MeatBag extends DisplaySprite
 			_body.animation.paused = true;
 			Reg.playState.particleBurst(_body.heart.x + 4, _body.heart.y + 4, z, getMidpoint(), ZEmitterExt.STYLE_BLOOD);
 			_body.heart.kill();
-			FlxG.sound.play("kill",.25);
+			FlxG.sound.play("kill",.5);
 			velocity.x = 0;
 			velocity.y = 0;
 			acceleration.x = 0;

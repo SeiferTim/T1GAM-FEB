@@ -2,10 +2,6 @@ package ;
 
 import flixel.addons.display.FlxNestedSprite;
 
-/**
- * ...
- * @author 
- */
 class MeatBagShadow extends DisplaySprite
 {
 	public function new(X:Float=0, Y:Float=0) 

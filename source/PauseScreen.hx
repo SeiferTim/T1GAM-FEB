@@ -1,12 +1,9 @@
 package ;
 
 import flixel.addons.text.FlxBitmapFont;
-import flixel.addons.ui.FlxButtonPlus;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 

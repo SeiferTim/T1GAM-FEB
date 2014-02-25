@@ -1,9 +1,6 @@
 package ;
 
 import flixel.effects.particles.FlxParticle;
-import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.util.FlxRandom;
 
 class ZParticle extends FlxParticle
 {

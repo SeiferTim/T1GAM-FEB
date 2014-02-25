@@ -7,7 +7,6 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
-import haxe.macro.Expr.MetadataEntry;
 
 class HowToState extends FlxState
 {

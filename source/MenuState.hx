@@ -1,12 +1,8 @@
 package;
 
-import flash.geom.Point;
-import flash.geom.Rectangle;
 import flash.system.System;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.text.FlxBitmapFont;
-import flixel.addons.ui.FlxUI;
-import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUIButton;
 import flixel.FlxBasic;
 import flixel.FlxG;
@@ -14,13 +10,10 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
-import flixel.system.FlxAssets;
-import flixel.text.FlxText;
 import flixel.tile.FlxTileblock;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;

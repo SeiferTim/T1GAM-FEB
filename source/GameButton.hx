@@ -1,21 +1,11 @@
 package ;
 
-import flash.display.BitmapData;
-import flash.geom.Point;
 import flixel.addons.text.FlxBitmapFont;
 import flixel.addons.ui.FlxUI9SliceSprite;
-import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxUITypedButton;
 import flixel.FlxG;
-import flixel.text.FlxText.FlxTextFormat;
 import flixel.ui.FlxButton;
-import flixel.util.FlxPoint;
-import flixel.util.FlxSpriteUtil;
 
-/**
- * ...
- * @author 
- */
 class GameButton extends FlxUITypedButton<GameFont>
 {
 

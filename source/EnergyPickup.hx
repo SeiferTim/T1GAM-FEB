@@ -1,12 +1,9 @@
 package ;
+
 import flixel.addons.display.FlxNestedSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
-/**
- * ...
- * @author Tile Isle
- */
 class EnergyPickup extends DisplaySprite
 {
 	private var _shadow:MeatBagShadow;
