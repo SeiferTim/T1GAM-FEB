@@ -1,8 +1,11 @@
 package;
 
+import flash.text.Font;
 import flixel.FlxG;
 import flixel.util.FlxSave;
-
+import openfl.Assets;
+@:font("assets/fonts/04B_19__.TTF") class Font04B extends Font { }
+//@:font("assets/fonts/8bitoperator.ttf") class Font8Bit extends Font { }
 /**
  * Handy, pre-built Registry class that can be used to store 
  * references to objects and other things for quick-access. Feel
@@ -53,6 +56,9 @@ class Reg
 	static public var SIZE_SMALL:Int = 0;
 	static public var SIZE_LARGE:Int = 1;
 	
+	//public static var FONT_DEFAULT:String = "04B_19__";
+	public static var FONT_DEFAULT:String = "assets/fonts/04B_19__.TTF";
+	
 	static public var GameInitialized:Bool = false;
 	#if desktop
 	static public var IsFullscreen:Bool;
@@ -62,6 +68,13 @@ class Reg
 	{
 		if (GameInitialized)
 			return;
+		
+		Font.registerFont(Font04B);
+		//Assets.loadFont(FONT_DEFAULT,Font.registerFont(Font8Bit) );
+		
+		//trace(Font8Bit);
+		
+		
 		
 		levels.push(new Level(0, 6));
 		levels.push(new Level(1, 10));

@@ -408,12 +408,12 @@ class MeatBag extends DisplaySprite
 		{
 			case FlxObject.RIGHT:
 				head.relativeX =  _body.relativeX + _body.width - 2;
-				head.relativeY = _body.relativeY - 2;
+				head.relativeY = _body.relativeY + 3;
 				head.z = 15;
 				//head.animation.frameIndex = 0;
 			case FlxObject.LEFT:
 				head.relativeX = _body.relativeX - head.width + 2; 
-				head.relativeY = _body.relativeY - 2;
+				head.relativeY = _body.relativeY + 3;
 				head.z = 15;
 				//head.animation.frameIndex = 2;
 			case FlxObject.DOWN:

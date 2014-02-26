@@ -12,11 +12,11 @@ class MeatBagHead extends DisplaySprite
 		super(X, Y);
 		//makeGraphic(8, 8, 0xffFFEDFD);
 		loadGraphic("assets/images/head-new.png", true, true, 8, 8);
-		animation.add("alive-lr", [0,1], 4, true);
+		animation.add("alive-lr", [0], 1, false);
 		animation.add("dead-lr", [2], 1, false);
-		animation.add("alive-d", [3,4], 4, true);
+		animation.add("alive-d", [3], 1, false);
 		animation.add("dead-d", [5], 1, false);
-		animation.add("alive-u", [6,7], 4, true);
+		animation.add("alive-u", [6], 1, false);
 		animation.add("dead-u", [8], 1, false);
 		
 		//animation.add("alive-right", [2], 1, false);

@@ -1,5 +1,6 @@
 package;
 
+import flash.display.StageQuality;
 import flash.Lib;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -22,7 +23,10 @@ class GameClass extends FlxGame
 	 */
 	public function new()
 	{
+		
+		Lib.current.stage.quality = StageQuality.LOW;
 		Reg.initGame();
+		
 		
 		#if desktop
 		startFullscreen = Reg.IsFullscreen;

@@ -140,7 +140,8 @@ class MenuState extends FlxState
 		//_sprExit.animation.play("off");
 		//_sprExit.visible = true;
 		//add(_sprExit);
-		_btnExit = new FlxUIButton(FlxG.width - 48, 16, "", exitGame).loadGraphicsUpOverDown("assets/images/exit.png");
+		_btnExit = new FlxUIButton(FlxG.width - 48, 16, "", exitGame);
+		_btnExit.loadGraphicsUpOverDown("assets/images/exit.png");
 		add(_btnExit);
 		#end
 		

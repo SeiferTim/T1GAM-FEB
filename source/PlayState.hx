@@ -129,7 +129,7 @@ class PlayState extends FlxState
 		player.offset.x = 4;
 		player.offset.y = 4;
 		
-		_grass = FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
+		_grass = FlxGridOverlay.create(64, 48, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		//_grass = new FlxSprite(0, 0, "assets/images/ground.png");
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
@@ -169,7 +169,7 @@ class PlayState extends FlxState
 			_helpKeys.alpha = .8;
 			add(_helpKeys);
 			#end
-			#if (!FLX_NO_MOUSE && !FLX_NO_TOUCH)
+			#if (!FLX_NO_MOUSE || !FLX_NO_TOUCH)
 			_helpMouse = new FlxSprite(0, 0).loadGraphic("assets/images/touch-controls.png", true, false, 207, 56);
 			_helpMouse.animation.add("play", [0, 1], 2);
 			_helpMouse.animation.play("play");
@@ -440,7 +440,7 @@ class PlayState extends FlxState
 			}
 			#end
 			
-			#if (!FLX_NO_MOUSE && !FLX_NO_TOUCH)
+			#if (!FLX_NO_MOUSE || !FLX_NO_TOUCH)
 			if (_helpMouse.alpha != _helpAlpha)
 			{
 				_helpMouse.alpha = _helpAlpha;

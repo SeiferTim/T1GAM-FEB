@@ -6,7 +6,7 @@ import flixel.addons.ui.FlxUITypedButton;
 import flixel.FlxG;
 import flixel.ui.FlxButton;
 
-class GameButton extends FlxUITypedButton<GameFont>
+class GameButton extends FlxUITypedButton<NewGameFont>
 {
 
 	public inline static var STYLE_SMALL:Int = 0;
@@ -37,35 +37,35 @@ class GameButton extends FlxUITypedButton<GameFont>
 		switch(Style)
 		{
 			case STYLE_SMALL:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont =  new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/blue_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/blue_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_SMALL_GREEN:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/green_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE_GREEN:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/green_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_SMALL_YELLOW:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/yellow_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE_YELLOW:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/yellow_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_SMALL_RED:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/red_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE_RED:
-				var l:GameFont = new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/red_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 		}

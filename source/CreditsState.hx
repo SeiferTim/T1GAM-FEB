@@ -42,73 +42,72 @@ class CreditsState extends FlxState
 		
 		add(new FlxSprite(4, 4).makeGraphic(FlxG.width - 8, FlxG.height - 8, 0x99000000));
 		
-		var _txtMode:GameFont = new GameFont("Credits", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16, 16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
-		_txtMode.scrollFactor.x = _txtMode.scrollFactor.y = 0;
-		_txtMode.y = 16;
-		FlxSpriteUtil.screenCenter(_txtMode, true, false);
-		add(_txtMode);
+		var _t1:NewGameFont = new NewGameFont(0, 16, "This game was made as part of");
+		FlxSpriteUtil.screenCenter(_t1, true, false);
+		add(_t1);
 		
+		/*
 	
 		
-		var _text:GameFont = new GameFont("This game was made as part of", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + 4;
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
+		var _text1:GameFont = new GameFont("This game was made as part of", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text1.y = 16;
+		FlxSpriteUtil.screenCenter(_text1, true, false);
+		add(_text1);
 		
-		var _text:GameFont = new GameFont("Tim's 1-Game-a-Month Project", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 2);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
+		var _text2:GameFont = new GameFont("Tim's 1-Game-a-Month Project", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text2.y = _text1.y + 12;
+		FlxSpriteUtil.screenCenter(_text2, true, false);
+		add(_text2);
 		
-		var _text:GameFont = new GameFont("t1gam.tims-world.com", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 3);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
+		var _text3:GameFont = new GameFont("t1gam.tims-world.com", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text3.y = _text2.y  + 12;
+		FlxSpriteUtil.screenCenter(_text3, true, false);
+		add(_text3);
 		
-		var _btn:GameButton = new GameButton(_text.x+ _text.width + 16, _text.y , "^", clickT1GamLink, GameButton.STYLE_SMALL, 0, true);
+		var _btn:GameButton = new GameButton(_text3.x+ _text3.width + 16, _text3.y-4, "^", clickT1GamLink, GameButton.STYLE_SMALL, 0, true);
 		add(_btn);
 		
-		var _text:GameFont = new GameFont("Concept, Programming, Design: ", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 5);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
+		var _text4:GameFont = new GameFont("Concept, Programming, Design: ", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text4.y = _text3.y + 20;
+		FlxSpriteUtil.screenCenter(_text4, true, false);
+		add(_text4);
 		
-		var _text:GameFont = new GameFont("Tim I Hely - tims-world.com", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 6);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
+		var _text5:GameFont = new GameFont("Tim I Hely - tims-world.com", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text5.y = _text4.y + 12;
+		FlxSpriteUtil.screenCenter(_text5, true, false);
+		add(_text5);
 		
-		var _btn:GameButton = new GameButton(_text.x+ _text.width + 16, _text.y , "^", clickTimsLink, GameButton.STYLE_SMALL, 0, true);
-		add(_btn);
-		
-		
-		
-		var _text:GameFont = new GameFont("Music: ", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 8);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
-		
-		var _text:GameFont = new GameFont("Fat Bard - fatbard.tumblr.com", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 9);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
-		
-		var _btn:GameButton = new GameButton(_text.x+ _text.width + 16, _text.y , "^", clickFBLink, GameButton.STYLE_SMALL, 0, true);
+		var _btn:GameButton = new GameButton(_text5.x+ _text5.width + 16, _text5.y -4 , "^", clickTimsLink, GameButton.STYLE_SMALL, 0, true);
 		add(_btn);
 		
 		
-		var _text:GameFont = new GameFont("Art: ", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 11);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
 		
-		var _text:GameFont = new GameFont("Ryan Malm - ...", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_text.y = _txtMode.y + _txtMode.height + 16 + ((_txtMode.height+4) * 12);
-		FlxSpriteUtil.screenCenter(_text, true, false);
-		add(_text);
+		var _text6:GameFont = new GameFont("Music: ", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text6.y = _text5.y + 20;
+		FlxSpriteUtil.screenCenter(_text6, true, false);
+		add(_text6);
 		
-		var _btn:GameButton = new GameButton(_text.x+ _text.width + 16, _text.y , "^", clickFBLink, GameButton.STYLE_SMALL, 0, true);
+		var _text7:GameFont = new GameFont("Fat Bard - fatbard.tumblr.com", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text7.y = _text6.y + 12;
+		FlxSpriteUtil.screenCenter(_text7, true, false);
+		add(_text7);
+		
+		var _btn:GameButton = new GameButton(_text7.x+ _text7.width + 16, _text7.y-4 , "^", clickFBLink, GameButton.STYLE_SMALL, 0, true);
 		add(_btn);
+		
+		
+		var _text8:GameFont = new GameFont("Art: ", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text8.y = _text7.y + 20;
+		FlxSpriteUtil.screenCenter(_text8, true, false);
+		add(_text8);
+		
+		var _text9:GameFont = new GameFont("Ryan Malm - ...", GameFont.STYLE_TINY_WHITE,FlxBitmapFont.ALIGN_CENTER);
+		_text9.y = _text8.y + 12;
+		FlxSpriteUtil.screenCenter(_text9, true, false);
+		add(_text9);
+		
+		var _btn:GameButton = new GameButton(_text9.x+ _text9.width + 16, _text9.y-4 , "^", clickFBLink, GameButton.STYLE_SMALL, 0, true);
+		add(_btn);*/
 		
 		var _btn:GameButton = new GameButton(0, 0, "Main Menu", clickMainMenu, GameButton.STYLE_SMALL,0, true);
 		_btn.x = FlxG.width - _btn.width - 16;

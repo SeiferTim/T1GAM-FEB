@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-	<meta title="T1GAM-FEB" package="com.timsworld.t1gam.feb" version="0.0.1" company="Tile Isle" />
-	<app title="T1GAM-FEB" file="T1GAM-FEB" main="Main" version="0.0.1" company="Tile Isle" />
+	<meta title="Meat Bags" package="com.timsworld.t1gam.feb" version="0.0.1" company="Tile Isle" />
+	<app title="Meat Bags" file="MeatBags" main="Main" version="0.0.1" company="Tile Isle" />
 
 	<window background="0x0" />
-	<window width="683" height="384" fps="120" orientation="portrait" resizable="false" if="web" />
+	<window width="683" height="384" fps="120" orientation="landscape" resizable="false" if="web" />
 	<window width="1366" height="768" fps="120" orientation="landscape" hardware="true" vsync="true" unless="web" /> || <window width="0" height="0" if="mobile" unless="web" />
 	<window antialiasing="0" if="cpp"/>
 	<window fullscreen="false" if="desktop" /> || <window fullscreen="true" if="mobile" />
@@ -17,6 +17,8 @@
 	
 	<set name="BUILD_DIR" value="export" />
 	<classpath name="source" />
+	
+	
 	
 	<!--You can use rename="newName" to shorten the paths to the individual subdirectories!-->
 	<assets path="assets" />
@@ -87,7 +89,7 @@
 	<haxedef name="FLX_NO_MOUSE" if="mobile" />
 	<haxedef name="FLX_NO_KEYBOARD" if="mobile" />
 	<haxedef name="FLX_NO_TOUCH" if="desktop" />
-	<!--<haxedef name="FLX_NO_GAMEPAD" />-->
+	<haxedef name="FLX_NO_GAMEPAD" />
 	
 	<!--Disable the Flixel core sound tray-->
 	<haxedef name="FLX_NO_SOUND_TRAY" />
@@ -97,4 +99,16 @@
 	
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+	
+	
+	<icon path="assets/icons/16.png" height="16" width="16" />
+	<icon path="assets/icons/32.png" height="32" width="32" />
+	<icon path="assets/icons/36.png" height="36" width="36" />
+	<icon path="assets/icons/48.png" height="48" width="48" />
+	<icon path="assets/icons/64.png" height="64" width="64" />
+	<icon path="assets/icons/72.png" height="72" width="72" />
+	<icon path="assets/icons/96.png" height="96" width="96" />
+	<icon path="assets/icons/144.png" height="144" width="144" />
+	<icon path="assets/icons/256.png" height="256" width="256" />
+	<icon path="assets/icons/playstore-icon.png" height="512" width="512" />
 </project>
