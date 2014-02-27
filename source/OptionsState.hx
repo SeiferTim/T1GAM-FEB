@@ -32,7 +32,7 @@ class OptionsState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		var _grass:FlxSprite = FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite = FlxGridOverlay.create(64, 48, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);
@@ -49,29 +49,26 @@ class OptionsState extends FlxState
 		_grpMain = new FlxGroup();
 		add(_grpMain);
 		
-		var _txtOpts:GameFont = new GameFont("Options", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		var _txtOpts:NewGameFont = new NewGameFont(0, 0, "Options", NewGameFont.STYLE_LARGE, NewGameFont.COLOR_YELLOW);
 		_txtOpts.y = 16;
 		FlxSpriteUtil.screenCenter(_txtOpts, true, false);
 		_grpMain.add(_txtOpts);
 		
-		var _optText1:GameFont = new GameFont("Volume", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_RIGHT);  //(16, 48, 100, "Volume", 8);
-		_optText1.x = 16;
-		_optText1.y = 48;
+		var _optText1:NewGameFont = new NewGameFont(16, _txtOpts.y + _txtOpts.height + 16, "Volume", NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);
+		
 		_grpMain.add(_optText1);
 		
-		_optSlide1 = new CustomSlider(_optText1.x + _optText1.width + 16, _optText1.y, Std.int (FlxG.width - _optText1.width - 80), 64, 16, 14, 0, 1, SlideChange);
+		_optSlide1 = new CustomSlider(_optText1.x + _optText1.width + 16, _optText1.y + (_txtOpts.height/2) - 8, Std.int(FlxG.width - _optText1.width - 80), 64, 16, 14, 0, 1, SlideChange);
 		_optSlide1.decimals = 1;
 		_optSlide1.value = FlxG.sound.volume;
 		_grpMain.add(_optSlide1);
 		
 		
 		#if desktop
-		var _optText2:GameFont = new GameFont("Screen Mode", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_RIGHT);// (16, 72, 100, "Screen Mode", 8);
-		_optText2.x = 16;
-		_optText2.y = 72;
+		var _optText2:NewGameFont = new NewGameFont(16, _txtOpts.y + _txtOpts.height + 16, "Screen Mode", NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);
 		_grpMain.add(_optText2);
 		
-		_optScreen = new  GameButton(_optText2.x + _optText2.width + 16, _optText2.y , FlxG.fullscreen ? "Fullscreen" : "Window", changeScreen, GameButton.STYLE_LARGE, 200);
+		_optScreen = new  GameButton(_optText2.x + _optText2.width + 16, _optText2.y + (_optText2.height/2) - (GameButton.SIZE_LG_H/2) , FlxG.fullscreen ? "Fullscreen" : "Window", changeScreen, GameButton.STYLE_LARGE, 200);
 		_grpMain.add(_optScreen);
 		
 		#end
@@ -92,24 +89,23 @@ class OptionsState extends FlxState
 		_grpConfirm.active = false;
 		_grpConfirm.visible = false;
 		
-		var _txtConfirm:GameFont = new GameFont("Clear Data?", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		var _txtConfirm:NewGameFont = new NewGameFont(0, 0, "Clear Data?", NewGameFont.STYLE_LARGE, NewGameFont.COLOR_YELLOW);
 		_txtConfirm.y = 16;
 		FlxSpriteUtil.screenCenter(_txtConfirm, true, false);
 		_grpConfirm.add(_txtConfirm);
 		
-		var _txtConfirmWarn:GameFont = new GameFont("Warning: This is PERMANANT!", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
-		_txtConfirmWarn.y = 40;
+		var _txtConfirmWarn:NewGameFont = new NewGameFont(0, _txtConfirm.y + _txtConfirm.height + 16, "Warning: This is PERMANANT!", NewGameFont.STYLE_MED, NewGameFont.COLOR_RED);
 		FlxSpriteUtil.screenCenter(_txtConfirmWarn, true, false);
 		_grpConfirm.add(_txtConfirmWarn);
 		
 		var _btnYes:GameButton = new GameButton(0, 0, "Yes", goClearYes, GameButton.STYLE_LARGE_RED);
 		_btnYes.x = (FlxG.width / 2) - _btnYes.width - 16;
-		_btnYes.y = 64;
+		_btnYes.y = _txtConfirmWarn.y + _txtConfirmWarn.height + 32;
 		_grpConfirm.add(_btnYes);
 		
 		var _btnNo:GameButton = new GameButton(0, 0, "No", goClearNo, GameButton.STYLE_LARGE_GREEN);
 		_btnNo.x = (FlxG.width / 2) + 16;
-		_btnNo.y = 64;
+		_btnNo.y = _txtConfirmWarn.y + _txtConfirmWarn.height + 32;
 		_grpConfirm.add(_btnNo);
 		
 		add(_grpConfirm);

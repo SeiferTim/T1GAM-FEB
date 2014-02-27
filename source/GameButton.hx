@@ -37,35 +37,35 @@ class GameButton extends FlxUITypedButton<NewGameFont>
 		switch(Style)
 		{
 			case STYLE_SMALL:
-				var l:NewGameFont =  new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont =  new NewGameFont(0, 0, Label,NewGameFont.STYLE_TINY);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/blue_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE:
-				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label,NewGameFont.STYLE_MED);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/blue_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_SMALL_GREEN:
-				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label,NewGameFont.STYLE_TINY);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/green_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE_GREEN:
-				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label,NewGameFont.STYLE_MED);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/green_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_SMALL_YELLOW:
-				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label,NewGameFont.STYLE_TINY,NewGameFont.COLOR_BLUE);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/yellow_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE_YELLOW:
-				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label,NewGameFont.STYLE_MED,NewGameFont.COLOR_BLUE);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/yellow_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_SMALL_RED:
-				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label,NewGameFont.STYLE_TINY,NewGameFont.COLOR_WHITE);//new GameFont(Label, GameFont.STYLE_TINY_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/red_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 16) : SIZE_SM_W) : Width, SIZE_SM_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 			case STYLE_LARGE_RED:
-				var l:NewGameFont = new NewGameFont(0, 0, Label);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
+				var l:NewGameFont = new NewGameFont(0, 0, Label,NewGameFont.STYLE_MED,NewGameFont.COLOR_WHITE);//new GameFont(Label, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER, false);
 				loadGraphicSlice9(["assets/images/red_button.png"], Width == 0 ? (FitText ? Std.int(l.width + 24) : SIZE_LG_W) : Width, SIZE_LG_H, _slices , FlxUI9SliceSprite.TILE_NONE, -1, false, 49, 49);
 				label = l;
 		}

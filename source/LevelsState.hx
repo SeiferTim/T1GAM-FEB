@@ -22,12 +22,12 @@ class LevelsState extends FlxState
 	private var _btnModeHunger:GameButton;
 	private var _locks:Array<FlxSprite>;
 	private var _checks:Array<FlxSprite>;
-	private var _txtMode:FlxBitmapFont;
-	private var _txtLevel:FlxBitmapFont;
+	private var _txtMode:NewGameFont;
+	private var _txtLevel:NewGameFont;
 	private var _btnMenu:GameButton;
 	private var _selected:FlxSprite;
-	private var _scores:Array<GameFont>;
-	private var _txtGoal:GameFont;
+	private var _scores:Array<NewGameFont>;
+	private var _txtGoal:NewGameFont;
 	
 	override public function create() 
 	{
@@ -40,7 +40,7 @@ class LevelsState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		var _grass:FlxSprite =  FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite =  FlxGridOverlay.create(64, 48, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);
@@ -53,15 +53,15 @@ class LevelsState extends FlxState
 		
 		add(new FlxSprite(4, 4).makeGraphic(FlxG.width - 8, FlxG.height - 8, 0x99000000));
 		
-		_txtMode = new GameFont("Choose Game Mode", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16, 16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
+		_txtMode = new NewGameFont(0, 0, "Choose Game Mode", NewGameFont.STYLE_LARGE, NewGameFont.COLOR_YELLOW);// GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16, 16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
 		_txtMode.scrollFactor.x = _txtMode.scrollFactor.y = 0;
 		_txtMode.y = 16;
 		FlxSpriteUtil.screenCenter(_txtMode, true, false);
 		add(_txtMode);
 		
-		_btnModeNormal = new GameButton((FlxG.width / 2) - (200 * 1.5) - 16, 40, "Normal", changeMode.bind(Reg.MODE_NORMAL),GameButton.STYLE_LARGE,200);
-		_btnModeEndless = new GameButton((FlxG.width / 2)-(200/2), 40, "Endless", changeMode.bind(Reg.MODE_ENDLESS),GameButton.STYLE_LARGE,200);
-		_btnModeHunger = new GameButton((FlxG.width / 2) + (200/2) + 16, 40, "Hunger", changeMode.bind(Reg.MODE_HUNGER),GameButton.STYLE_LARGE,200);
+		_btnModeNormal = new GameButton((FlxG.width / 2) - (200 * 1.5) - 16, 44, "Normal", changeMode.bind(Reg.MODE_NORMAL),GameButton.STYLE_LARGE,200);
+		_btnModeEndless = new GameButton((FlxG.width / 2)-(200/2), 44, "Endless", changeMode.bind(Reg.MODE_ENDLESS),GameButton.STYLE_LARGE,200);
+		_btnModeHunger = new GameButton((FlxG.width / 2) + (200/2) + 16, 44, "Hunger", changeMode.bind(Reg.MODE_HUNGER),GameButton.STYLE_LARGE,200);
 		
 		//_btnModeNormal.status = FlxButton.PRESSED;
 		//_btnModeNormal.active = false;
@@ -75,12 +75,12 @@ class LevelsState extends FlxState
 		_selected = new FlxSprite(_btnModeNormal.x + 8, _btnModeNormal.y + (_btnModeNormal.height/2) - 8, "assets/images/selected.png");
 		add(_selected);
 		
-		_txtGoal = new GameFont("Goal: Keep them safe in their pens!", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
-		_txtGoal.y = 40 + GameButton.SIZE_LG_H + 8;
+		_txtGoal = new NewGameFont(0,0,"Goal: Keep them safe in their pens!", NewGameFont.STYLE_SMALL, NewGameFont.COLOR_GREEN);
+		_txtGoal.y = _btnModeNormal.y + GameButton.SIZE_LG_H + 8;
 		FlxSpriteUtil.screenCenter(_txtGoal, true, false);
 		add(_txtGoal);
 		
-		_txtLevel = new GameFont("Select Level", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		_txtLevel = new NewGameFont(0,0,"Select Level", NewGameFont.STYLE_LARGE, NewGameFont.COLOR_YELLOW);
 		_txtLevel.scrollFactor.x = _txtLevel.scrollFactor.y = 0;
 		_txtLevel.y = 120;
 		FlxSpriteUtil.screenCenter(_txtLevel, true, false);
@@ -92,10 +92,10 @@ class LevelsState extends FlxState
 		var buttonAndGapHeight:Float = GameButton.SIZE_LG_H + 32;
 		var screenWidth:Float = Math.floor((FlxG.width - 64) / (buttonAndGapWidth));
 		var startX:Float = (FlxG.width / 2) -  (((screenWidth * buttonAndGapWidth) - 16) / 2) + 8;
-		var txtScore:GameFont;
+		var txtScore:NewGameFont;
 		_locks = new Array<FlxSprite>();		
 		_checks = new Array<FlxSprite>();
-		_scores = new Array<GameFont>();
+		_scores = new Array<NewGameFont>();
 		
 		for (l in Reg.levels)
 		{
@@ -107,7 +107,7 @@ class LevelsState extends FlxState
 			add(b);
 			_buttons.push(b);
 			
-			txtScore = new GameFont("HI: " + StringTools.lpad((l.bestScores[Reg.mode] > 0 ? Std.string(l.bestScores[Reg.mode]) : "-----")," ",5), GameFont.STYLE_TINY_WHITE);
+			txtScore = new NewGameFont(0,0,"HI: " + StringTools.lpad((l.bestScores[Reg.mode] > 0 ? Std.string(l.bestScores[Reg.mode]) : "-----")," ",5),NewGameFont.STYLE_TINY, NewGameFont.COLOR_RED);
 			txtScore.x = b.x + (b.width/2) - (txtScore.width/2);
 			txtScore.y = b.y + b.height+ 8;
 			add(txtScore);

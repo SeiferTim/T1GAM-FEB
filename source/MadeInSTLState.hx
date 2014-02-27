@@ -33,7 +33,7 @@ class MadeInSTLState extends FlxState
 		FlxG.mouse.visible = false;
 		#end
 		
-		var _grass:FlxSprite = FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite = FlxGridOverlay.create(64, 48, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);

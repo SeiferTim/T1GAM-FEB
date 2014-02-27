@@ -14,7 +14,7 @@ class PauseScreen extends FlxGroup
 	private var _back:FlxSprite;
 	
 	private var _grpMain:FlxGroup;
-	private var _txtPause:GameFont;
+	private var _txtPause:NewGameFont;
 	private var _btnResume:GameButton;
 	private var _btnQuit:GameButton;
 	private var _btnRetry:GameButton;
@@ -26,7 +26,7 @@ class PauseScreen extends FlxGroup
 	
 	
 	private var _grpConfirm:FlxGroup;
-	private var _txtConfirm:GameFont;
+	private var _txtConfirm:NewGameFont;
 	private var _btnYes:GameButton;
 	private var _btnNo:GameButton;
 	
@@ -46,8 +46,7 @@ class PauseScreen extends FlxGroup
 		_grpMain = new FlxGroup();
 		add(_grpMain);
 		
-		_txtPause = new GameFont("***   Paused   ***", GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_txtPause.y = 32;
+		_txtPause = new NewGameFont(0,32,"***   Paused   ***", NewGameFont.STYLE_LARGE,NewGameFont.COLOR_YELLOW);
 		FlxSpriteUtil.screenCenter(_txtPause, true, false);
 		_grpMain.add(_txtPause);
 		
@@ -77,8 +76,7 @@ class PauseScreen extends FlxGroup
 		
 		
 		
-		_txtConfirm = new GameFont("Really Quit?",GameFont.STYLE_SM_WHITE,FlxBitmapFont.ALIGN_CENTER);
-		_txtConfirm.y = 32;
+		_txtConfirm = new NewGameFont(0,32,"Really Quit?", NewGameFont.STYLE_LARGE,NewGameFont.COLOR_YELLOW);
 		FlxSpriteUtil.screenCenter(_txtConfirm, true, false);
 		_grpConfirm.add(_txtConfirm);
 		

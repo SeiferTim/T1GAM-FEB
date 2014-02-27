@@ -34,7 +34,7 @@ class MenuState extends FlxState
 	
 	private var _grpStampede:FlxGroup;
 	
-	private var _txtSubtitle:GameFont;
+	private var _txtSubtitle:NewGameFont;
 	private var _twnSub:FlxTween;
 	private var _twnDelay:FlxTimer;
 	private var _twnBack:FlxTimer;
@@ -60,7 +60,7 @@ class MenuState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		var _grass:FlxSprite = FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite = FlxGridOverlay.create(64, 48, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);
@@ -124,7 +124,7 @@ class MenuState extends FlxState
 		add(new TitleLetter((FlxG.width/2)+30, -150, TitleLetter.LETTER_A, titleFloor,.7));
 		add(new TitleLetter((FlxG.width/2)+0, -150, TitleLetter.LETTER_B, titleFloor,.6));
 		
-		_txtSubtitle = new GameFont("- The Video Game -", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);//new FlxBitmapFont("assets/images/small_white_font.png", 16,16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
+		_txtSubtitle = new NewGameFont(0,0,"- The Video Game -", NewGameFont.STYLE_LARGE,NewGameFont.COLOR_BLUE);//new FlxBitmapFont("assets/images/small_white_font.png", 16,16, FlxBitmapFont.TEXT_SET1, 96, 0, 0, 16, 0);
 		//_txtSubtitle.setText("- The Video Game -", false, 0, 0, FlxBitmapFont.ALIGN_CENTER, true);
 		_txtSubtitle.y = titleFloor + 75;
 		FlxSpriteUtil.screenCenter(_txtSubtitle, true, false);
@@ -150,13 +150,6 @@ class MenuState extends FlxState
 		super.create();
 	}
 	
-	private function goHowTo():Void
-	{
-		if (_leaving || _loading )
-			return;
-		_leaving = true;		
-		FlxG.camera.fade(0xff000000, Reg.FADE_DUR, false, goHowToDone);
-	}
 	private function goCredits():Void
 	{
 		if (_leaving || _loading )
@@ -210,10 +203,6 @@ class MenuState extends FlxState
 	}
 	
 	
-	private function goHowToDone():Void
-	{
-		FlxG.switchState(new HowToState());
-	}
 	
 	private function goLevelSelectDone():Void
 	{

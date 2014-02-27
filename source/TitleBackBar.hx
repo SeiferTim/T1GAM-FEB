@@ -49,7 +49,7 @@ class TitleBackBar extends FlxNestedSprite
 		_started = true;
 		
 		_twnAlpha = FlxTween.singleVar(this, "alpha", 1, Reg.FADE_DUR*2, { type:FlxTween.ONESHOT, ease:FlxEase.sineIn } );
-		_twn = FlxTween.singleVar(_main, "relativeScaleY", FlxG.height/3, 1, { type:FlxTween.ONESHOT, ease:FlxEase.circOut } );
+		_twn = FlxTween.singleVar(_main, "relativeScaleY", FlxG.height/2, 1, { type:FlxTween.ONESHOT, ease:FlxEase.circOut } );
 	}
 	
 	override public function update():Void 

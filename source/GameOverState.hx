@@ -17,7 +17,7 @@ class GameOverState extends FlxState
 	
 	private var _loaded:Bool = false;
 	private var _unloading:Bool = false;
-	private var _hiScore:GameFont;
+	private var _hiScore:NewGameFont;
 	private var _won:Bool;
 	
 
@@ -29,7 +29,7 @@ class GameOverState extends FlxState
 		FlxG.mouse.visible = true;
 		#end
 		
-		var _grass:FlxSprite =  FlxGridOverlay.create(64, 64, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
+		var _grass:FlxSprite =  FlxGridOverlay.create(64, 48, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		_grass.scrollFactor.x = _grass.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_grass);
 		add(_grass);
@@ -47,27 +47,27 @@ class GameOverState extends FlxState
 		_won = Reg.gameTime >= PlayState.GAMETIME && Reg.leftAlive > 0;
 		
 		
-		var _txtGo:GameFont;
+		var _txtGo:NewGameFont;
 		
 		if ((Reg.mode == Reg.MODE_NORMAL && _won) || Reg.mode == Reg.MODE_HUNGER)
 		{
-			_txtGo = new GameFont("Complete!", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+			_txtGo = new NewGameFont(0,0,"Complete!", NewGameFont.STYLE_LARGE, NewGameFont.COLOR_GREEN);
 		}
 		else
 		{
-			_txtGo = new GameFont("Game Over!", GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+			_txtGo = new NewGameFont(0,0,"Game Over!", NewGameFont.STYLE_LARGE, NewGameFont.COLOR_RED);
 		}
 		_txtGo.y = 16;
 		FlxSpriteUtil.screenCenter(_txtGo, true, false);
 		add(_txtGo);
 		
-		var _txtScore:GameFont = new GameFont("Score " +  StringTools.lpad("", ".", 30 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER); // (0, 64, FlxG.width, "Score " +  StringTools.lpad("",".",40 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score);
-		_txtScore.y = 64;
+		var _txtScore:NewGameFont = new NewGameFont(0, 0, "Score " +  StringTools.lpad("", ".", 30 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score, NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);// GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER); // (0, 64, FlxG.width, "Score " +  StringTools.lpad("",".",40 - ("Score ".length + Std.string(Reg.score).length))  + " " + Reg.score);
+		_txtScore.y = _txtGo.y + _txtGo.height + 16;
 		FlxSpriteUtil.screenCenter(_txtScore, true, false);
 		add(_txtScore);
 		
-		var _txtLeft:GameFont;
-		var _txtBonus:GameFont;
+		var _txtLeft:NewGameFont;
+		var _txtBonus:NewGameFont;
 		var _bonusScore:Int;
 		
 		switch (Reg.mode)
@@ -75,38 +75,38 @@ class GameOverState extends FlxState
 
 			case  Reg.MODE_HUNGER:
 				
-				_txtLeft = new GameFont("Time Left " + StringTools.lpad("", ".", 30 - ("Time ".length + FlxStringUtil.formatTime((PlayState.GAMETIME-Reg.gameTime), true).length)) +  " " + FlxStringUtil.formatTime((PlayState.GAMETIME-Reg.gameTime), true), GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+				_txtLeft = new NewGameFont(0,0,"Time Left " + StringTools.lpad("", ".", 30 - ("Time ".length + FlxStringUtil.formatTime((PlayState.GAMETIME-Reg.gameTime), true).length)) +  " " + FlxStringUtil.formatTime((PlayState.GAMETIME-Reg.gameTime), true), NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);
 				_bonusScore = Std.int((PlayState.GAMETIME-Reg.gameTime) * 25);
 			case Reg.MODE_ENDLESS:
-				_txtLeft = new GameFont("Time " + StringTools.lpad("", ".", 30 - ("Time ".length + FlxStringUtil.formatTime(Reg.gameTime, true).length)) +  " " + FlxStringUtil.formatTime(Reg.gameTime, true), GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+				_txtLeft = new NewGameFont(0,0,"Time " + StringTools.lpad("", ".", 30 - ("Time ".length + FlxStringUtil.formatTime(Reg.gameTime, true).length)) +  " " + FlxStringUtil.formatTime(Reg.gameTime, true), NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);
 				_bonusScore = Std.int(Reg.gameTime * 10);
 			default: 
-				_txtLeft = new GameFont("Living " + StringTools.lpad("", ".", 30 - ("Living ".length + Std.string(Reg.leftAlive).length)) +  " " + Reg.leftAlive, GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+				_txtLeft = new NewGameFont(0,0,"Living " + StringTools.lpad("", ".", 30 - ("Living ".length + Std.string(Reg.leftAlive).length)) +  " " + Reg.leftAlive, NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);
 				_bonusScore = Reg.leftAlive * 100;
 		}
 		
-		_txtLeft.y = 88;
+		_txtLeft.y = _txtScore.y + _txtScore.height + 4;
 		
 		FlxSpriteUtil.screenCenter(_txtLeft, true, false);
 		
 		add(_txtLeft);
 		
 		
-		_txtBonus = new GameFont("Bonus " + StringTools.lpad("", ".", 30 - ("Bonus ".length + Std.string(_bonusScore).length)) +  " " + Std.string(_bonusScore), GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		_txtBonus = new NewGameFont(0,0,"Bonus " + StringTools.lpad("", ".", 30 - ("Bonus ".length + Std.string(_bonusScore).length)) +  " " + Std.string(_bonusScore), NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);
 		
 		//new FlxText(0, 80, FlxG.width, "Bonus " + StringTools.lpad("", ".", 40 - ("Bonus ".length + Std.string(_bonusScore).length)) +  " " + Std.string(_bonusScore));
 		
 		//_txtBonus.alignment = "center";
-		_txtBonus.y = 112;
+		_txtBonus.y = _txtLeft.y + _txtLeft.height + 4;
 		FlxSpriteUtil.screenCenter(_txtBonus, true, false);
 		add(_txtBonus);
 		
 		var totalScore:Int = _bonusScore + Reg.score;
 		
-		var _txtTotal:GameFont = new GameFont("Total " + StringTools.lpad("", ".", 30 - ("Total ".length + Std.string(totalScore).length)) +  " " + Std.string(totalScore), GameFont.STYLE_SM_WHITE, FlxBitmapFont.ALIGN_CENTER);
+		var _txtTotal:NewGameFont = new NewGameFont(0,0,"Total " + StringTools.lpad("", ".", 30 - ("Total ".length + Std.string(totalScore).length)) +  " " + Std.string(totalScore), NewGameFont.STYLE_MED, NewGameFont.COLOR_YELLOW);
 		//new FlxText(0, 88, FlxG.width, "Total " + StringTools.lpad("",".",40 - ("Total ".length + Std.string(totalScore).length)) +  " " + Std.string(totalScore));
 		//_txtTotal.alignment = "center";
-		_txtTotal.y = 136;
+		_txtTotal.y = _txtBonus.y + _txtBonus.height + 4;
 		FlxSpriteUtil.screenCenter(_txtTotal, true, false);
 		add(_txtTotal);
 		
@@ -139,7 +139,7 @@ class GameOverState extends FlxState
 				Reg.levels[Reg.level].bestScores[Reg.mode] = totalScore;
 				Reg.saveScores();
 				// put a 'hi score' thing?
-				_hiScore = new GameFont("HIGH SCORE!", GameFont.STYLE_TINY_WHITE);
+				_hiScore = new NewGameFont(0,0,"HIGH SCORE!",NewGameFont.COLOR_BLUE,NewGameFont.STYLE_TINY);
 				_hiScore.x = _txtTotal.x + _txtTotal.width - _hiScore.width;
 				_hiScore.y = _txtTotal.y + _txtTotal.height +8;
 				add(_hiScore);
