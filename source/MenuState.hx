@@ -77,10 +77,6 @@ class MenuState extends FlxState
 		
 		_titleBack = new TitleBackBar();
 		add(_titleBack);
-
-		var s:FlxSprite = new FlxSprite(0, 0);
-		s.makeGraphic(FlxG.width, FlxG.height, 0xff77C450);
-		add(s);
 		
 		var m:MeatBag;
 		for (i in 0...4)
