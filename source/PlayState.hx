@@ -27,6 +27,7 @@ import flixel.util.FlxSort;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
+import haxe.xml.Fast;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -149,6 +150,25 @@ class PlayState extends FlxState
 		_map = new FlxOgmoLoader("assets/data/level-" + StringTools.lpad(Std.string(Reg.level),"0",4) +  ".oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 8, 8, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
+		trace(_walls.x + " " + _walls.y);
+		
+		var f:Fence;
+		for (mY in 0..._walls.heightInTiles)
+		{
+			for (mX in 0..._walls.widthInTiles)
+			{
+				if (_walls.getTile(mX, mY) > 0)
+				{
+					f = new Fence( ( mX * 8)-1,  ( mY * 8)+1);
+					
+					_grpDisplayObjs.add(f);
+				}
+			}
+		}
+		
+		
+		
+		
 		
 		
 		_map.loadRectangles(loadMeatZone, "meats");
@@ -157,6 +177,7 @@ class PlayState extends FlxState
 		
 		
 		_grpMap.add(_walls);
+		_walls.visible = false;
 		
 		add(_grpMap);
 		
@@ -450,9 +471,9 @@ class PlayState extends FlxState
 		
 		super.update();
 		
-		FlxG.collide(player, _walls);
+		FlxG.collide( _walls,player);
 		//FlxG.collide(grpMeat, grpMeat);
-		FlxG.collide(grpMeat, _walls);
+		FlxG.collide( _walls,grpMeat);
 		FlxG.overlap(player, _grpPickups, pickupEnergy);
 
 		if (!player.isOnScreen())
