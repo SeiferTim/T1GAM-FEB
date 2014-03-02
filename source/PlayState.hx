@@ -41,7 +41,7 @@ class PlayState extends FlxState
 	private var _loading:Bool = true;
 	private var _unloading:Bool = false;
 	
-	public var player:DisplaySprite;
+	public var player:Player;
 	public var grpMeat(default, null):FlxGroup;
 	private var _grpMap:FlxGroup;
 	private var _grpDisplayObjs:FlxGroup;
@@ -123,12 +123,8 @@ class PlayState extends FlxState
 		_grpHUD = new FlxGroup();
 		_grpPickups = new FlxGroup(20);
 		
-		player = new DisplaySprite(0, 0);
-		player.makeGraphic(16, 16, 0xff1F64B1);
-		player.width = 8;
-		player.height = 12;
-		player.offset.x = 4;
-		player.offset.y = 4;
+		player = new Player();//new DisplaySprite(0, 0);
+		//player.makeGraphic(16, 16, 0xff1F64B1);
 		
 		_grass = FlxGridOverlay.create(64, 48, FlxG.width + 64, FlxG.height+64, false, true, 0xff77C450, 0xff67b440);
 		//_grass = new FlxSprite(0, 0, "assets/images/ground.png");
@@ -141,11 +137,6 @@ class PlayState extends FlxState
 		_random.scrollFactor.x = _random.scrollFactor.y = 0;
 		FlxSpriteUtil.screenCenter(_random);
 		_grpMap.add(_random);
-		
-		
-		
-		
-		player.forceComplexRender = true;
 		
 		_map = new FlxOgmoLoader("assets/data/level-" + StringTools.lpad(Std.string(Reg.level),"0",4) +  ".oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 8, 8, "walls");

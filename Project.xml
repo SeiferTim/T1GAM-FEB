@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-	<meta title="Meat Bags" package="com.timsworld.t1gam.feb" version="0.0.1" company="Tile Isle" />
-	<app title="Meat Bags" file="MeatBags" main="Main" version="0.0.1" company="Tile Isle" />
+	<meta title="Meat Bags" package="com.timsworld.t1gam.feb" version="1.0.0" company="Tile Isle" />
+	<app title="Meat Bags" file="MeatBags" main="Main" version="1.0.0" company="Tile Isle" />
 
 	<window background="0x0" />
 	<window width="683" height="384" fps="120" orientation="landscape" resizable="false" if="web" />
@@ -17,9 +17,7 @@
 	
 	<set name="BUILD_DIR" value="export" />
 	<classpath name="source" />
-	
-	
-	
+
 	<!--You can use rename="newName" to shorten the paths to the individual subdirectories!-->
 	<assets path="assets" />
 	
@@ -111,4 +109,9 @@
 	<icon path="assets/icons/144.png" height="144" width="144" />
 	<icon path="assets/icons/256.png" height="256" width="256" />
 	<icon path="assets/icons/playstore-icon.png" height="512" width="512" />
+	
+	
+	<certificate path="T:\Users\Tim\Dropbox\Keys\meatbags-release-key.keystore"  alias="meatbags-release" password="tileisle" if="android" unless="debug" />
+	
+	
 </project>
