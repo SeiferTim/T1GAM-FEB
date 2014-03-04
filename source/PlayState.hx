@@ -141,7 +141,7 @@ class PlayState extends FlxState
 		_map = new FlxOgmoLoader("assets/data/level-" + StringTools.lpad(Std.string(Reg.level),"0",4) +  ".oel");
 		_walls = _map.loadTilemap("assets/images/walls.png", 8, 8, "walls");
 		FlxSpriteUtil.screenCenter(_walls, true, true);
-		trace(_walls.x + " " + _walls.y);
+		//trace(_walls.x + " " + _walls.y);
 		
 		var f:Fence;
 		for (mY in 0..._walls.heightInTiles)

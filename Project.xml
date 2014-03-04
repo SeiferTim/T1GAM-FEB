@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-	<meta title="Meat Bags" package="com.timsworld.t1gam.feb" version="1.0.0" company="Tile Isle" />
-	<app title="Meat Bags" file="MeatBags" main="Main" version="1.0.0" company="Tile Isle" />
+	<meta title="Meat Bags" package="com.timsworld.t1gam.feb" version="1.0.1" company="Tile Isle" />
+	<app title="Meat Bags" file="MeatBags" main="Main" version="1.0.1" company="Tile Isle" />
 
 	<window background="0x0" />
 	<window width="683" height="384" fps="120" orientation="landscape" resizable="false" if="web" />
